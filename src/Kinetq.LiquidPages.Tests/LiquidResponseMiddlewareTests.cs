@@ -11,7 +11,7 @@ using Moq;
 
 namespace Kinetq.LiquidPages.Tests
 {
-    public class LiquidSimpleServerTests : IAsyncLifetime
+    public class LiquidResponseMiddlewareTests : IAsyncLifetime
     {
         private ILiquidResponseMiddleware _liquidResponseMiddleware;
         private Mock<ILiquidRoutesManager> _liquidRoutesManagerMock;
@@ -32,7 +32,7 @@ namespace Kinetq.LiquidPages.Tests
                 .BuildServiceProvider();
 
             _liquidResponseMiddleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
-            _embeddedFileProvider = new EmbeddedFileProvider(typeof(LiquidSimpleServerTests).Assembly, "Kinetq.LiquidPages.Tests.Templates");
+            _embeddedFileProvider = new EmbeddedFileProvider(typeof(LiquidResponseMiddlewareTests).Assembly, "Kinetq.LiquidPages.Tests.Templates");
         }
 
         public Task DisposeAsync()

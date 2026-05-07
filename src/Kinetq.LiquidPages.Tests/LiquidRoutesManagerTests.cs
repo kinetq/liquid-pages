@@ -29,7 +29,7 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
 
         _liquidRoutesManager = _serviceProvider.GetRequiredService<ILiquidRoutesManager>();
         _logger = _serviceProvider.GetRequiredService<ILogger<LiquidRoutesManager>>();
-        _embeddedFileProvider = new EmbeddedFileProvider(typeof(LiquidSimpleServerTests).Assembly, "Kinetq.LiquidMiddleware.Tests.Templates");
+        _embeddedFileProvider = new EmbeddedFileProvider(typeof(LiquidResponseMiddlewareTests).Assembly, "Kinetq.LiquidMiddleware.Tests.Templates");
         return Task.CompletedTask;
     }
 
