@@ -1,21 +1,14 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.ServiceHub.Framework;
-using Microsoft.VisualBasic;
+﻿using System.IO;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.ProjectSystem.Query;
-using System.Configuration;
-using System.Xml.Linq;
+using Kinetq.LiquidPages.Extension.Helpers;
 
 namespace Kinetq.LiquidPages.Extension.ExtensionParts;
 
 [VisualStudioContribution]
-internal class LiquidIntellisense : ExtensionPart, ITextViewChangedListener
+internal class LiquidIntellisenseExtensionPart : ExtensionPart, ITextViewChangedListener
 {
-    private const string PageAttributeMetadataName = "Kinetq.LiquidPages.Pages.LiquidPageAttribute";
-    private const string PageModelBaseMetadataName = "Kinetq.LiquidPages.Pages.LiquidPageModel";
-
     public TextViewExtensionConfiguration TextViewExtensionConfiguration => new()
     {
         AppliesTo =
@@ -85,14 +78,27 @@ internal class LiquidIntellisense : ExtensionPart, ITextViewChangedListener
         string modelFileContents = await File.ReadAllTextAsync(modelFile.Path, cancellationToken);
         var liquidPageModelSyntaxTree = CSharpSyntaxTree.ParseText(modelFileContents);
 
+        var metadataReferences = 
+            references.Select(r => 
+                    MetadataReference.CreateFromFile(r.ReferencedProjectPath))
+                .ToList();
+
         CSharpCompilation compilation = CSharpCompilation.Create(
             $"{Path.GetFileNameWithoutExtension(modelFile.FileName)}.Intellisense",
             syntaxTrees: new List<SyntaxTree>() { liquidPageModelSyntaxTree },
-            references: ,
+            references: metadataReferences,
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOverflowChecks(true)
                 .WithOptimizationLevel(OptimizationLevel.Debug)
                 .WithAssemblyIdentityComparer(DesktopAssemblyIdentityComparer.Default));
+
+        var modelType = compilation.GetTypeByMetadataName(modelFile.ItemName);
+        if (modelType == null)
+        {
+            return;
+        }
+
+        var completions = LiquidIntelliSenseHelper.BuildCompletionItems(modelType);
     }
 
     private static string NormalizeTemplatePath(string fullPath) =>
