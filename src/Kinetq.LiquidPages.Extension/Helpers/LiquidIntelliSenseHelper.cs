@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.CodeAnalysis;
 
-namespace Kinetq.LiquidPages.Extension
+namespace Kinetq.LiquidPages.Extension.Helpers
 {
     /// <summary>
     /// Helper class to analyze liquid template content and provide model property suggestions.
@@ -52,11 +52,11 @@ namespace Kinetq.LiquidPages.Extension
         public static List<CompletionItem> BuildCompletionItems(INamedTypeSymbol modelSymbol)
         {
             var items = new List<CompletionItem>();
-            var properties = LiquidModelResolver.GetPublicProperties(modelSymbol);
+            var properties = GetPublicProperties(modelSymbol);
 
             foreach (var property in properties)
             {
-                var snakeCaseName = LiquidModelResolver.ToSnakeCase(property.Name);
+                var snakeCaseName = ToSnakeCase(property.Name);
                 var description = $"({property.Type.ToDisplayString()}) {property.ContainingType.Name}.{property.Name}";
 
                 var xmlDoc = property.GetDocumentationCommentXml();
@@ -83,6 +83,27 @@ namespace Kinetq.LiquidPages.Extension
         {
             // Lightweight - strips XML tags from doc comment output
             return System.Text.RegularExpressions.Regex.Replace(xml, "<[^>]+>", string.Empty).Trim();
+        }
+
+        /// <summary>
+        /// Mirrors <c>MemberNameStrategies.SnakeCase</c> used by Fluid so that
+        /// C# <c>Title</c> maps to liquid <c>title</c>, <c>FirstName</c> to <c>first_name</c>, etc.
+        /// </summary>
+        internal static string ToSnakeCase(string name) =>
+            string.Concat(name.Select((c, i) =>
+                i > 0 && char.IsUpper(c)
+                    ? "_" + char.ToLower(c)
+                    : char.ToLower(c).ToString()));
+
+        /// <summary>
+        /// Gets all public properties from a type symbol.
+        /// </summary>
+        internal static IEnumerable<IPropertySymbol> GetPublicProperties(INamedTypeSymbol typeSymbol)
+        {
+            return typeSymbol
+                .GetMembers()
+                .OfType<IPropertySymbol>()
+                .Where(p => p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public && !p.IsStatic);
         }
     }
 

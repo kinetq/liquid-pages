@@ -3,8 +3,9 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Shell;
 using System.Diagnostics;
+using Microsoft.VisualStudio.ProjectSystem.Query;
 
-namespace Kinetq.LiquidPages.Extension;
+namespace Kinetq.LiquidPages.Extension.Commands;
 
 /// <summary>
 /// Command to install the Liquid Page item template to Visual Studio's templates directory.
@@ -77,14 +78,16 @@ internal class InstallItemTemplateCommand : Command
             this.logger.TraceEvent(TraceEventType.Information, 0,
                 $"Installed Liquid Page template to: {targetDir}");
 
-            await this.Extensibility.Shell().ShowPromptAsync(
-                "✓ Liquid Page template installed successfully!\n\n" +
+            var successMessage = "✓ Liquid Page template installed successfully!\n\n" +
                 "Next steps:\n" +
                 "1. Restart Visual Studio\n" +
                 "2. Right-click on a folder\n" +
                 "3. Select 'Add > New Item'\n" +
                 "4. Search for 'Liquid Page'\n\n" +
-                $"Template installed to:\n{targetDir}",
+                $"Template installed to:\n{targetDir}";
+
+            await this.Extensibility.Shell().ShowPromptAsync(
+                successMessage,
                 PromptOptions.OK,
                 cancellationToken);
         }

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
 namespace Kinetq.LiquidPages.Extension
@@ -88,27 +83,6 @@ namespace Kinetq.LiquidPages.Extension
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Mirrors <c>MemberNameStrategies.SnakeCase</c> used by Fluid so that
-        /// C# <c>Title</c> maps to liquid <c>title</c>, <c>FirstName</c> to <c>first_name</c>, etc.
-        /// </summary>
-        internal static string ToSnakeCase(string name) =>
-            string.Concat(name.Select((c, i) =>
-                i > 0 && char.IsUpper(c)
-                    ? "_" + char.ToLower(c)
-                    : char.ToLower(c).ToString()));
-
-        /// <summary>
-        /// Gets all public properties from a type symbol.
-        /// </summary>
-        internal static IEnumerable<IPropertySymbol> GetPublicProperties(INamedTypeSymbol typeSymbol)
-        {
-            return typeSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Where(p => p.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public && !p.IsStatic);
         }
     }
 }
