@@ -24,7 +24,7 @@ internal class ApplyFileNestingCommand : Command
         [
             CommandPlacement.VsctParent(
                 new Guid("{d309f791-903f-11d0-9efc-00a0c911004f}"), // guidSHLMainMenu
-                id: 521,   // IDM_VS_CTXT_PROJNODE
+                id: 1072,   // IDM_VS_CTXT_PROJNODE_ADD
                 priority: 0)
         ]
     };

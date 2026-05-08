@@ -14,12 +14,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Grammars\liquid.tmLanguage">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <!-- Exclude ItemTemplates from compilation -->
   <ItemGroup>
     <Compile Remove="ItemTemplates\**" />
