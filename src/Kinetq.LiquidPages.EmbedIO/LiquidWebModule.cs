@@ -32,7 +32,8 @@ public class LiquidWebModule : WebModuleBase
             {
                 Route = request.Url.AbsolutePath,
                 QueryParams = request.Url.Query.GetQueryParams(),
-                Headers = request.Headers
+                Headers = request.Headers,
+                Method = request.HttpMethod
             };
 
             if (request.HasEntityBody)

@@ -57,6 +57,27 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
         }
 
         [Fact]
+        public async Task WebServer_ShouldSetHttpMethod_OnLiquidRequestModel()
+        {
+            LiquidRequestModel capturedRequest = null;
+
+            _mockLiquidResponseMiddleware
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()))
+                .Callback<LiquidRequestModel>(req => capturedRequest = req)
+                .ReturnsAsync(new LiquidResponseModel()
+                {
+                    Content = Encoding.UTF8.GetBytes("<h1>Page Found</h1>")
+                });
+
+            using var httpClient = new HttpClient();
+
+            await httpClient.PostAsync(_urlPrefix, new StringContent("{\"test\": 0}"));
+
+            Assert.NotNull(capturedRequest);
+            Assert.Equal("POST", capturedRequest.Method, ignoreCase: true);
+        }
+
+        [Fact]
         public void WebServer_ShouldNotBeNull()
         {
             Assert.NotNull(_webServer);

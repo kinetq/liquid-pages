@@ -1,5 +1,5 @@
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
+using System.ComponentModel.Composition;
 
 namespace Kinetq.LiquidPages.Extension
 {
@@ -7,12 +7,12 @@ namespace Kinetq.LiquidPages.Extension
     {
         [Export]
         [Name("liquid")]
-        [BaseDefinition("HTML")]
-        internal static ContentTypeDefinition LiquidContentType;
+        [BaseDefinition("htmlx")]
+        public static ContentTypeDefinition LiquidContentType { get; set; }
 
         [Export]
         [FileExtension(".liquid")]
         [ContentType("liquid")]
-        internal static FileExtensionToContentTypeDefinition LiquidFileExtension;
+        public static FileExtensionToContentTypeDefinition LiquidFileExtension { get; set; }
     }
 }

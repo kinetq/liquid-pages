@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Composition;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;

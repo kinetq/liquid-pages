@@ -8,4 +8,5 @@ public class LiquidRequestModel
     public IDictionary<string, string> QueryParams { get; set; }
     public object? Body { get; set; }
     public NameValueCollection Headers { get; set; }
+    public string Method { get; set; } = "GET";
 }

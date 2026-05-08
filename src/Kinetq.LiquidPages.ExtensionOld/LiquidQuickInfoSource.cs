@@ -81,9 +81,9 @@ namespace Kinetq.LiquidPages.Extension
 
             quickInfoContent.Add(tooltip);
 
-            var wordStart = triggerPoint.Value.Position - (triggerPoint.Value - line.Start - IndexOfWord(line.GetText(), triggerPoint.Value - line.Start));
+            var wordIndex = IndexOfWord(line.GetText(), triggerPoint.Value - line.Start);
             applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(
-                new SnapshotSpan(line.Start + IndexOfWord(line.GetText(), triggerPoint.Value - line.Start), word.Length),
+                new SnapshotSpan(line.Start + wordIndex, word.Length),
                 SpanTrackingMode.EdgeInclusive);
         }
 

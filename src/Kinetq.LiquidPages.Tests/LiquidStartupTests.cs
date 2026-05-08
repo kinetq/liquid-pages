@@ -3,7 +3,9 @@ using Fluid;
 using Fluid.Values;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
+using Kinetq.LiquidPages.Pages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -18,6 +20,7 @@ public class LiquidStartupTests
     private readonly Mock<IEnumerable<ILiquidErrorRoute>> _liquidErrorRoutesMock;
     private readonly Mock<IEnumerable<ILiquidFilter>> _liquidFiltersMock;
     private readonly ServiceProvider _serviceProvider;
+    private readonly Mock<IEnumerable<LiquidPageModel>> _liquidPageModelsMock;
 
     public LiquidStartupTests()
     {
@@ -26,6 +29,7 @@ public class LiquidStartupTests
         _liquidRoutesMock = new Mock<IEnumerable<ILiquidRoute>>();
         _liquidErrorRoutesMock = new Mock<IEnumerable<ILiquidErrorRoute>>();
         _liquidFiltersMock = new Mock<IEnumerable<ILiquidFilter>>();
+        _liquidPageModelsMock = new Mock<IEnumerable<LiquidPageModel>>();
 
         var routes = new List<ILiquidRoute> { };
         _liquidRoutesMock.Setup(r => r.GetEnumerator()).Returns(routes.GetEnumerator());
@@ -40,6 +44,7 @@ public class LiquidStartupTests
             .AddSingleton(_liquidRoutesMock.Object)
             .AddSingleton(_liquidErrorRoutesMock.Object)
             .AddSingleton(_liquidFiltersMock.Object)
+            .AddSingleton(_liquidPageModelsMock.Object)
             .AddScoped<ILiquidStartup, LiquidStartup>()
             .AddLogging(builder => builder.AddConsole())
             .BuildServiceProvider();
@@ -273,6 +278,8 @@ public class LiquidStartupTests
         callOrder.Should().Equal("route1", "register1", "route2", "register2");
     }
 
+
+
     [Fact]
     public async Task RegisterFilters_ShouldProcessFiltersSequentially()
     {
@@ -326,6 +333,172 @@ public class LiquidStartupTests
             FileProvider = new Microsoft.Extensions.FileProviders.NullFileProvider(),
             QueryParams = new Dictionary<string, string>()
         };
+    }
+
+    // --- Concrete test page model helpers (add alongside existing private helpers ---
+
+    [LiquidPage("^/test1$", "test1.liquid")]
+    private class TestPageModel1 : LiquidPageModel
+    {
+        public bool OnGetCalled { get; private set; }
+        public bool OnPostCalled { get; private set; }
+
+        public override IFileProvider GetFileProvider() => new NullFileProvider();
+        public override Task OnGetAsync(LiquidRequestModel request) { OnGetCalled = true; return Task.CompletedTask; }
+        public override Task OnPostAsync(LiquidRequestModel request) { OnPostCalled = true; return Task.CompletedTask; }
+    }
+
+    [LiquidPage("^/test2$", "test2.liquid")]
+    private class TestPageModel2 : LiquidPageModel
+    {
+        public override IFileProvider GetFileProvider() => new NullFileProvider();
+    }
+
+    // --- Tests ---
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterRouteForEachPageModel()
+    {
+        // Arrange
+        var pageModel1 = new TestPageModel1();
+        var pageModel2 = new TestPageModel2();
+
+        var pageModels = new List<LiquidPageModel> { pageModel1, pageModel2 };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        // Act
+        await _liquidStartup.RegisterPageModels();
+
+        // Assert
+        _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterRouteWithCorrectPatternAndTemplatePath()
+    {
+        // Arrange
+        var pageModel = new TestPageModel1();
+        var pageModels = new List<LiquidPageModel> { pageModel };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        LiquidRoute? registeredRoute = null;
+        _liquidRoutesManagerMock
+            .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
+            .Callback<LiquidRoute>(r => registeredRoute = r);
+
+        // Act
+        await _liquidStartup.RegisterPageModels();
+
+        // Assert
+        registeredRoute.Should().NotBeNull();
+        registeredRoute!.RoutePattern.ToString().Should().Be("^/test1$");
+        registeredRoute.LiquidTemplatePath.Should().Be("test1.liquid");
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterRouteWithFileProviderFromPageModel()
+    {
+        // Arrange
+        var pageModel = new TestPageModel1();
+        var pageModels = new List<LiquidPageModel> { pageModel };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        LiquidRoute? registeredRoute = null;
+        _liquidRoutesManagerMock
+            .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
+            .Callback<LiquidRoute>(r => registeredRoute = r);
+
+        // Act
+        await _liquidStartup.RegisterPageModels();
+
+        // Assert
+        registeredRoute!.FileProvider.Should().BeOfType<NullFileProvider>();
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ExecuteDelegate_ShouldCallOnGetAsync_WhenMethodIsGet()
+    {
+        // Arrange
+        var pageModel = new TestPageModel1();
+        var pageModels = new List<LiquidPageModel> { pageModel };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        LiquidRoute? registeredRoute = null;
+        _liquidRoutesManagerMock
+            .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
+            .Callback<LiquidRoute>(r => registeredRoute = r);
+
+        await _liquidStartup.RegisterPageModels();
+
+        var request = new LiquidRequestModel { Method = "GET" };
+
+        // Act
+        await registeredRoute!.Execute!(request);
+
+        // Assert
+        pageModel.OnGetCalled.Should().BeTrue();
+        pageModel.OnPostCalled.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ExecuteDelegate_ShouldCallOnPostAsync_WhenMethodIsPost()
+    {
+        // Arrange
+        var pageModel = new TestPageModel1();
+        var pageModels = new List<LiquidPageModel> { pageModel };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        LiquidRoute? registeredRoute = null;
+        _liquidRoutesManagerMock
+            .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
+            .Callback<LiquidRoute>(r => registeredRoute = r);
+
+        await _liquidStartup.RegisterPageModels();
+
+        var request = new LiquidRequestModel { Method = "POST" };
+
+        // Act
+        await registeredRoute!.Execute!(request);
+
+        // Assert
+        pageModel.OnPostCalled.Should().BeTrue();
+        pageModel.OnGetCalled.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ExecuteDelegate_ShouldReturnPageModelInstance()
+    {
+        // Arrange
+        var pageModel = new TestPageModel1();
+        var pageModels = new List<LiquidPageModel> { pageModel };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        LiquidRoute? registeredRoute = null;
+        _liquidRoutesManagerMock
+            .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
+            .Callback<LiquidRoute>(r => registeredRoute = r);
+
+        await _liquidStartup.RegisterPageModels();
+
+        // Act
+        var result = await registeredRoute!.Execute!(new LiquidRequestModel { Method = "GET" });
+
+        // Assert
+        result.Should().BeSameAs(pageModel);
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldHandleEmptyPageModelCollection()
+    {
+        // Arrange
+        var pageModels = new List<LiquidPageModel>();
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        // Act
+        await _liquidStartup.RegisterPageModels();
+
+        // Assert
+        _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Never);
     }
 
     public void Dispose()

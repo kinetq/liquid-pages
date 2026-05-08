@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36804.6
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11723.231 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages", "src\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj", "{DFA17B67-84E7-4257-8438-B1D1D3F7CE27}"
 EndProject
@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.EmbedIO"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.EmbedIO.Tests", "src\Kinetq.LiquidPages.EmbedIO.Tests\Kinetq.LiquidPages.EmbedIO.Tests.csproj", "{DB4B7BCF-5E60-4233-AA84-30A030251F41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Extension", "src\Kinetq.LiquidPages.Extension\Kinetq.LiquidPages.Extension.csproj", "{DE4D8CA4-A69D-2252-863A-A43254F0510F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Extension", "src\Kinetq.LiquidPages.Extension\Kinetq.LiquidPages.Extension.csproj", "{9778EB36-55CC-44FB-8974-45BC7919652B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +40,10 @@ Global
 		{DB4B7BCF-5E60-4233-AA84-30A030251F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB4B7BCF-5E60-4233-AA84-30A030251F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB4B7BCF-5E60-4233-AA84-30A030251F41}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE4D8CA4-A69D-2252-863A-A43254F0510F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE4D8CA4-A69D-2252-863A-A43254F0510F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE4D8CA4-A69D-2252-863A-A43254F0510F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE4D8CA4-A69D-2252-863A-A43254F0510F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9778EB36-55CC-44FB-8974-45BC7919652B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9778EB36-55CC-44FB-8974-45BC7919652B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9778EB36-55CC-44FB-8974-45BC7919652B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9778EB36-55CC-44FB-8974-45BC7919652B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
