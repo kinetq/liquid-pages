@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Extensibility;
 
-namespace Kinetq.LiquidPages.Extension;
+namespace Kinetq.LiquidPages.HybridExtension;
 
 /// <summary>
 /// Extension entrypoint for the LiquidPages IntelliSense extension.
 /// </summary>
 [VisualStudioContribution]
-internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extension
+internal class ExtensionEntrypoint : Extension
 {
     /// <inheritdoc/>
     public override ExtensionConfiguration ExtensionConfiguration => new()

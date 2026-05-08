@@ -1,11 +1,11 @@
+using System.Diagnostics;
+using System.IO;
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Shell;
-using System.Diagnostics;
-using Microsoft.VisualStudio.ProjectSystem.Query;
 
-namespace Kinetq.LiquidPages.Extension.Commands;
+namespace Kinetq.LiquidPages.HybridExtension.Commands;
 
 /// <summary>
 /// Command to install the Liquid Page item template to Visual Studio's templates directory.

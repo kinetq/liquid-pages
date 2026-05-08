@@ -1,7 +1,7 @@
 using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
-using Kinetq.LiquidPages.Extension.Helpers;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -103,8 +103,8 @@ namespace Kinetq.LiquidPages.HybridExtension
                 .OfType<IPropertySymbol>()
                 .Where(p => p.DeclaredAccessibility == Accessibility.Public && !p.IsStatic)
                 .Select(p => new Completion(
-                    displayText: LiquidIntelliSenseHelper.ToSnakeCase(p.Name),
-                    insertionText: LiquidIntelliSenseHelper.ToSnakeCase(p.Name),
+                    displayText: LiquidModelResolver.ToSnakeCase(p.Name),
+                    insertionText: LiquidModelResolver.ToSnakeCase(p.Name),
                     description: $"({p.Type.ToDisplayString()}) {p.ContainingType.Name}.{p.Name}",
                     iconSource: icon,
                     iconAutomationText: null))

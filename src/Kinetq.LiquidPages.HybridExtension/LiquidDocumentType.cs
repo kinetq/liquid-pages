@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 
-namespace Kinetq.LiquidPages.Extension;
+namespace Kinetq.LiquidPages.HybridExtension;
 
 /// <summary>
 /// Defines the Liquid document type for .liquid files.

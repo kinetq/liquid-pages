@@ -1,11 +1,12 @@
-﻿namespace Kinetq.LiquidPages.Extension.Commands;
-
+﻿using System.Diagnostics;
+using System.IO;
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.ProjectSystem.Query;
-using System.Diagnostics;
+
+namespace Kinetq.LiquidPages.HybridExtension.Commands;
 
 [VisualStudioContribution]
 internal class ApplyFileNestingCommand : Command
