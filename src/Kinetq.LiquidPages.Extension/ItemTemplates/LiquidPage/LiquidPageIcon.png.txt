@@ -1,0 +1,12 @@
+This file should be replaced with a 32x32 PNG icon for the Liquid Page item template.
+For now, the template will use the default icon.
+
+To create a proper icon:
+1. Create a 32x32 pixel PNG image
+2. Save it as LiquidPageIcon.png
+3. Replace this file with the actual PNG
+
+Icon design suggestions:
+- A document/page icon with "{{ }}" liquid braces
+- Blue/purple color scheme
+- Clear and recognizable at small sizes
