@@ -1,0 +1,18 @@
+﻿using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
+
+namespace Kinetq.LiquidPages.Extension;
+
+public static class LiquidDocumentTypeConfiguration
+{
+    /// <summary>
+    /// Document type configuration for Liquid template files.
+    /// Inherits from HTML to get HTML syntax highlighting as the base.
+    /// </summary>
+    [VisualStudioContribution]
+    public static DocumentTypeConfiguration LiquidDocumentType => new("liquid")
+    {
+        FileExtensions = new[] { ".liquid", ".html.liquid" },
+        BaseDocumentType = DocumentType.Custom("HTML")
+    };
+}

@@ -19,21 +19,11 @@ internal class LiquidTaggerProviderExtensionPart : ExtensionPart, ITextViewTagge
     private readonly object lockObject = new();
     private readonly Dictionary<Uri, List<LiquidTagger>> _taggers = new();
 
-    /// <summary>
-    /// Document type configuration for Liquid template files.
-    /// </summary>
-    [VisualStudioContribution]
-    public static DocumentTypeConfiguration LiquidDocumentType => new("liquid")
-    {
-        FileExtensions = new[] { ".liquid", ".html.liquid" },
-        BaseDocumentType = DocumentType.KnownValues.Code
-    };
-
     public TextViewExtensionConfiguration TextViewExtensionConfiguration => new()
     {
         AppliesTo =
         [
-            DocumentFilter.FromDocumentType(LiquidDocumentType)
+            DocumentFilter.FromDocumentType(LiquidDocumentTypeConfiguration.LiquidDocumentType)
         ]
     };
 

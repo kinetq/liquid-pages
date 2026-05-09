@@ -11,6 +11,7 @@ using System.Diagnostics;
 internal class ApplyFileNestingCommand : Command
 {
     private readonly TraceSource logger;
+
     public ApplyFileNestingCommand(VisualStudioExtensibility extensibility, TraceSource traceSource)
         : base(extensibility)
     {
@@ -19,12 +20,12 @@ internal class ApplyFileNestingCommand : Command
 
     public override CommandConfiguration CommandConfiguration => new("Apply LiquidPages File Nesting")
     {
-        Icon = new(ImageMoniker.KnownValues.Extension, IconSettings.IconAndText),
+        Icon = new(ImageMoniker.Custom("{b1a9eb31-d18e-4617-985a-e4e511f68994}:LiquidPages"), IconSettings.IconAndText),
         Placements =
         [
             CommandPlacement.VsctParent(
                 new Guid("{d309f791-903f-11d0-9efc-00a0c911004f}"), // guidSHLMainMenu
-                id: 1072,   // IDM_VS_CTXT_PROJNODE_ADD
+                id: 518,   // IDM_VS_CTXT_PROJNODE_ADD
                 priority: 0)
         ]
     };
@@ -34,7 +35,16 @@ internal class ApplyFileNestingCommand : Command
     {
         // Copy .filenesting.json to project
         var extensionDir = Path.GetDirectoryName(typeof(InstallItemTemplateCommand).Assembly.Location);
-        var successMessage = await CopyFileNestingToProject(extensionDir!, cancellationToken);
+        var activeProject = await context.GetActiveProjectAsync(cancellationToken);
+        if (activeProject == null)
+        {
+            await Extensibility.Shell().ShowPromptAsync(
+                $"No project selected.",
+                PromptOptions.AlertConfirm,
+                cancellationToken);
+        }
+
+        var successMessage = await CopyFileNestingToProject(extensionDir!, activeProject, cancellationToken);
 
         await Extensibility.Shell().ShowPromptAsync(
             successMessage,
@@ -42,7 +52,7 @@ internal class ApplyFileNestingCommand : Command
             cancellationToken);
     }
 
-    private async Task<string> CopyFileNestingToProject(string extensionDir, CancellationToken cancellationToken)
+    private async Task<string> CopyFileNestingToProject(string extensionDir, IProjectSnapshot activeProject, CancellationToken cancellationToken)
     {
         try
         {
@@ -55,12 +65,6 @@ internal class ApplyFileNestingCommand : Command
                 return "";
             }
 
-            // Get active project
-            var project = await this.Extensibility.Workspaces().QueryProjectsAsync(
-                project => project.With(p => p.Path),
-                cancellationToken);
-
-            var activeProject = project.FirstOrDefault();
             if (activeProject?.Path == null)
             {
                 this.logger.TraceEvent(TraceEventType.Warning, 0,

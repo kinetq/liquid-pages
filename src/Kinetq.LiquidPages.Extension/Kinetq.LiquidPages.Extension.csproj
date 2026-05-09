@@ -27,4 +27,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Images\LiquidPages.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove=".filenesting.json" />
+    <None Remove="Monikers.imagemanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".filenesting.json" />
+    <Content Include="LiquidPages.ico" />
+    <content Include="Monikers.imagemanifest">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </content>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\LiquidPages.png" />
+  </ItemGroup>
 </Project>
