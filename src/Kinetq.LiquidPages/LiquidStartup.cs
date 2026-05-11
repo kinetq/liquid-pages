@@ -85,10 +85,55 @@ public class LiquidStartup : ILiquidStartup
             
             var additionalProperties = derivedProperties.Where(p => !baseProperties.Any(bp => bp.Name == p.Name));
             
+            var processedTypes = new HashSet<Type>();
             foreach (var property in additionalProperties)
             {
-                _liquidRegisteredTypesManager.RegisterType(property.PropertyType);
+                RegisterTypeRecursively(property.PropertyType, processedTypes);
             }
+        }
+    }
+
+    private void RegisterTypeRecursively(Type type, HashSet<Type> processedTypes)
+    {
+        if (processedTypes.Contains(type))
+            return;
+        
+        processedTypes.Add(type);
+        
+        // Skip primitive types, strings, and other basic value types
+        if (type.IsPrimitive || type == typeof(string) || type == typeof(decimal) || 
+            type == typeof(DateTime) || type == typeof(DateTimeOffset) || 
+            type == typeof(TimeSpan) || type == typeof(Guid) || type.IsEnum)
+        {
+            return;
+        }
+        
+        // Handle enumerable types - recurse into element types but don't register the collection itself
+        if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
+        {
+            if (type.IsGenericType)
+            {
+                var genericArgs = type.GetGenericArguments();
+                foreach (var arg in genericArgs)
+                {
+                    RegisterTypeRecursively(arg, processedTypes);
+                }
+            }
+            else if (type.IsArray)
+            {
+                RegisterTypeRecursively(type.GetElementType()!, processedTypes);
+            }
+            return;
+        }
+        
+        // Register complex types only
+        _liquidRegisteredTypesManager.RegisterType(type);
+        
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        
+        foreach (var property in properties)
+        {
+            RegisterTypeRecursively(property.PropertyType, processedTypes);
         }
     }
 }
