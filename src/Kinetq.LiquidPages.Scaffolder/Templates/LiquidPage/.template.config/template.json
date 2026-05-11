@@ -45,7 +45,7 @@
     },
     "Name": {
       "type": "bind",
-      "binding": "name",
+      "binding": "sourceName",
       "replaces": "{{Name}}",
       "defaultValue": "NewPage"
     },

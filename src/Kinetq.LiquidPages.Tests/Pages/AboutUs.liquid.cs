@@ -8,7 +8,7 @@ namespace Kinetq.LiquidPages.Tests.Pages;
 /// Liquid page model for AboutUs.
 /// This class is the code-behind for AboutUs.liquid
 /// </summary>
-[LiquidPage("about-us", "Pages/NewPage.liquid")]
+[LiquidPage("about-us", "Pages/AboutUs.liquid")]
 public class AboutUsModel : LiquidPageModel
 {
     // Add your model properties here

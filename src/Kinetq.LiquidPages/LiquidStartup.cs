@@ -20,8 +20,8 @@ public class LiquidStartup : ILiquidStartup
         ILiquidRoutesManager liquidRoutesManager,
         IEnumerable<ILiquidRoute> liquidRoutes,
         IEnumerable<ILiquidFilter> liquidFilters,
-        ILiquidFilterManager liquidFilterManager, 
-        IEnumerable<ILiquidErrorRoute> liquidErrorRoutes, 
+        ILiquidFilterManager liquidFilterManager,
+        IEnumerable<ILiquidErrorRoute> liquidErrorRoutes,
         IEnumerable<LiquidPageModel> liquidPageModels, ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
     {
         _liquidRoutesManager = liquidRoutesManager;
@@ -60,32 +60,55 @@ public class LiquidStartup : ILiquidStartup
     {
         foreach (var liquidPageModel in _liquidPageModels)
         {
-            var attr = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>()!;
-
-            _liquidRoutesManager.RegisterRoute(new LiquidRoute
+            var liquidPageAttribute = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>();
+            if (liquidPageAttribute != null)
             {
-                RoutePattern = new Regex(attr.RoutePattern),
-                LiquidTemplatePath = attr.TemplatePath,
-                FileProvider = liquidPageModel.GetFileProvider(),
-                Execute = async (request) =>
+                _liquidRoutesManager.RegisterRoute(new LiquidRoute
                 {
-                    if (request.Method == "POST")
-                        await liquidPageModel.OnPostAsync(request);
-                    else
-                        await liquidPageModel.OnGetAsync(request);
+                    RoutePattern = new Regex(liquidPageAttribute.RoutePattern),
+                    LiquidTemplatePath = liquidPageAttribute.TemplatePath,
+                    FileProvider = liquidPageModel.GetFileProvider(),
+                    Execute = async (request) =>
+                    {
+                        if (request.Method == "POST")
+                            await liquidPageModel.OnPostAsync(request);
+                        else
+                            await liquidPageModel.OnGetAsync(request);
 
-                    return liquidPageModel;
-                }
-            });
+                        return liquidPageModel;
+                    }
+                });
+            }
+
+
+            var liquidErrorPageAttribute =
+                liquidPageModel.GetType().GetCustomAttribute<LiquidPageErrorAttribute>();
+            if (liquidErrorPageAttribute != null)
+            {
+                _liquidRoutesManager.RegisterErrorRoute((int)liquidErrorPageAttribute.StatusCode, new LiquidRoute
+                {
+                    LiquidTemplatePath = liquidErrorPageAttribute.TemplatePath,
+                    FileProvider = liquidPageModel.GetFileProvider(),
+                    Execute = async (request) =>
+                    {
+                        if (request.Method == "POST")
+                            await liquidPageModel.OnPostAsync(request);
+                        else
+                            await liquidPageModel.OnGetAsync(request);
+
+                        return liquidPageModel;
+                    }
+                });
+            }
 
             _liquidRegisteredTypesManager.RegisterType(liquidPageModel.GetType());
             var derivedType = liquidPageModel.GetType();
             var baseType = typeof(LiquidPageModel);
             var baseProperties = baseType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var derivedProperties = derivedType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            
+
             var additionalProperties = derivedProperties.Where(p => !baseProperties.Any(bp => bp.Name == p.Name));
-            
+
             var processedTypes = new HashSet<Type>();
             foreach (var property in additionalProperties)
             {
@@ -98,17 +121,17 @@ public class LiquidStartup : ILiquidStartup
     {
         if (processedTypes.Contains(type))
             return;
-        
+
         processedTypes.Add(type);
-        
+
         // Skip primitive types, strings, and other basic value types
-        if (type.IsPrimitive || type == typeof(string) || type == typeof(decimal) || 
-            type == typeof(DateTime) || type == typeof(DateTimeOffset) || 
+        if (type.IsPrimitive || type == typeof(string) || type == typeof(decimal) ||
+            type == typeof(DateTime) || type == typeof(DateTimeOffset) ||
             type == typeof(TimeSpan) || type == typeof(Guid) || type.IsEnum)
         {
             return;
         }
-        
+
         // Handle enumerable types - recurse into element types but don't register the collection itself
         if (typeof(System.Collections.IEnumerable).IsAssignableFrom(type) && type != typeof(string))
         {
@@ -126,12 +149,12 @@ public class LiquidStartup : ILiquidStartup
             }
             return;
         }
-        
+
         // Register complex types only
         _liquidRegisteredTypesManager.RegisterType(type);
-        
+
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        
+
         foreach (var property in properties)
         {
             RegisterTypeRecursively(property.PropertyType, processedTypes);

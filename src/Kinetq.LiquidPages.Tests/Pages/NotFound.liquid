@@ -1,0 +1,10 @@
+{% capture page_content %}
+    <h1>{{FileName}}</h1>
+    <p>Welcome to the {{FileName}} page!</p>
+
+    <!-- Add your liquid template content here -->
+    <!-- Access model properties using {{ property_name }} -->
+    <!-- Example: {{ title }}, {{ current_date }} -->
+{% endcapture %}
+
+{% include 'Layouts/default.liquid' %}
