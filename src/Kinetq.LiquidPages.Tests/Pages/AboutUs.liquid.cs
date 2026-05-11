@@ -1,5 +1,6 @@
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
+using Kinetq.LiquidPages.Tests.ViewModels;
 
 namespace Kinetq.LiquidPages.Tests.Pages;
 
@@ -18,9 +19,11 @@ public class AboutUsModel : LiquidPageModel
     // 
     // In template: {{ title }} and {{ current_date }}
 
+    public IList<NavItemViewModel> NavItems { get; set; }
+    public NestedTypeOne NestedOne { get; set; }
+
     public override Task OnGetAsync(LiquidRequestModel request)
     {
-        // Initialize your model properties here
-        // This method is called when the page is requested
+        return Task.CompletedTask;
     }
 }

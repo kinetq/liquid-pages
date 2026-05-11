@@ -78,6 +78,7 @@ public class LiquidStartup : ILiquidStartup
                 }
             });
 
+            _liquidRegisteredTypesManager.RegisterType(liquidPageModel.GetType());
             var derivedType = liquidPageModel.GetType();
             var baseType = typeof(LiquidPageModel);
             var baseProperties = baseType.GetProperties(BindingFlags.Public | BindingFlags.Instance);

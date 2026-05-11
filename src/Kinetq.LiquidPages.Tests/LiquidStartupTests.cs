@@ -4,6 +4,8 @@ using Fluid.Values;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
+using Kinetq.LiquidPages.Tests.Pages;
+using Kinetq.LiquidPages.Tests.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -19,6 +21,7 @@ public class LiquidStartupTests
     private readonly Mock<IEnumerable<ILiquidRoute>> _liquidRoutesMock;
     private readonly Mock<IEnumerable<ILiquidErrorRoute>> _liquidErrorRoutesMock;
     private readonly Mock<IEnumerable<ILiquidFilter>> _liquidFiltersMock;
+    private readonly Mock<ILiquidRegisteredTypesManager> _liquidRegisteredTypesManagerMock;
     private readonly ServiceProvider _serviceProvider;
     private readonly Mock<IEnumerable<LiquidPageModel>> _liquidPageModelsMock;
 
@@ -30,6 +33,7 @@ public class LiquidStartupTests
         _liquidErrorRoutesMock = new Mock<IEnumerable<ILiquidErrorRoute>>();
         _liquidFiltersMock = new Mock<IEnumerable<ILiquidFilter>>();
         _liquidPageModelsMock = new Mock<IEnumerable<LiquidPageModel>>();
+        _liquidRegisteredTypesManagerMock = new Mock<ILiquidRegisteredTypesManager>();
 
         var routes = new List<ILiquidRoute> { };
         _liquidRoutesMock.Setup(r => r.GetEnumerator()).Returns(routes.GetEnumerator());
@@ -45,6 +49,7 @@ public class LiquidStartupTests
             .AddSingleton(_liquidErrorRoutesMock.Object)
             .AddSingleton(_liquidFiltersMock.Object)
             .AddSingleton(_liquidPageModelsMock.Object)
+            .AddSingleton(_liquidRegisteredTypesManagerMock.Object)
             .AddScoped<ILiquidStartup, LiquidStartup>()
             .AddLogging(builder => builder.AddConsole())
             .BuildServiceProvider();
@@ -118,7 +123,7 @@ public class LiquidStartupTests
         mockRoute1.Setup(r => r.StatusCode).Returns(404);
         mockRoute2.Setup(r => r.GetRoute()).ReturnsAsync(liquidRoute2);
         mockRoute2.Setup(r => r.StatusCode).Returns(500);
-        
+
         var errorRoutes = new List<ILiquidErrorRoute> { mockRoute1.Object, mockRoute2.Object };
         _liquidErrorRoutesMock.Setup(r => r.GetEnumerator()).Returns(errorRoutes.GetEnumerator());
 
@@ -151,9 +156,9 @@ public class LiquidStartupTests
         // Arrange
         var mockRoute = new Mock<ILiquidRoute>();
         var expectedException = new InvalidOperationException("Test exception");
-        
+
         mockRoute.Setup(r => r.GetRoute()).ThrowsAsync(expectedException);
-        
+
         var routes = new List<ILiquidRoute> { mockRoute.Object };
         _liquidRoutesMock.Setup(r => r.GetEnumerator()).Returns(routes.GetEnumerator());
 
@@ -234,9 +239,9 @@ public class LiquidStartupTests
         // Arrange
         var mockFilter = new Mock<ILiquidFilter>();
         var expectedException = new InvalidOperationException("Filter exception");
-        
+
         mockFilter.Setup(f => f.GetFilter()).ThrowsAsync(expectedException);
-        
+
         var filters = new List<ILiquidFilter> { mockFilter.Object };
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
@@ -500,6 +505,31 @@ public class LiquidStartupTests
         // Assert
         _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Never);
     }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterTypes()
+    {
+        // Arrange
+        var pageModels = new List<LiquidPageModel>()
+        {
+            new AboutUsModel()
+        };
+        _liquidPageModelsMock
+            .Setup(p =>
+                p.GetEnumerator())
+            .Returns(pageModels.GetEnumerator()
+            );
+
+        // Act
+        await _liquidStartup.RegisterPageModels();
+
+        // Assert
+        _liquidRegisteredTypesManagerMock.Verify(m => m.RegisterType(typeof(NavItemViewModel)), Times.Once);
+        _liquidRegisteredTypesManagerMock.Verify(m => m.RegisterType(typeof(NestedTypeOne)), Times.Once);
+        _liquidRegisteredTypesManagerMock.Verify(m => m.RegisterType(typeof(NestedTypeTwo)), Times.Once);
+        _liquidRegisteredTypesManagerMock.Verify(m => m.RegisterType(typeof(AboutUsModel)), Times.Once);
+    }
+
 
     public void Dispose()
     {
