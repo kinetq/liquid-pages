@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+
+    <!-- Package metadata -->
+    <Description>A .NET CLI tool for scaffolding files from templates (LiquidPages, etc.)</Description>
+    <Authors>Kinetq</Authors>
+    <PackageTags>liquid;templates;scaffolding;code-generation;razor-pages</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <PackageType>Template</PackageType>
+    <IsPackable>true</IsPackable>
+    <IsShipping>true</IsShipping>
+    <IsShippingPackage>true</IsShippingPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="Templates\LiquidPage\.template.config\template.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**" />
+  </ItemGroup>
+
+</Project>
