@@ -2,12 +2,12 @@
 
 namespace Kinetq.LiquidPages.Pages;
 
-public class LiquidPageErrorAttribute : Attribute
+public class LiquidErrorPageAttribute : Attribute
 {
     public HttpStatusCode StatusCode { get; }
     public string TemplatePath { get; }
 
-    public LiquidPageErrorAttribute(HttpStatusCode statusCode, string templatePath)
+    public LiquidErrorPageAttribute(HttpStatusCode statusCode, string templatePath)
     {
         TemplatePath = templatePath;
         StatusCode = statusCode;

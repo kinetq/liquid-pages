@@ -82,7 +82,7 @@ public class LiquidStartup : ILiquidStartup
 
 
             var liquidErrorPageAttribute =
-                liquidPageModel.GetType().GetCustomAttribute<LiquidPageErrorAttribute>();
+                liquidPageModel.GetType().GetCustomAttribute<LiquidErrorPageAttribute>();
             if (liquidErrorPageAttribute != null)
             {
                 _liquidRoutesManager.RegisterErrorRoute((int)liquidErrorPageAttribute.StatusCode, new LiquidRoute

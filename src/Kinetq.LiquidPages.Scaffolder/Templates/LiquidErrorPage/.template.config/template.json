@@ -2,7 +2,7 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Kinetq",
   "classifications": [ "Web", "LiquidPages" ],
-  "identity": "Kinetq.LiquidPages.Page",
+  "identity": "Kinetq.LiquidPages.ErrorPage",
   "name": "Liquid Page",
   "description": "Creates a new Liquid Error Page with code-behind (Razor Pages style)",
   "shortName": "liquiderrorpage",
