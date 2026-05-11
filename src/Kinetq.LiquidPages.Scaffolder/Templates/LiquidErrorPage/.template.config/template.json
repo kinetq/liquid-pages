@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Kinetq",
+  "classifications": [ "Web", "LiquidPages" ],
+  "identity": "Kinetq.LiquidPages.Page",
+  "name": "Liquid Page",
+  "description": "Creates a new Liquid Error Page with code-behind (Razor Pages style)",
+  "shortName": "liquiderrorpage",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "sourceName": "NewPage",
+  "preferNameDirectory": false,
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [ "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json", "Layouts/**" ],
+      "rename": {
+        "PageModel.cs": "NewPage.liquid.cs",
+        "PageTemplate.liquid": "NewPage.liquid"
+      }
+    }
+  ],
+  "symbols": {
+    "Namespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "NAMESPACE_PLACEHOLDER",
+      "defaultValue": "MyApp"
+    },
+    "StatusCode": {
+      "type": "parameter",
+      "displayName": "Status Code",
+      "datatype": "choice",
+      "isRequired": true,
+      "choices": [
+        { "choice": "400", "description": "Bad Request" },
+        { "choice": "401", "description": "Unauthorized" },
+        { "choice": "403", "description": "Forbidden" },
+        { "choice": "404", "description": "Not Found" },
+        { "choice": "500", "description": "Internal Server Error" },
+        { "choice": "502", "description": "Bad Gateway" },
+        { "choice": "503", "description": "Service Unavailable" }
+      ]
+    },
+    "HttpStatusCode": {
+      "type": "generated",
+      "generator": "switch",
+      "replaces": "{{HttpStatusCode}}",
+      "parameters": {
+        "evaluator": "C++",
+        "datatype": "string",
+        "cases": [
+          { "condition": "(StatusCode == '400')", "value": "HttpStatusCode.BadRequest" },
+          { "condition": "(StatusCode == '401')", "value": "HttpStatusCode.Unauthorized" },
+          { "condition": "(StatusCode == '403')", "value": "HttpStatusCode.Forbidden" },
+          { "condition": "(StatusCode == '404')", "value": "HttpStatusCode.NotFound" },
+          { "condition": "(StatusCode == '500')", "value": "HttpStatusCode.InternalServerError" },
+          { "condition": "(StatusCode == '502')", "value": "HttpStatusCode.BadGateway" },
+          { "condition": "(StatusCode == '503')", "value": "HttpStatusCode.ServiceUnavailable" }
+        ]
+      }
+    },
+    "Name": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "defaultValue": "NewPage",
+      "replaces": "{{Name}}"
+    }
+  },
+  "forms": {
+   
+  },
+  "constraints": {
+    "csharp-only": {
+      "type": "project-capability",
+      "args": "CSharp"
+    }
+  }
+}

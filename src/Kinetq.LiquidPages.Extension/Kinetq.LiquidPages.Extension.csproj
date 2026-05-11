@@ -34,4 +34,9 @@
   <ItemGroup>
     <Resource Include="Images\LiquidPages.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Dialogs\PageNameDialogControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
 </Project>

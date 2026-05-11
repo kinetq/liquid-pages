@@ -44,4 +44,27 @@ public static class HttpHelpers
 
         return queryParams;
     }
+
+    public static IDictionary<string, string> ParseMultipartFormData(this string body)
+    {
+        var formData = new Dictionary<string, string>();
+
+        if (string.IsNullOrEmpty(body))
+            return formData;
+
+        var pairs = body.Split('&');
+
+        foreach (var pair in pairs)
+        {
+            var keyValue = pair.Split('=', 2);
+            if (keyValue.Length == 2)
+            {
+                var key = Uri.UnescapeDataString(keyValue[0]);
+                var value = Uri.UnescapeDataString(keyValue[1]);
+                formData[key] = value;
+            }
+        }
+
+        return formData;
+    }
 }
