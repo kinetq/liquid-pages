@@ -10,7 +10,7 @@
     <!-- Package metadata -->
     <Description>A .NET CLI tool for scaffolding files from templates (LiquidPages, etc.)</Description>
     <Authors>Kinetq</Authors>
-    <PackageTags>liquid;templates;scaffolding;code-generation;razor-pages</PackageTags>
+    <PackageTags>liquid;templates;scaffolding;code-generation;liquid-pages</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <PackageType>Template</PackageType>

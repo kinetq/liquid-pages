@@ -40,25 +40,43 @@
     "RoutePath": {
       "type": "derived",
       "valueSource": "name",
-      "valueTransform": "lowercase",
+      "valueTransform": "kebabcase",
       "replaces": "{{RoutePath}}"
     },
-    "TemplatePath": {
-      "type": "derived",
-      "valueSource": "name",
-      "valueTransform": "snakecaseWithExtension",
-      "replaces": "{{TemplatePath}}"
+    "Name": {
+      "type": "bind",
+      "binding": "name",
+      "replaces": "{{Name}}",
+      "defaultValue": "NewPage"
     },
     "GenerateLayout": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
       "description": "Generate a default layout file if it doesn't already exist"
+    },
+    "SkipEmbeddedResourceConfig": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Skip automatic configuration of EmbeddedResource for .liquid files"
     }
   },
   "forms": {
     "lowercase": {
       "identifier": "lowercase"
+    },
+    "kebabcase": {
+      "identifier": "chain",
+      "steps": [
+        "kebabcaseTransform",
+        "lowercase"
+      ]
+    },
+    "kebabcaseTransform": {
+      "identifier": "replace",
+      "pattern": "([a-z0-9])([A-Z])",
+      "replacement": "$1-$2"
     },
     "snakecaseWithExtension": {
       "identifier": "chain",
@@ -90,5 +108,22 @@
       "type": "project-capability",
       "args": "CSharp"
     }
-  }
+  },
+  "postActions": [
+    {
+      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
+      "condition": "(!SkipEmbeddedResourceConfig)",
+      "description": "Add EmbeddedResource ItemGroup for .liquid files",
+      "manualInstructions": [
+        {
+          "text": "For production builds, you'll need to enable .liquid file embedding, add this to your .csproj file:\n\n<ItemGroup>\n  <EmbeddedResource Include=\"**\\*.liquid\" />\n</ItemGroup>"
+        }
+      ],
+      "args": {
+        "files": [ "0" ],
+        "xmlContents": "<ItemGroup><EmbeddedResource Include=\"**\\*.liquid\" /></ItemGroup>"
+      },
+      "continueOnError": true
+    }
+  ]
 }

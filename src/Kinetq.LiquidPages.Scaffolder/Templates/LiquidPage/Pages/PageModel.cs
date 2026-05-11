@@ -1,12 +1,13 @@
+using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
 
-namespace NAMESPACE_PLACEHOLDER;
+namespace NAMESPACE_PLACEHOLDER.Pages;
 
 /// <summary>
 /// Liquid page model for NewPage.
 /// This class is the code-behind for NewPage.liquid
 /// </summary>
-[LiquidPage("{{RoutePath}}", "{{TemplatePath}}")]
+[LiquidPage("{{RoutePath}}", "Pages/{{Name}}.liquid")]
 public class NewPageModel : LiquidPageModel
 {
     // Add your model properties here
@@ -17,10 +18,9 @@ public class NewPageModel : LiquidPageModel
     // 
     // In template: {{ title }} and {{ current_date }}
 
-    public override void OnGet()
+    public override Task OnGetAsync(LiquidRequestModel request)
     {
         // Initialize your model properties here
         // This method is called when the page is requested
-        base.OnGet();
     }
 }

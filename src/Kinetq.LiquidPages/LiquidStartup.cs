@@ -10,6 +10,7 @@ public class LiquidStartup : ILiquidStartup
 {
     private readonly ILiquidRoutesManager _liquidRoutesManager;
     private readonly ILiquidFilterManager _liquidFilterManager;
+    private readonly ILiquidRegisteredTypesManager _liquidRegisteredTypesManager;
     private readonly IEnumerable<ILiquidRoute> _liquidRoutes;
     private readonly IEnumerable<ILiquidFilter> _liquidFilters;
     private readonly IEnumerable<ILiquidErrorRoute> _liquidErrorRoutes;
@@ -21,7 +22,7 @@ public class LiquidStartup : ILiquidStartup
         IEnumerable<ILiquidFilter> liquidFilters,
         ILiquidFilterManager liquidFilterManager, 
         IEnumerable<ILiquidErrorRoute> liquidErrorRoutes, 
-        IEnumerable<LiquidPageModel> liquidPageModels)
+        IEnumerable<LiquidPageModel> liquidPageModels, ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
     {
         _liquidRoutesManager = liquidRoutesManager;
         _liquidRoutes = liquidRoutes;
@@ -29,6 +30,7 @@ public class LiquidStartup : ILiquidStartup
         _liquidFilterManager = liquidFilterManager;
         _liquidErrorRoutes = liquidErrorRoutes;
         _liquidPageModels = liquidPageModels;
+        _liquidRegisteredTypesManager = liquidRegisteredTypesManager;
     }
 
     public async Task RegisterRoutes()
@@ -59,6 +61,7 @@ public class LiquidStartup : ILiquidStartup
         foreach (var liquidPageModel in _liquidPageModels)
         {
             var attr = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>()!;
+
             _liquidRoutesManager.RegisterRoute(new LiquidRoute
             {
                 RoutePattern = new Regex(attr.RoutePattern),
@@ -74,6 +77,18 @@ public class LiquidStartup : ILiquidStartup
                     return liquidPageModel;
                 }
             });
+
+            var derivedType = liquidPageModel.GetType();
+            var baseType = typeof(LiquidPageModel);
+            var baseProperties = baseType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var derivedProperties = derivedType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            
+            var additionalProperties = derivedProperties.Where(p => !baseProperties.Any(bp => bp.Name == p.Name));
+            
+            foreach (var property in additionalProperties)
+            {
+                _liquidRegisteredTypesManager.RegisterType(property.PropertyType);
+            }
         }
     }
 }
