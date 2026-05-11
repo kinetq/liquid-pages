@@ -44,10 +44,11 @@
       "replaces": "{{RoutePath}}"
     },
     "Name": {
-      "type": "bind",
-      "binding": "sourceName",
-      "replaces": "{{Name}}",
-      "defaultValue": "NewPage"
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "defaultValue": "NewPage",
+      "replaces": "{{Name}}"
     },
     "GenerateLayout": {
       "type": "parameter",
