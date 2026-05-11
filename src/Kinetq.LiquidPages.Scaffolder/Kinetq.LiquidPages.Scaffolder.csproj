@@ -20,16 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-    <None Include="Templates\LiquidPage\.template.config\template.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**" />
+    <Content Include="Templates\**" PackagePath="Templates" />
   </ItemGroup>
 
 </Project>

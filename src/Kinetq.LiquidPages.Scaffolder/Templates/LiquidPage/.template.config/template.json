@@ -1,34 +1,94 @@
 {
-  "name": "LiquidPage",
-  "description": "Creates a new Liquid Page with code-behind (Razor Pages style)",
+  "$schema": "http://json.schemastore.org/template",
   "author": "Kinetq",
-  "version": "1.0.0",
-  "defaultName": "NewPage",
-  "files": [
+  "classifications": [ "Web", "LiquidPages" ],
+  "identity": "Kinetq.LiquidPages.Page",
+  "name": "Liquid Page",
+  "description": "Creates a new Liquid Page with code-behind (Razor Pages style)",
+  "shortName": "liquidpage",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "sourceName": "NewPage",
+  "preferNameDirectory": false,
+  "sources": [
     {
-      "source": "PageModel.cs",
-      "target": "{{FileName}}.liquid.cs",
-      "replaceParameters": true
+      "source": "./",
+      "target": "./",
+      "exclude": [ "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json", "Layouts/**" ],
+      "rename": {
+        "PageModel.cs": "NewPage.liquid.cs",
+        "PageTemplate.liquid": "NewPage.liquid"
+      }
     },
     {
-      "source": "PageTemplate.liquid",
-      "target": "{{FileName}}.liquid",
-      "replaceParameters": true
+      "source": "./Layouts",
+      "target": "./Layouts",
+      "condition": "(GenerateLayout)",
+      "include": [ "**/*" ],
+      "copyOnly": [ "**/*" ]
     }
   ],
-  "parameters": {
-    "FileName": {
-      "description": "The name of the file/page",
-      "required": true
-    },
+  "symbols": {
     "Namespace": {
-      "description": "The namespace for the generated code",
-      "required": true
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "replaces": "NAMESPACE_PLACEHOLDER",
+      "defaultValue": "MyApp"
     },
-    "OutputPath": {
-      "description": "The relative output path from project root",
-      "required": false,
-      "default": ""
+    "RoutePath": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowercase",
+      "replaces": "{{RoutePath}}"
+    },
+    "TemplatePath": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "snakecaseWithExtension",
+      "replaces": "{{TemplatePath}}"
+    },
+    "GenerateLayout": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Generate a default layout file if it doesn't already exist"
+    }
+  },
+  "forms": {
+    "lowercase": {
+      "identifier": "lowercase"
+    },
+    "snakecaseWithExtension": {
+      "identifier": "chain",
+      "steps": [
+        "snakecase",
+        "addLiquidExtension"
+      ]
+    },
+    "snakecase": {
+      "identifier": "replace",
+      "pattern": "([a-z0-9])([A-Z])",
+      "replacement": "$1_$2"
+    },
+    "addLiquidExtension": {
+      "identifier": "chain",
+      "steps": [
+        "lowercase",
+        "appendExtension"
+      ]
+    },
+    "appendExtension": {
+      "identifier": "replace",
+      "pattern": "^(.*)$",
+      "replacement": "$1.liquid"
+    }
+  },
+  "constraints": {
+    "csharp-only": {
+      "type": "project-capability",
+      "args": "CSharp"
     }
   }
 }

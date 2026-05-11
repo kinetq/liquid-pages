@@ -1,18 +1,18 @@
 using Kinetq.LiquidPages.Pages;
 
-namespace {{Namespace}};
+namespace NAMESPACE_PLACEHOLDER;
 
 /// <summary>
-/// Liquid page model for {{FileName}}.
-/// This class is the code-behind for {{FileName}}.liquid
+/// Liquid page model for NewPage.
+/// This class is the code-behind for NewPage.liquid
 /// </summary>
 [LiquidPage("{{RoutePath}}", "{{TemplatePath}}")]
-public class {{FileName}}Model : LiquidPageModel
+public class NewPageModel : LiquidPageModel
 {
     // Add your model properties here
     // Properties will be available in the .liquid template using snake_case naming
     // Example:
-    // public string Title { get; set; } = "Welcome to {{FileName}}";
+    // public string Title { get; set; } = "Welcome to NewPage";
     // public DateTime CurrentDate { get; set; } = DateTime.Now;
     // 
     // In template: {{ title }} and {{ current_date }}
