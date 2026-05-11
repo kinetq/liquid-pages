@@ -55,20 +55,30 @@ internal class AddLiquidPageCommand : Command
 
         // Show dialog to get page name from user
         var dialog = new PageNameDialogControl();
+        // Start showing the dialog (non-blocking)
+        var _ = Extensibility.Shell().ShowDialogAsync(dialog, cancellationToken);
 
-        await this.Extensibility.Shell().ShowDialogAsync(dialog, cancellationToken);
+        var dialogData = dialog.DataContext as PageNameData;
+        // Wait for user to click OK or Cancel
+        var isConfirmed = await dialogData.DialogResult;
 
-        if (!dialog.IsConfirmed || string.IsNullOrWhiteSpace(dialog.PageName))
+        if (!isConfirmed || string.IsNullOrWhiteSpace(dialogData.PageName))
         {
-            this.logger.TraceEvent(TraceEventType.Information, 0,
+            logger.TraceEvent(TraceEventType.Information, 0,
                 "User cancelled page creation");
+            dialog.Dispose();
             return;
         }
 
-        var pageName = dialog.PageName.Trim();
+        // Convert to PascalCase
+        var pageName = ToPascalCase(dialogData.PageName.Trim());
+
+        logger.TraceEvent(TraceEventType.Information, 0,
+            $"Creating page with name: {pageName}");
 
         // Execute dotnet new liquidpage command
-        var result = await ExecuteDotnetNewCommand(projectDir, pageName, cancellationToken);
+        var result = await ExecuteDotnetNewCommand(projectDir, pageName, dialogData.Force ?? false, cancellationToken);
+        dialog.Dispose();
 
         await Extensibility.Shell().ShowPromptAsync(
             result,
@@ -76,14 +86,46 @@ internal class AddLiquidPageCommand : Command
             cancellationToken);
     }
 
-    private async Task<string> ExecuteDotnetNewCommand(string projectDir, string pageName, CancellationToken cancellationToken)
+    private static string ToPascalCase(string input)
     {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // Remove invalid characters and split by common separators
+        var parts = input.Split(new[] { ' ', '-', '_', '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+        var result = new System.Text.StringBuilder();
+
+        foreach (var part in parts)
+        {
+            if (part.Length == 0)
+                continue;
+
+            // Capitalize first letter, lowercase the rest
+            result.Append(char.ToUpperInvariant(part[0]));
+
+            if (part.Length > 1)
+            {
+                result.Append(part.Substring(1).ToLowerInvariant());
+            }
+        }
+
+        return result.ToString();
+    }
+
+    private async Task<string> ExecuteDotnetNewCommand(
+        string projectDir, 
+        string pageName, 
+        bool force,
+        CancellationToken cancellationToken)
+    {
+        string forceFlag = force ? "--force" : string.Empty;
         try
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"new liquidpage --name {pageName}",
+                Arguments = $"new liquidpage --name {pageName} {forceFlag}",
                 WorkingDirectory = projectDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -108,7 +150,7 @@ internal class AddLiquidPageCommand : Command
                     errorBuilder.AppendLine(e.Data);
             };
 
-            this.logger.TraceEvent(TraceEventType.Information, 0,
+            logger.TraceEvent(TraceEventType.Information, 0,
                 $"Executing: dotnet new liquidpage --name {pageName} in {projectDir}");
 
             process.Start();
@@ -122,27 +164,31 @@ internal class AddLiquidPageCommand : Command
 
             if (process.ExitCode == 0)
             {
-                this.logger.TraceEvent(TraceEventType.Information, 0,
+                logger.TraceEvent(TraceEventType.Information, 0,
                     $"Successfully created Liquid Page: {pageName}");
                 return $"✓ Liquid Page '{pageName}' created successfully!\n\nFiles created:\n• {pageName}.liquid\n• {pageName}.liquid.cs";
             }
-            else
+
+            logger.TraceEvent(TraceEventType.Error, 0,
+                $"Failed to create Liquid Page. Exit code: {process.ExitCode}\nError: {error}");
+
+            // Check if files would be overwritten
+            if (error.Contains("already exists") || error.Contains("would overwrite") || output.Contains("already exists"))
             {
-                this.logger.TraceEvent(TraceEventType.Error, 0,
-                    $"Failed to create Liquid Page. Exit code: {process.ExitCode}\nError: {error}");
-
-                // Check if template is not installed
-                if (error.Contains("No templates found") || error.Contains("liquidpage"))
-                {
-                    return $"⚠ Template not installed!\n\nPlease install the LiquidPages template first:\n\n  dotnet new install Kinetq.LiquidPages.Scaffolder\n\nThen try again.";
-                }
-
-                return $"⚠ Failed to create Liquid Page\n\nError: {error}\nOutput: {output}";
+                return $"⚠ Files already exist!\n\nThe page '{pageName}' would overwrite existing files.\n\nCheck the 'Force overwrite' option to replace existing files.";
             }
+
+            // Check if template is not installed
+            if (error.Contains("No templates found") || error.Contains("liquidpage"))
+            {
+                return $"⚠ Template not installed!\n\nPlease install the LiquidPages template first:\n\n  dotnet new install Kinetq.LiquidPages.Scaffolder\n\nThen try again.";
+            }
+
+            return $"⚠ Failed to create Liquid Page\n\nError: {error}\nOutput: {output}";
         }
         catch (Exception ex)
         {
-            this.logger.TraceEvent(TraceEventType.Error, 0,
+            logger.TraceEvent(TraceEventType.Error, 0,
                 $"Exception while creating Liquid Page: {ex.Message}");
             return $"⚠ Error creating Liquid Page: {ex.Message}";
         }

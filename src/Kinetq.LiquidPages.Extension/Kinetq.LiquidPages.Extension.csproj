@@ -22,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove=".filenesting.json" />
+    <None Remove="Dialogs\PageNameDialogControl.xaml" />
     <None Remove="Monikers.imagemanifest" />
   </ItemGroup>
   <ItemGroup>
@@ -32,11 +33,11 @@
     </content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\LiquidPages.png" />
+    <EmbeddedResource Include="Dialogs\PageNameDialogControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Dialogs\PageNameDialogControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
+    <Resource Include="Images\LiquidPages.png" />
   </ItemGroup>
 </Project>
