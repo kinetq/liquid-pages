@@ -215,8 +215,8 @@ internal class LiquidTagger : TextViewTagger<ClassificationTag>
             var openDelim = match.Value.StartsWith("{%-") ? "{%-" : "{%";
             var closeDelim = match.Value.EndsWith("-%}") ? "-%}" : "%}";
 
-            AddTag(tags, document, rangeStart + match.Index, openDelim.Length, ClassificationType.KnownValues.Punctuation);
-            AddTag(tags, document, rangeStart + match.Index + match.Length - closeDelim.Length, closeDelim.Length, ClassificationType.KnownValues.Punctuation);
+            AddTag(tags, document, rangeStart + match.Index, openDelim.Length, ClassificationType.KnownValues.PreprocessorKeyword);
+            AddTag(tags, document, rangeStart + match.Index + match.Length - closeDelim.Length, closeDelim.Length, ClassificationType.KnownValues.PreprocessorKeyword);
 
             // Process content inside the tag
             var content = match.Groups["content"].Value;
