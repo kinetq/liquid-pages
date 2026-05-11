@@ -1,7 +1,6 @@
 ﻿using Kinetq.LiquidPages.Extension.Classification;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.Utilities;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Kinetq.LiquidPages.Extension.ExtensionParts;

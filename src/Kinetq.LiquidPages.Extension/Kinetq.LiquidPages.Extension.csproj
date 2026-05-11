@@ -15,18 +15,8 @@
   </ItemGroup>
 
   <!-- Exclude ItemTemplates from compilation -->
-  <ItemGroup>
-    <Compile Remove="ItemTemplates\**" />
-    <EmbeddedResource Remove="ItemTemplates\**" />
-    <None Remove="ItemTemplates\**" />
-  </ItemGroup>
 
   <!-- Include ItemTemplates as content to copy to output -->
-  <ItemGroup>
-    <Content Include="ItemTemplates\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <Content Remove="Images\LiquidPages.png" />
   </ItemGroup>

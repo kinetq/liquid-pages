@@ -34,7 +34,7 @@ internal class ApplyFileNestingCommand : Command
     public override async Task ExecuteCommandAsync(IClientContext context, CancellationToken cancellationToken)
     {
         // Copy .filenesting.json to project
-        var extensionDir = Path.GetDirectoryName(typeof(InstallItemTemplateCommand).Assembly.Location);
+        var extensionDir = Path.GetDirectoryName(typeof(ApplyFileNestingCommand).Assembly.Location);
         var activeProject = await context.GetActiveProjectAsync(cancellationToken);
         if (activeProject == null)
         {
