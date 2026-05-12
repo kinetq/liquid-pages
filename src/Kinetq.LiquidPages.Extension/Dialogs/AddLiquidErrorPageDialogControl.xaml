@@ -19,19 +19,23 @@
                  Padding="5"
                  FontSize="13"/>
 
+        <TextBlock Text="Enter the status code used for the error page." 
+                   Margin="0,0,0,10"
+                   TextWrapping="Wrap"
+                   FontSize="11"
+                   Foreground="Gray"/>
+        <TextBox x:Name="StatusCodeTextBox"
+                 Text="{Binding StatusCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                 MinWidth="300"
+                 Margin="0,0,0,15"
+                 Padding="5"
+                 FontSize="13"
+                 MaxLength="3"
+                 InputScope="Number"/>
+
         <CheckBox x:Name="ForceCheckBox"
                   Content="Force overwrite if file exists"
                   IsChecked="{Binding Force, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Margin="0,0,0,15"/>
-
-        <CheckBox x:Name="GenerateLayoutCheckBox"
-                  Content="Generate a Layout file along with the page"
-                  IsChecked="{Binding GenerateLayout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Margin="0,0,0,15"/>
-
-        <CheckBox x:Name="EmbeddedResourceConifgCheckBox"
-                  Content="Automatically add embedded resource config to .csproj file."
-                  IsChecked="{Binding EmbeddedResourceConfig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   Margin="0,0,0,15"/>
 
 

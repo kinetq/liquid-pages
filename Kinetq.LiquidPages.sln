@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.EmbedIO.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Extension", "src\Kinetq.LiquidPages.Extension\Kinetq.LiquidPages.Extension.csproj", "{9778EB36-55CC-44FB-8974-45BC7919652B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Scaffolder", "src\Kinetq.LiquidPages.Scaffolder\Kinetq.LiquidPages.Scaffolder.csproj", "{52B46CEC-7DD5-4616-B0BD-EA5BEDB2025A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Templates", "src\Kinetq.LiquidPages.Templates\Kinetq.LiquidPages.Templates.csproj", "{9F43F735-25B0-A2D3-1780-166383D5743F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +46,10 @@ Global
 		{9778EB36-55CC-44FB-8974-45BC7919652B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9778EB36-55CC-44FB-8974-45BC7919652B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9778EB36-55CC-44FB-8974-45BC7919652B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52B46CEC-7DD5-4616-B0BD-EA5BEDB2025A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52B46CEC-7DD5-4616-B0BD-EA5BEDB2025A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52B46CEC-7DD5-4616-B0BD-EA5BEDB2025A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52B46CEC-7DD5-4616-B0BD-EA5BEDB2025A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F43F735-25B0-A2D3-1780-166383D5743F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F43F735-25B0-A2D3-1780-166383D5743F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F43F735-25B0-A2D3-1780-166383D5743F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F43F735-25B0-A2D3-1780-166383D5743F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

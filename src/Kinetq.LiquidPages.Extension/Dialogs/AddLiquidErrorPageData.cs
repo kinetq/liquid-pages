@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Kinetq.LiquidPages.Extension.Dialogs;
 
 [DataContract]
-internal class PageNameData : NotifyPropertyChangedObject
+internal class AddLiquidErrorPageData : NotifyPropertyChangedObject
 {
     private string? _pageName = string.Empty;
     [DataMember]
@@ -21,19 +21,11 @@ internal class PageNameData : NotifyPropertyChangedObject
         set => SetProperty(ref _force, value);
     }
 
-    private bool? _embeddedResourceConfig = false;
+    private int? _statusCode = null;
     [DataMember]
-    public bool? EmbeddedResourceConfig
+    public int? StatusCode
     {
-        get => _embeddedResourceConfig;
-        set => SetProperty(ref _embeddedResourceConfig, value);
-    }
-
-    private bool? _generateLayout = false;
-    [DataMember]
-    public bool? GenerateLayout
-    {
-        get => _generateLayout;
-        set => SetProperty(ref _generateLayout, value);
+        get => _statusCode;
+        set => SetProperty(ref _statusCode, value);
     }
 }

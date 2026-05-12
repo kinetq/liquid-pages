@@ -74,8 +74,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ErrorPages\" />
-  </ItemGroup>
-
 </Project>

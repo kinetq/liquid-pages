@@ -7,10 +7,10 @@ using System.Runtime.Serialization;
 /// A remote user control to get the page name from the user.
 /// </summary>
 [DataContract]
-internal class PageNameDialogControl : RemoteUserControl
+internal class AddLiquidErrorPageDialogControl : RemoteUserControl
 {
-    public PageNameDialogControl()
-        : base(dataContext: new PageNameData())
+    public AddLiquidErrorPageDialogControl()
+        : base(dataContext: new AddLiquidErrorPageData())
     {
     }
 }

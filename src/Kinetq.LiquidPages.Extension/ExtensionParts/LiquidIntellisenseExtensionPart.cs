@@ -21,71 +21,46 @@
 //    {
 //        // Normalise to a forward-slash relative path so it matches the
 //        // template path stored in [LiquidPage("...", "/Pages/Index.liquid")]
-//        string? normalizedPath = NormalizeTemplatePath(args.AfterTextView.FilePath);
-//        if (string.IsNullOrEmpty(normalizedPath))
-//        {
-//            return;
-//        }
+//        string? filePath = args.AfterTextView.FilePath;
 
 //        var workspace = Extensibility.Workspaces();
-//        var projects = await workspace.QueryProjectsAsync(
-//            project => project.With(p => p.Path),
-//            cancellationToken);
-
-//        IFileSnapshot modelFile = null;
-//        List<IProjectReferenceSnapshot> references = new List<IProjectReferenceSnapshot>();
-//        foreach (var projectSnapshot in projects)
+//        IProjectSnapshot activeProject = null;
+//        try
 //        {
-//            foreach (var fileSnapshot in projectSnapshot.FilesByPath("Pages"))
-//            {
-//                if (!string.Equals(
-//                        Path.GetDirectoryName(NormalizeTemplatePath(fileSnapshot.Path)),
-//                        Path.GetDirectoryName(normalizedPath),
-//                        StringComparison.OrdinalIgnoreCase))
-//                {
-//                    continue;
-//                }
-
-//                if (!string.Equals(
-//                        Path.GetFileNameWithoutExtension(NormalizeTemplatePath(fileSnapshot.Path)),
-//                        Path.GetFileName(normalizedPath),
-//                        StringComparison.OrdinalIgnoreCase))
-//                {
-//                    continue;
-//                }
-
-
-//                if (!Path.GetExtension(fileSnapshot.FileName).Equals("cs"))
-//                {
-//                    continue;
-//                }
-
-//                modelFile = fileSnapshot;
-//                break;
-//            }
-
-//            if (modelFile != null)
-//            {
-//                references = projectSnapshot.ProjectReferences.ToList(); 
-//                break;
-//            }
+//            var projects = await workspace.QueryProjectsAsync(
+//                project => project.With(p => p.Path),
+//                cancellationToken);
+//            activeProject = projects.FirstOrDefault(p => !string.IsNullOrEmpty(p.Path) && filePath.StartsWith(p.Path, StringComparison.OrdinalIgnoreCase));
 //        }
-
-//        if (modelFile == null)
+//        catch (Exception ex)
 //        {
 //            return;
 //        }
 
-//        string modelFileContents = await File.ReadAllTextAsync(modelFile.Path, cancellationToken);
+//        if (activeProject == null)
+//        {
+//            return;
+//        }
+
+//        var references = activeProject.ProjectReferences.ToList();
+//        string modelFilePath = Path.Combine(filePath, ".cs");
+
+//        if (!File.Exists(modelFilePath))
+//        {
+//            return;
+//        }
+
+//        string modelFileName = Path.GetFileNameWithoutExtension(modelFilePath);
+//        string modelFileContents = await File.ReadAllTextAsync(modelFilePath, cancellationToken);
 //        var liquidPageModelSyntaxTree = CSharpSyntaxTree.ParseText(modelFileContents);
 
-//        var metadataReferences = 
-//            references.Select(r => 
+//        var metadataReferences =
+//            references.Select(r =>
 //                    MetadataReference.CreateFromFile(r.ReferencedProjectPath))
 //                .ToList();
 
 //        CSharpCompilation compilation = CSharpCompilation.Create(
-//            $"{Path.GetFileNameWithoutExtension(modelFile.FileName)}.Intellisense",
+//            $"{Path.GetFileNameWithoutExtension(modelFileName)}.Intellisense",
 //            syntaxTrees: new List<SyntaxTree>() { liquidPageModelSyntaxTree },
 //            references: metadataReferences,
 //            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
@@ -93,7 +68,7 @@
 //                .WithOptimizationLevel(OptimizationLevel.Debug)
 //                .WithAssemblyIdentityComparer(DesktopAssemblyIdentityComparer.Default));
 
-//        var modelType = compilation.GetTypeByMetadataName(modelFile.ItemName);
+//        var modelType = compilation.GetTypeByMetadataName(modelFileName);
 //        if (modelType == null)
 //        {
 //            return;

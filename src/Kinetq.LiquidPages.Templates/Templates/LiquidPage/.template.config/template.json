@@ -55,12 +55,6 @@
       "datatype": "bool",
       "defaultValue": "false",
       "description": "Generate a default layout file if it doesn't already exist"
-    },
-    "EmbeddedResourceConfig": {
-      "type": "parameter",
-      "datatype": "bool",
-      "defaultValue": "false",
-      "description": "Automatic configuration of EmbeddedResource for .liquid files"
     }
   },
   "forms": {
@@ -109,22 +103,5 @@
       "type": "project-capability",
       "args": "CSharp"
     }
-  },
-  "postActions": [
-    {
-      "actionId": "B17581D1-C5C9-4489-8F0A-004BE667B814",
-      "condition": "(!SkipEmbeddedResourceConfig)",
-      "description": "Add EmbeddedResource ItemGroup for .liquid files",
-      "manualInstructions": [
-        {
-          "text": "For production builds, you'll need to enable .liquid file embedding, add this to your .csproj file:\n\n<ItemGroup>\n  <EmbeddedResource Include=\"**\\*.liquid\" />\n</ItemGroup>"
-        }
-      ],
-      "args": {
-        "files": [ "0" ],
-        "xmlContents": "<ItemGroup><EmbeddedResource Include=\"**\\*.liquid\" /></ItemGroup>"
-      },
-      "continueOnError": true
-    }
-  ]
+  }
 }
