@@ -30,6 +30,7 @@ jobs:
       
     - name: Publish Visual Studio Extension
       uses: cezarypiatek/VsixPublisherAction@1.0
+      continue-on-error: true
       with:
         extension-file: src/Kinetq.LiquidPages.Extension/bin/Release/net8.0-windows8.0/Kinetq.LiquidPages.Extension.vsix
         publish-manifest-file: src/Kinetq.LiquidPages.Extension/publishManifest.json
