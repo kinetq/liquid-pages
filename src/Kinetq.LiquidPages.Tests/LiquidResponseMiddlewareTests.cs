@@ -40,6 +40,8 @@ namespace Kinetq.LiquidPages.Tests
             return Task.CompletedTask;
         }
 
+
+
         [Fact]
         public async Task GetHomePageAsync_ShouldReturnRenderedHtml_WhenRouteExists()
         {
@@ -232,6 +234,140 @@ namespace Kinetq.LiquidPages.Tests
             // Assert
             Assert.True(responseModel.StatusCode == (int)HttpStatusCode.OK);
             Assert.Equal(fileBytes, responseModel.Content);
+        }
+
+        [Fact]
+        public async Task HandleRequestAsync_ShouldReturnInternalServerError_WhenGeneralExceptionThrown_Doesnt_Exceed_CallStackLimit()
+        {
+            // Arrange
+            const string expectedRoute = "/";
+            var expectedException = new InvalidOperationException("Test exception");
+
+            var liquidRoute = new LiquidRoute
+            {
+                RoutePattern = new Regex("^/$"),
+                LiquidTemplatePath = "index.liquid",
+                FileProvider = null,
+                Execute = _ => throw expectedException
+            };
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForPath(expectedRoute, It.IsAny<IDictionary<string, string>>()))
+                .Returns(liquidRoute);
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForStatusCode(HttpStatusCode.InternalServerError))
+                .Returns(new LiquidRoute
+                {
+                    RoutePattern = new Regex("^/$"),
+                    LiquidTemplatePath = "503.liquid",
+                    FileProvider = null,
+                    Execute = _ => throw expectedException
+                });
+            // Act
+            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            {
+                Route = expectedRoute,
+                QueryParams = new Dictionary<string, string>()
+            });
+
+            // Assert
+            Assert.Equal((int)HttpStatusCode.InternalServerError, responseModel.StatusCode);
+        }
+
+        [Fact]
+        public async Task HandleRequestAsync_ShouldReturnInternalServerError_WhenGeneralExceptionThrown()
+        {
+            // Arrange
+            const string expectedRoute = "/";
+            var expectedException = new InvalidOperationException("Test exception");
+
+            var liquidRoute = new LiquidRoute
+            {
+                RoutePattern = new Regex("^/$"),
+                LiquidTemplatePath = "index.liquid",
+                FileProvider = null,
+                Execute = _ => throw expectedException
+            };
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForPath(expectedRoute, It.IsAny<IDictionary<string, string>>()))
+                .Returns(liquidRoute);
+
+            const string expectedRenderedHtml = "<html><body>Unhandled Exception</body></html>";
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForStatusCode(HttpStatusCode.InternalServerError))
+                .Returns(new LiquidRoute
+                {
+                    RoutePattern = new Regex("^/$"),
+                    LiquidTemplatePath = "500.liquid",
+                    FileProvider = null
+                });
+
+            _htmlRendererMock
+                .SetupSequence(x =>
+                    x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
+                .ReturnsAsync((string)null) // First call returns null to simulate not found
+                .ReturnsAsync(expectedRenderedHtml);
+
+            // Act
+            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            {
+                Route = expectedRoute,
+                QueryParams = new Dictionary<string, string>()
+            });
+
+            // Assert
+            Assert.Equal((int)HttpStatusCode.InternalServerError, responseModel.StatusCode);
+        }
+
+        [Fact]
+        public async Task HandleRequestAsync_ShouldReturnBadGateway_WhenHttpRequestExceptionThrown()
+        {
+            // Arrange
+            const string expectedRoute = "/";
+            var expectedException = new HttpRequestException(
+                "Service Unavailable", 
+                new Exception(), 
+                HttpStatusCode.ServiceUnavailable);
+
+            var liquidRoute = new LiquidRoute
+            {
+                RoutePattern = new Regex("^/$"),
+                LiquidTemplatePath = "index.liquid",
+                FileProvider = null,
+                Execute = _ => throw expectedException
+            };
+
+            const string expectedRenderedHtml = "<html><body>Service Unavailable</body></html>";
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForStatusCode(HttpStatusCode.ServiceUnavailable))
+                .Returns(new LiquidRoute
+                {
+                    RoutePattern = new Regex("^/$"),
+                    LiquidTemplatePath = "503.liquid",
+                    FileProvider = null
+                });
+
+            _htmlRendererMock
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
+                .ReturnsAsync(expectedRenderedHtml);
+
+            _liquidRoutesManagerMock
+                .Setup(x => x.GetRouteForPath(expectedRoute, It.IsAny<IDictionary<string, string>>()))
+                .Returns(liquidRoute);
+
+            // Act
+            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            {
+                Route = expectedRoute,
+                QueryParams = new Dictionary<string, string>()
+            });
+
+            // Assert
+            Assert.Equal((int)HttpStatusCode.ServiceUnavailable, responseModel.StatusCode);
         }
     }
 }
