@@ -1,0 +1,21 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="20a2d220-c724-408b-8c3c-09866f045087" Version="1.0" Language="en-US" Publisher="Kinetq" />
+    <DisplayName>LiquidPages Extension</DisplayName>
+    <Description xml:space="preserve">Provides IntelliSense for .liquid templates backed by LiquidPageModel classes.</Description>
+    <Tags>liquid, liquid-pages, kinetq</Tags>
+    <Preview>true</Preview>
+  </Metadata>
+  <Installation ExtensionType="VisualStudio.Extensibility">
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
+      <ProductArchitecture>arm64</ProductArchitecture>
+    </InstallationTarget>
+    <DotnetTargetVersions>net8.0</DotnetTargetVersions>
+  </Installation>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,19.0)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
+</PackageManifest>

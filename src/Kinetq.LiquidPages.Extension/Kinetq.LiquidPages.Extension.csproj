@@ -18,15 +18,12 @@
 
   <!-- Include ItemTemplates as content to copy to output -->
   <ItemGroup>
-    <Content Remove="Images\LiquidPages.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove=".filenesting.json" />
     <None Remove="Monikers.imagemanifest" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include=".filenesting.json" />
-    <Content Include="LiquidPages.ico" />
+    <Content Include="LiquidPages.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <content Include="Monikers.imagemanifest">
       <IncludeInVSIX>true</IncludeInVSIX>
     </content>
@@ -40,6 +37,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\LiquidPages.png" />
+    <Content Update="Images\LiquidPages.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
 </Project>
