@@ -23,7 +23,7 @@ jobs:
       run: dotnet restore Kinetq.LiquidPages.sln
       
     - name: Build Solution
-      run: dotnet build Kinetq.LiquidPages.sln  
+      run: dotnet build Kinetq.LiquidPages.sln -c Release --no-restore 
       
     - name: Test Solution
       run: dotnet test Kinetq.LiquidPages.sln
