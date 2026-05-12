@@ -28,6 +28,13 @@ jobs:
     - name: Test Solution
       run: dotnet test Kinetq.LiquidPages.sln
       
+    - name: Publish Visual Studio Extension
+      uses: cezarypiatek/VsixPublisherAction@1.0
+      with:
+        extension-file: src/Kinetq.LiquidPages.Extension/bin/Release/Kinetq.LiquidPages.Extension.vsix
+        publish-manifest-file: src/Kinetq.LiquidPages.Extension/publishManifest.json
+        personal-access-code: ${{secrets.MARKETPLACE_PAT}}
+      
     - name: Publish Liquid Simple Server
       uses: alirezanet/publish-nuget@v3.0.0
       with:
@@ -48,3 +55,4 @@ jobs:
           PROJECT_FILE_PATH: src/Kinetq.LiquidPages.Templates/Kinetq.LiquidPages.Templates.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           INCLUDE_SYMBOLS: true
+
