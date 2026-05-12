@@ -1,4 +1,7 @@
-﻿namespace Kinetq.LiquidPages.Extension.Commands;
+﻿using System.Text;
+using Microsoft.VisualStudio.RpcContracts.Notifications;
+
+namespace Kinetq.LiquidPages.Extension.Commands;
 
 using Kinetq.LiquidPages.Extension.Dialogs;
 using Microsoft;
@@ -55,29 +58,26 @@ internal class AddLiquidPageCommand : Command
 
         // Show dialog to get page name from user
         var dialog = new PageNameDialogControl();
+
         // Start showing the dialog (non-blocking)
-        var _ = Extensibility.Shell().ShowDialogAsync(dialog, cancellationToken);
-
-        var dialogData = dialog.DataContext as PageNameData;
-        // Wait for user to click OK or Cancel
-        var isConfirmed = await dialogData.DialogResult;
-
-        if (!isConfirmed || string.IsNullOrWhiteSpace(dialogData.PageName))
+        var dialogResult = await Extensibility.Shell().ShowDialogAsync(dialog, DialogOption.OKCancel, cancellationToken);
+        if (dialogResult == DialogResult.Cancel)
         {
             logger.TraceEvent(TraceEventType.Information, 0,
                 "User cancelled page creation");
-            dialog.Dispose();
+
             return;
         }
 
         // Convert to PascalCase
+        PageNameData dialogData = (PageNameData)dialog.DataContext;
         var pageName = ToPascalCase(dialogData.PageName.Trim());
 
         logger.TraceEvent(TraceEventType.Information, 0,
             $"Creating page with name: {pageName}");
 
         // Execute dotnet new liquidpage command
-        var result = await ExecuteDotnetNewCommand(projectDir, pageName, dialogData.Force ?? false, cancellationToken);
+        var result = await ExecuteDotnetNewCommand(projectDir, dialogData, cancellationToken);
         dialog.Dispose();
 
         await Extensibility.Shell().ShowPromptAsync(
@@ -115,17 +115,36 @@ internal class AddLiquidPageCommand : Command
 
     private async Task<string> ExecuteDotnetNewCommand(
         string projectDir, 
-        string pageName, 
-        bool force,
+        PageNameData pageNameData,
         CancellationToken cancellationToken)
     {
-        string forceFlag = force ? "--force" : string.Empty;
+        string pageName = pageNameData.PageName;
+        string forceFlag = pageNameData.Force == true ? "--force" : string.Empty;
+        string generateLayout = pageNameData.Force == true ? "--GenerateLayout" : string.Empty;
+        string embeddedResourceConfig = pageNameData.Force == true ? "--EmbeddedResourceConfig" : string.Empty;
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (!string.IsNullOrEmpty(forceFlag))
+        {
+            stringBuilder.Append($" {forceFlag}");
+        }
+
+        if (!string.IsNullOrEmpty(generateLayout))
+        {
+            stringBuilder.Append($" {generateLayout}");
+        }
+
+        if (!string.IsNullOrEmpty(embeddedResourceConfig))
+        {
+            stringBuilder.Append($" {embeddedResourceConfig}");
+        }
+
         try
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"new liquidpage --name {pageName} {forceFlag}",
+                Arguments = $"new liquidpage --name {pageNameData.PageName}{stringBuilder}",
                 WorkingDirectory = projectDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

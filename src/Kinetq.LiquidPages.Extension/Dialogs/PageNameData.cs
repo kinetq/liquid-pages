@@ -6,23 +6,6 @@ namespace Kinetq.LiquidPages.Extension.Dialogs;
 [DataContract]
 internal class PageNameData : NotifyPropertyChangedObject
 {
-    private readonly TaskCompletionSource<bool> _dialogResultSource = new();
-
-    public PageNameData()
-    {
-        AcceptCommand = new AsyncCommand((parameter, cancellationToken) =>
-        {
-            _dialogResultSource.TrySetResult(true);
-            return Task.CompletedTask;
-        });
-
-        CancelCommand = new AsyncCommand((parameter, cancellationToken) =>
-        {
-            _dialogResultSource.TrySetResult(false);
-            return Task.CompletedTask;
-        });
-    }
-
     private string? _pageName = string.Empty;
     [DataMember]
     public string? PageName
@@ -38,20 +21,19 @@ internal class PageNameData : NotifyPropertyChangedObject
         set => SetProperty(ref _force, value);
     }
 
-    /// <summary>
-    /// Gets a task that completes when the dialog is closed.
-    /// </summary>
-    public Task<bool> DialogResult => this._dialogResultSource.Task;
-
-    /// <summary>
-    /// Gets the command to accept the dialog.
-    /// </summary>
+    private bool? _embeddedResourceConfig = false;
     [DataMember]
-    public IAsyncCommand AcceptCommand { get; }
+    public bool? EmbeddedResourceConfig
+    {
+        get => _embeddedResourceConfig;
+        set => SetProperty(ref _embeddedResourceConfig, value);
+    }
 
-    /// <summary>
-    /// Gets the command to cancel the dialog.
-    /// </summary>
+    private bool? _generateLayout = false;
     [DataMember]
-    public IAsyncCommand CancelCommand { get; }
+    public bool? GenerateLayout
+    {
+        get => _generateLayout;
+        set => SetProperty(ref _generateLayout, value);
+    }
 }

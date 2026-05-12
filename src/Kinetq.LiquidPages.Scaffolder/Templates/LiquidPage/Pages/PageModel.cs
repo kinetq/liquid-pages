@@ -22,5 +22,7 @@ public class NewPageModel : LiquidPageModel
     {
         // Initialize your model properties here
         // This method is called when the page is requested
+
+        return Task.CompletedTask;
     }
 }

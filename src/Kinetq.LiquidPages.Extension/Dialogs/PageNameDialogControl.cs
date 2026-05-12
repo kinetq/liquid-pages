@@ -8,10 +8,9 @@ using System.Runtime.Serialization;
 /// </summary>
 [DataContract]
 internal class PageNameDialogControl : RemoteUserControl
-{   
+{
     public PageNameDialogControl()
         : base(dataContext: new PageNameData())
     {
-       
     }
 }

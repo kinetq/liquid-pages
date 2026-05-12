@@ -56,11 +56,11 @@
       "defaultValue": "false",
       "description": "Generate a default layout file if it doesn't already exist"
     },
-    "SkipEmbeddedResourceConfig": {
+    "EmbeddedResourceConfig": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "false",
-      "description": "Skip automatic configuration of EmbeddedResource for .liquid files"
+      "description": "Automatic configuration of EmbeddedResource for .liquid files"
     }
   },
   "forms": {

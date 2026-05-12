@@ -23,19 +23,17 @@
                   Content="Force overwrite if file exists"
                   IsChecked="{Binding Force, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   Margin="0,0,0,15"/>
-        <StackPanel Orientation="Horizontal" 
-                    HorizontalAlignment="Right">
-            <Button Content="OK" 
-                    IsDefault="True"
-                    Command="{Binding AcceptCommand}"
-                    MinWidth="75"
-                    Padding="10,5"
-                    Margin="0,0,10,0"/>
-            <Button Content="Cancel" 
-                    IsCancel="True"
-                    Command="{Binding CancelCommand}"
-                    MinWidth="75"
-                    Padding="10,5"/>
-        </StackPanel>
+
+        <CheckBox x:Name="GenerateLayoutCheckBox"
+                  Content="Generate a Layout file along with the page"
+                  IsChecked="{Binding GenerateLayout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="0,0,0,15"/>
+
+        <CheckBox x:Name="EmbeddedResourceConifgCheckBox"
+                  Content="Automatically add embedded resource config to .csproj file."
+                  IsChecked="{Binding EmbeddedResourceConfig, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="0,0,0,15"/>
+
+
     </StackPanel>
 </DataTemplate>
