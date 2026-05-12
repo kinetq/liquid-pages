@@ -33,35 +33,10 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         };
 
         LiquidRoute? liquidRoute = _liquidRoutesManager.GetRouteForPath(request.Route, renderModel.QueryParams);
-        if (liquidRoute?.Execute != null)
+        HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request);
+        if (statusCode != null && (int)statusCode.Value >= 400)
         {
-            try
-            {
-
-                renderModel.ViewModel = await liquidRoute.Execute(request);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error executing route logic for path {Path}", request.Route);
-                var errorRoute = _liquidRoutesManager.GetRouteForStatusCode(HttpStatusCode.InternalServerError);
-                var errorHtmlResponse = await _htmlRenderer.RenderHtml(renderModel, errorRoute);
-                if (errorHtmlResponse != null)
-                {
-                    return new LiquidResponseModel 
-                    { 
-                        Content = Encoding.UTF8.GetBytes(errorHtmlResponse), 
-                        ContentType = "text/html", 
-                        StatusCode = (int)HttpStatusCode.InternalServerError 
-                    };
-                }
-
-                return new LiquidResponseModel
-                {
-                    Content = Encoding.UTF8.GetBytes($"<h1>500 - Internal Server Error</h1><p>{ex.Message}</p>"),
-                    ContentType = "text/html",
-                    StatusCode = (int)HttpStatusCode.InternalServerError
-                };
-            }
+            return await GetErrorRouteResponse(statusCode.Value, renderModel, request);
         }
 
         // Handle static routes
@@ -112,23 +87,77 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
             }
         }
 
-        var notFoundRoute = _liquidRoutesManager.GetRouteForStatusCode(HttpStatusCode.NotFound);
-        var notFoundHtmlResponse = await _htmlRenderer.RenderHtml(renderModel, notFoundRoute);
-        if (notFoundHtmlResponse != null)
+        return await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request);
+    }
+
+    private async Task<LiquidResponseModel> GetErrorRouteResponse(
+        HttpStatusCode httpStatusCode,
+        RenderModel renderModel,
+        LiquidRequestModel request,
+        int callStack = 0
+        )
+    {
+        var statusCodeRoute = _liquidRoutesManager.GetRouteForStatusCode(httpStatusCode);
+        HttpStatusCode? processStatusCodeRoute = await ProcessRoute(statusCodeRoute, renderModel, request);
+        if (processStatusCodeRoute != null && callStack < 3)
+        {
+            return await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, callStack + 1);
+        }
+
+        if (processStatusCodeRoute != null && callStack >= 3)
         {
             return new LiquidResponseModel
             {
-                Content = Encoding.UTF8.GetBytes(notFoundHtmlResponse),
+                Content = Encoding.UTF8.GetBytes($"<h1>500 - Internal Server Error</h1>"),
                 ContentType = "text/html",
-                StatusCode = (int)HttpStatusCode.NotFound
+                StatusCode = (int)HttpStatusCode.InternalServerError
+            };
+        }
+
+        var statusCodeHtmlResponse = await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute);
+        if (!string.IsNullOrEmpty(statusCodeHtmlResponse))
+        {
+            return new LiquidResponseModel
+            {
+                Content = Encoding.UTF8.GetBytes(statusCodeHtmlResponse),
+                ContentType = "text/html",
+                StatusCode = (int)httpStatusCode
             };
         }
 
         return new LiquidResponseModel
         {
-            Content = Encoding.UTF8.GetBytes("<h1>404 - Page Not Found</h1>"),
+            Content = Encoding.UTF8.GetBytes($"<h1>500 - Internal Server Error</h1>"),
             ContentType = "text/html",
-            StatusCode = 404
+            StatusCode = (int)HttpStatusCode.InternalServerError
         };
+    }
+
+    private async Task<HttpStatusCode?> ProcessRoute(
+        LiquidRoute? liquidRoute,
+        RenderModel renderModel,
+        LiquidRequestModel request)
+    {
+        if (liquidRoute?.Execute == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            renderModel.ViewModel = await liquidRoute.Execute(request);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Error executing route logic for path {Path}", request.Route);
+            return ex.StatusCode;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error executing route logic for path {Path}", request.Route);
+            return HttpStatusCode.InternalServerError;
+        }
+
+        return null;
     }
 }

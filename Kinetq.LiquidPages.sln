@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Extensio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Templates", "src\Kinetq.LiquidPages.Templates\Kinetq.LiquidPages.Templates.csproj", "{9F43F735-25B0-A2D3-1780-166383D5743F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Sample", "src\Kinetq.LiquidPages.Sample\Kinetq.LiquidPages.Sample.csproj", "{5811EC16-9EAD-413B-8544-83739D4B28A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{9F43F735-25B0-A2D3-1780-166383D5743F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F43F735-25B0-A2D3-1780-166383D5743F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F43F735-25B0-A2D3-1780-166383D5743F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5811EC16-9EAD-413B-8544-83739D4B28A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5811EC16-9EAD-413B-8544-83739D4B28A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5811EC16-9EAD-413B-8544-83739D4B28A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5811EC16-9EAD-413B-8544-83739D4B28A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
