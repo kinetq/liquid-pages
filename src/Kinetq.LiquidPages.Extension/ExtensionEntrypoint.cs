@@ -13,11 +13,11 @@ internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extens
     public override ExtensionConfiguration ExtensionConfiguration => new()
     {
         Metadata = new(
-                id: "Kinetq.LiquidPages.Extension.20a2d220-c724-408b-8c3c-09866f045087",
+                id: "20a2d220-c724-408b-8c3c-09866f045087",
                 version: new Version(1, 0),
                 publisherName: "Kinetq",
-                displayName: "LiquidPages IntelliSense",
-                description: "Provides IntelliSense for .liquid templates backed by LiquidPageModel classes."),
+                displayName: "LiquidPages Extension",
+                description: "A Visual Studio extension that provides enhanced support for Liquid template files in your .NET projects."),
     };
 
     /// <inheritdoc />
