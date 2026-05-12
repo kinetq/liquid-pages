@@ -12,11 +12,9 @@ public class NewPageModel : LiquidPageModel
 {
     // Add your model properties here
     // Properties will be available in the .liquid template using snake_case naming
-    // Example:
-    // public string Title { get; set; } = "Welcome to NewPage";
-    // public DateTime CurrentDate { get; set; } = DateTime.Now;
-    // 
-    // In template: {{ title }} and {{ current_date }}
+    // Example: {{ view_model.title }}
+
+    public string Title { get; set; } = "Welcome to NewPage";
 
     public override Task OnGetAsync(LiquidRequestModel request)
     {
