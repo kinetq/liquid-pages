@@ -19,6 +19,7 @@
   <!-- Include ItemTemplates as content to copy to output -->
   <ItemGroup>
     <None Remove="Monikers.imagemanifest" />
+    <None Remove="Overview.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="LiquidPages.ico">
@@ -27,6 +28,7 @@
     <content Include="Monikers.imagemanifest">
       <IncludeInVSIX>true</IncludeInVSIX>
     </content>
+    <Content Include="Overview.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dialogs\AddLiquidErrorPageDialogControl.xaml">

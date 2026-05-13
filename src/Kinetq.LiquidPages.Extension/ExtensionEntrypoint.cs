@@ -14,7 +14,7 @@ internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extens
     {
         Metadata = new(
                 id: "20a2d220-c724-408b-8c3c-09866f045087",
-                version: new Version(1, 0),
+                version: new Version(1, 1),
                 publisherName: "Kinetq",
                 displayName: "LiquidPages Extension",
                 description: "A Visual Studio extension that provides enhanced support for Liquid template files in your .NET projects."),

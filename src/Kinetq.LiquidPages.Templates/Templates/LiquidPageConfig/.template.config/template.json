@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Kinetq",
+  "classifications": [ "Web", "LiquidPages" ],
+  "identity": "Kinetq.LiquidPages.Config",
+  "name": "Liquid Page Config",
+  "description": "Add configuration files to improve the editing experience of LiquidPages.",
+  "shortName": "liquidpageconfig",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "sourceName": "LiquidPageConfig",
+  "preferNameDirectory": false,
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "include": [ ".editorconfig" ],
+      "copyOnly": [ ".editorconfig" ],
+      "condition": "(CreateEditorConfig)",
+      "modifiers": [
+        {
+          "condition": "(!CreateEditorConfig)",
+          "exclude": [ ".editorconfig" ]
+        }
+      ]
+    },
+    {
+      "source": "./",
+      "target": "./",
+      "include": [ ".filenesting.json" ],
+      "copyOnly": [ ".filenesting.json" ],
+      "condition": "(CreateFileNesting)",
+      "modifiers": [
+        {
+          "condition": "(!CreateFileNesting)",
+          "exclude": [ ".filenesting.json" ]
+        }
+      ]
+    }
+  ],
+  "symbols": {
+    "CreateEditorConfig": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Create .editorconfig file for Liquid validation suppression"
+    },
+    "CreateFileNesting": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Create .filenesting.json file for Liquid file nesting configuration"
+    }
+  },
+  "forms": {
+  }
+}

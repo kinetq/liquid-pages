@@ -57,6 +57,28 @@ internal class AddLiquidPageCommand : Command
             return;
         }
 
+        var solutions =
+            await Extensibility.Workspaces()
+                .QuerySolutionAsync(snapshots => snapshots.With(s => new { s.Path }), cancellationToken);
+
+        // There is always exactly one ISolutionSnapshot if a solution is open.
+        var solution = solutions.FirstOrDefault();
+        if (solution is null)
+        {
+            // No solution is open (e.g., Open Folder mode).
+            return;
+        }
+
+        var solutionDir = Path.GetDirectoryName(solution.Path);
+        if (string.IsNullOrEmpty(solutionDir))
+        {
+            await Extensibility.Shell().ShowPromptAsync(
+                "Unable to determine solution directory.",
+                PromptOptions.OK,
+                cancellationToken);
+            return;
+        }
+
         // Show dialog to get page name from user
         var dialog = new AddLiquidPageDialogControl();
 
@@ -78,7 +100,7 @@ internal class AddLiquidPageCommand : Command
             $"Creating page with name: {pageName}");
 
         // Execute dotnet new liquidpage command
-        var result = await ExecuteDotnetNewCommand(projectDir, dialogData, cancellationToken);
+        var result = await ExecuteDotnetNewCommand(projectDir, solutionDir, dialogData, cancellationToken);
         dialog.Dispose();
 
         await Extensibility.Shell().ShowPromptAsync(
@@ -88,90 +110,60 @@ internal class AddLiquidPageCommand : Command
     }
 
     private async Task<string> ExecuteDotnetNewCommand(
-        string projectDir, 
+        string projectDir,
+        string solutionDir,
         AddLiquidPageData pageNameData,
         CancellationToken cancellationToken)
     {
-        string pageName = pageNameData.PageName;
-        string forceFlag = pageNameData.Force == true ? "--force" : string.Empty;
-        string generateLayout = pageNameData.GenerateLayout == true ? "--GenerateLayout" : string.Empty;
-
-        StringBuilder stringBuilder = new StringBuilder();
-        if (!string.IsNullOrEmpty(forceFlag))
-        {
-            stringBuilder.Append($" {forceFlag}");
-        }
-
-        if (!string.IsNullOrEmpty(generateLayout))
-        {
-            stringBuilder.Append($" {generateLayout}");
-        }
-
         try
         {
-            var startInfo = new ProcessStartInfo
+            var configStringBuilder = new StringBuilder();
+            // Check if .editorconfig already exists at solution root
+            var editorConfigPath = Path.Combine(solutionDir, ".editorconfig");
+            bool editorConfigExists = File.Exists(editorConfigPath);
+
+            // Only create .editorconfig if it doesn't exist (prevents overwriting user config)
+            //if (!editorConfigExists)
+            //{
+            //    configStringBuilder.Append(" --CreateEditorConfig");
+            //}
+
+            // Check if .filenesting.json already exists at solution root
+            var fileNestingPath = Path.Combine(solutionDir, ".filenesting.json");
+            bool fileNestingExists = File.Exists(fileNestingPath);
+
+            // Only create .filenesting.json if it doesn't exist (prevents overwriting user config)
+            if (!fileNestingExists)
             {
-                FileName = "dotnet",
-                Arguments = $"new liquidpage --name {pageNameData.PageName}{stringBuilder}",
-                WorkingDirectory = projectDir,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                configStringBuilder.Append(" --CreateFileNesting");
+            }
 
-            using var process = new Process { StartInfo = startInfo };
+            string arguments = $"new liquidpageconfig {configStringBuilder}";
+            var result = await StartProcess(solutionDir, arguments, cancellationToken);
 
-            var outputBuilder = new System.Text.StringBuilder();
-            var errorBuilder = new System.Text.StringBuilder();
-
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                    outputBuilder.AppendLine(e.Data);
-            };
-
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                    errorBuilder.AppendLine(e.Data);
-            };
-
-            logger.TraceEvent(TraceEventType.Information, 0,
-                $"Executing: dotnet new liquidpage --name {pageName} in {projectDir}");
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            await process.WaitForExitAsync(cancellationToken);
-
-            var output = outputBuilder.ToString();
-            var error = errorBuilder.ToString();
-
-            if (process.ExitCode == 0)
+            if (result.Item1 == 0)
             {
                 logger.TraceEvent(TraceEventType.Information, 0,
-                    $"Successfully created Liquid Page: {pageName}");
-                return $"✓ Liquid Page '{pageName}' created successfully!\n\nFiles created:\n• {pageName}.liquid\n• {pageName}.liquid.cs";
+                    $"Successfully adding configuration files for LiquidPages");
+
+                if (!fileNestingExists || !editorConfigExists)
+                {
+                    await Extensibility.Workspaces().UpdateSolutionAsync(
+                        // The query function selects all solutions (the only one open)
+                        query => query,
+                        // The update function applies the AddFile operations
+                        update => update
+                            .AddFile(fileNestingPath),
+                        cancellationToken);
+                }
             }
-
-            logger.TraceEvent(TraceEventType.Error, 0,
-                $"Failed to create Liquid Page. Exit code: {process.ExitCode}\nError: {error}");
-
-            // Check if files would be overwritten
-            if (error.Contains("already exists") || error.Contains("would overwrite") || output.Contains("already exists"))
+            else
             {
-                return $"⚠ Files already exist!\n\nThe page '{pageName}' would overwrite existing files.\n\nCheck the 'Force overwrite' option to replace existing files.";
-            }
+                logger.TraceEvent(TraceEventType.Error, 0,
+                                $"Failed to add configuration files. Exit code: {result.Item1}\nError: {result.Item3}");
 
-            // Check if template is not installed
-            if (error.Contains("No templates found") || error.Contains("liquidpage"))
-            {
-                return $"⚠ Template not installed!\n\nPlease install the LiquidPages template first:\n\n  dotnet new install Kinetq.LiquidPages.Scaffolder\n\nThen try again.";
+                return $"⚠ Failed to add configuration files for Liquid Pages\n\nError: {result.Item3}\nOutput: {result.Item2}";
             }
-
-            return $"⚠ Failed to create Liquid Page\n\nError: {error}\nOutput: {output}";
         }
         catch (Exception ex)
         {
@@ -179,5 +171,86 @@ internal class AddLiquidPageCommand : Command
                 $"Exception while creating Liquid Page: {ex.Message}");
             return $"⚠ Error creating Liquid Page: {ex.Message}";
         }
+
+        try
+        {
+            string pageName = pageNameData.PageName;
+            string forceFlag = pageNameData.Force == true ? "--force" : string.Empty;
+            string generateLayout = pageNameData.GenerateLayout == true ? "--GenerateLayout" : string.Empty;
+
+            StringBuilder stringBuilder = new StringBuilder();
+            if (!string.IsNullOrEmpty(forceFlag))
+            {
+                stringBuilder.Append($" {forceFlag}");
+            }
+
+            if (!string.IsNullOrEmpty(generateLayout))
+            {
+                stringBuilder.Append($" {generateLayout}");
+            }
+
+            string arguments = $"new liquidpage --name {pageNameData.PageName}{stringBuilder}";
+            var result = await StartProcess(projectDir, arguments, cancellationToken);
+
+            if (result.Item1 == 0)
+            {
+                logger.TraceEvent(TraceEventType.Information, 0,
+                    $"Successfully created Liquid Page: {pageName}");
+                return $"✓ Liquid Page '{pageName}' created successfully!\n\nFiles created:\n• {pageName}.liquid\n• {pageName}.liquid.cs";
+            }
+
+            logger.TraceEvent(TraceEventType.Error, 0,
+                $"Failed to create Liquid Page. Exit code: {result.Item1}\nError: {result.Item3}");
+
+            return $"⚠ Failed to create Liquid Page\n\nError: {result.Item3}\nOutput: {result.Item2}";
+        }
+        catch (Exception ex)
+        {
+            logger.TraceEvent(TraceEventType.Error, 0,
+                $"Exception while creating Liquid Page: {ex.Message}");
+            return $"⚠ Error creating Liquid Page: {ex.Message}";
+        }
+    }
+
+    private async Task<(int, string, string)> StartProcess(string workingDirectory, string arguments, CancellationToken cancellationToken)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            Arguments = arguments,
+            WorkingDirectory = workingDirectory,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = startInfo };
+
+        var outputBuilder = new StringBuilder();
+        var errorBuilder = new StringBuilder();
+
+        process.OutputDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                outputBuilder.AppendLine(e.Data);
+        };
+
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                errorBuilder.AppendLine(e.Data);
+        };
+
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync(cancellationToken);
+
+        var output = outputBuilder.ToString();
+        var error = errorBuilder.ToString();
+
+        return (process.ExitCode, output, error);
     }
 }
