@@ -14,10 +14,13 @@ internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extens
     {
         Metadata = new(
                 id: "20a2d220-c724-408b-8c3c-09866f045087",
-                version: new Version(1, 1),
+                version: new Version(1, 2),
                 publisherName: "Kinetq",
                 displayName: "LiquidPages Extension",
-                description: "A Visual Studio extension that provides enhanced support for Liquid template files in your .NET projects."),
+                description: "Enhanced Visual Studio support for Liquid template files in .NET projects. Designed for Kinetq.LiquidPages, a framework that brings Liquid templates to .NET while emulating RazorPages patterns. Features include syntax highlighting for .liquid files with HTML base support, and convenient quick commands (Add LiquidPage, Add LiquidErrorPage) accessible from the project context menu to streamline template creation.")
+        {
+            Icon = "Images/Logo32x32.png",
+        },
     };
 
     /// <inheritdoc />

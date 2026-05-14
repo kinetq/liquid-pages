@@ -1,0 +1,6 @@
+{
+  "HtmlValidation.EnableValidation": false,
+  "HtmlValidation.IgnorePatterns": [
+    "**/*.liquid"
+  ]
+}

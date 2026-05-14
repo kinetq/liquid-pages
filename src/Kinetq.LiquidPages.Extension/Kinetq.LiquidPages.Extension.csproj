@@ -6,6 +6,10 @@
     <!-- Don't auto-include .cs files from ItemTemplates -->
     <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Images\Logo.png" />
+    <Content Remove="Images\Logo32x32.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
@@ -22,9 +26,6 @@
     <None Remove="Overview.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LiquidPages.ico">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <content Include="Monikers.imagemanifest">
       <IncludeInVSIX>true</IncludeInVSIX>
     </content>
@@ -39,8 +40,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Images\LiquidPages.png">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <Resource Include="Images\Logo.png" />
+    <Resource Include="Images\Logo32x32.png" />
   </ItemGroup>
 </Project>

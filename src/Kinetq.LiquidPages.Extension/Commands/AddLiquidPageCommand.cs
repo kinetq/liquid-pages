@@ -115,18 +115,18 @@ internal class AddLiquidPageCommand : Command
         AddLiquidPageData pageNameData,
         CancellationToken cancellationToken)
     {
+        string forceFlag = pageNameData.Force == true ? "--force" : string.Empty;
+
         try
         {
             var configStringBuilder = new StringBuilder();
             // Check if .editorconfig already exists at solution root
-            var editorConfigPath = Path.Combine(solutionDir, ".editorconfig");
-            bool editorConfigExists = File.Exists(editorConfigPath);
-
-            // Only create .editorconfig if it doesn't exist (prevents overwriting user config)
-            //if (!editorConfigExists)
-            //{
-            //    configStringBuilder.Append(" --CreateEditorConfig");
-            //}
+            var vsWorkspaceSettingsPath = Path.Combine(solutionDir, ".vs", "VSWorkspaceSettings.json");
+            bool vsWorkspaceSettingsExists = File.Exists(vsWorkspaceSettingsPath);
+            if (!vsWorkspaceSettingsExists)
+            {
+                configStringBuilder.Append(" --CreateWorkspaceSettings");
+            }
 
             // Check if .filenesting.json already exists at solution root
             var fileNestingPath = Path.Combine(solutionDir, ".filenesting.json");
@@ -146,7 +146,7 @@ internal class AddLiquidPageCommand : Command
                 logger.TraceEvent(TraceEventType.Information, 0,
                     $"Successfully adding configuration files for LiquidPages");
 
-                if (!fileNestingExists || !editorConfigExists)
+                if (!fileNestingExists)
                 {
                     await Extensibility.Workspaces().UpdateSolutionAsync(
                         // The query function selects all solutions (the only one open)
@@ -175,7 +175,6 @@ internal class AddLiquidPageCommand : Command
         try
         {
             string pageName = pageNameData.PageName;
-            string forceFlag = pageNameData.Force == true ? "--force" : string.Empty;
             string generateLayout = pageNameData.GenerateLayout == true ? "--GenerateLayout" : string.Empty;
 
             StringBuilder stringBuilder = new StringBuilder();

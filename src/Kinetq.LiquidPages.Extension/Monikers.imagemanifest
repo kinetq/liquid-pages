@@ -9,8 +9,8 @@
   </Symbols>
   <Images>
     <Image Guid="$(MonikersGuid)" ID="$(LiquidPages)">
-      <Source Uri="$(Resources)/LiquidPages.png">
-        <Size Value="16" />
+      <Source Uri="$(Resources)/Logo32x32.png">
+        <Size Value="32" />
       </Source>
     </Image>
   </Images>
