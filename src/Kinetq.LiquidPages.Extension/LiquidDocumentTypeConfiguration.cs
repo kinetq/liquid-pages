@@ -13,6 +13,6 @@ public static class LiquidDocumentTypeConfiguration
     public static DocumentTypeConfiguration LiquidDocumentType => new("liquid")
     {
         FileExtensions = new[] { ".liquid", ".html.liquid" },
-        BaseDocumentType = DocumentType.Custom("HTML")
+        BaseDocumentType = DocumentType.Custom("htmlx")
     };
 }

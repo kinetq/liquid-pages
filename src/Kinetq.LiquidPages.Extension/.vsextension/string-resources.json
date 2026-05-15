@@ -1,3 +1,4 @@
 {
-  "Kinetq.LiquidPages.Extension.Command1.DisplayName": "Sample Remote Command"
+  "Kinetq.LiquidPages.Extension.Command1.DisplayName": "Sample Remote Command",
+  "LiquidPages.FormatCommand.DisplayName": "Format Liquid Document"
 }
