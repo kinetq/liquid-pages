@@ -6,10 +6,7 @@
     <!-- Don't auto-include .cs files from ItemTemplates -->
     <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Images\Logo.png" />
-    <Content Remove="Images\Logo32x32.png" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
@@ -39,8 +36,19 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
+  <!-- Logo images: Resource for runtime/imagemanifest, Content for VSIX packaging -->
   <ItemGroup>
     <Resource Include="Images\Logo.png" />
     <Resource Include="Images\Logo32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\Logo.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\Logo32x32.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
