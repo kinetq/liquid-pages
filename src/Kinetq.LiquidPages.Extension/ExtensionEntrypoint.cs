@@ -14,12 +14,12 @@ internal class ExtensionEntrypoint : Microsoft.VisualStudio.Extensibility.Extens
     {
         Metadata = new(
                 id: "20a2d220-c724-408b-8c3c-09866f045087",
-                version: new Version(1, 2),
+                version: new Version(1, 3),
                 publisherName: "Kinetq",
                 displayName: "LiquidPages Extension",
                 description: "Enhanced Visual Studio support for Liquid templates in .NET. Features syntax highlighting and quick commands (Add LiquidPage, Add LiquidErrorPage) for Kinetq.LiquidPages framework.")
         {
-            Icon = "Images/Logo32x32.png",
+            Icon = "Images/Logo.png",
         },
     };
 
