@@ -50,5 +50,19 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <!-- Include the Liquid formatter executable -->
+    <Content Include="Static\formatter.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>formatter.exe</Link>
+    </Content>
   </ItemGroup>
+
+  <!-- Build the formatter executable before building the extension -->
+  <Target Name="BuildFormatter" BeforeTargets="BeforeBuild">
+    <Message Text="Building Liquid formatter..." Importance="high" />
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)\Static" Condition="!Exists('$(MSBuildProjectDirectory)\Static\node_modules')" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)\Static" />
+    <Message Text="Liquid formatter built successfully" Importance="high" />
+  </Target>
 </Project>

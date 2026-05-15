@@ -9,6 +9,20 @@ specifically with [Kinetq.LiquidPages](https://kinetq.com/docs/open-source-softw
 
 The extension provides syntax highlighting for Liquid template files (`.liquid`) in Visual Studio. The syntax highlighting uses HTML as the base document type, ensuring you get proper highlighting for both HTML and Liquid syntax within your templates.
 
+### ✨ Built-in Formatter
+
+The extension includes a standalone Liquid template formatter powered by Prettier and the Shopify Liquid plugin. The formatter is bundled as a single executable (`formatter.exe`) built using Node.js Single Executable Applications (SEA), requiring no external dependencies or Node.js installation.
+
+**Developer API**: You can programmatically format Liquid templates using the `LiquidFormatter` helper class:
+
+```csharp
+using Kinetq.LiquidPages.Extension.Helpers;
+
+var formatted = await LiquidFormatter.FormatAsync(liquidContent);
+```
+
+See [Helpers/FORMATTER_USAGE.md](Helpers/FORMATTER_USAGE.md) for detailed usage examples and integration patterns.
+
 ### ⚡ Quick Commands
 
 The extension adds two convenient commands to your project context menu (`.csproj`), located towards the top:

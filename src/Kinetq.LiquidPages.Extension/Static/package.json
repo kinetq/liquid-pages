@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@shopify/prettier-plugin-liquid": "^1.10.2",
+    "prettier": "^3.8.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "postject": "^1.0.0-alpha.6"
+  },
+  "scripts": {
+    "build": "node build-sea.mjs"
+  }
+}
