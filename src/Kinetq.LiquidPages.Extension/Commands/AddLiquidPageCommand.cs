@@ -23,9 +23,9 @@ internal class AddLiquidPageCommand : Command
         this.logger = Requires.NotNull(traceSource, nameof(traceSource));
     }
 
-    public override CommandConfiguration CommandConfiguration => new("Add LiquidPage")
+    public override CommandConfiguration CommandConfiguration => new("%LiquidPages.AddCommand.DisplayName%")
     {
-        Icon = new(ImageMoniker.Custom("{b1a9eb31-d18e-4617-985a-e4e511f68994}:LiquidPages"), IconSettings.IconAndText),
+        Icon = new(ImageMoniker.Custom("Logo32x3"), IconSettings.IconAndText),
         Placements =
         [
             CommandPlacement.VsctParent(
