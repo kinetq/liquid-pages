@@ -118,10 +118,22 @@ internal class LiquidTagger : TextViewTagger<ClassificationTag>
             return range;
         }
 
+        // Ensure the expanded range stays within document bounds
+        int documentLength = range.Document.Length;
         int start = Math.Max(0, range.Start - 1);
-        int end = Math.Min(range.Document.Length, range.Start + 1);
+        int end = Math.Min(documentLength, range.Start + 1);
 
-        return new(range.Document, start, end - start);
+        // If range.Start is at or beyond document length, clamp to valid range
+        if (range.Start >= documentLength)
+        {
+            start = Math.Max(0, documentLength - 1);
+            end = documentLength;
+        }
+
+        // Ensure we have a valid length
+        int length = Math.Max(0, end - start);
+
+        return new(range.Document, start, length);
     }
 
     private async Task CreateTagsAsync(ITextDocumentSnapshot document, IEnumerable<TextRange> requestedRanges)
