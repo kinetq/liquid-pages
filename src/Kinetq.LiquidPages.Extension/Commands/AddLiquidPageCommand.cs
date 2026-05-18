@@ -25,7 +25,7 @@ internal class AddLiquidPageCommand : Command
 
     public override CommandConfiguration CommandConfiguration => new("%LiquidPages.AddCommand.DisplayName%")
     {
-        Icon = new(ImageMoniker.Custom("Logo32x3"), IconSettings.IconAndText),
+        Icon = new(ImageMoniker.Custom("Logo32x32"), IconSettings.IconAndText),
         Placements =
         [
             CommandPlacement.VsctParent(

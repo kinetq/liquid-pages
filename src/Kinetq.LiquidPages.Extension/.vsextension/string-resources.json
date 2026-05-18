@@ -1,4 +1,5 @@
 {
   "LiquidPages.AddCommand.DisplayName": "Add LiquidPage",
-  "LiquidPages.AddErrorCommand.DisplayName": "Add LiquidErrorPage"
+  "LiquidPages.AddErrorCommand.DisplayName": "Add LiquidErrorPage",
+  "LiquidPages.FormatCommand.DisplayName": "Format Liquid Document"
 }
