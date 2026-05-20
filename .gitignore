@@ -290,3 +290,4 @@ __pycache__/
 formatter.exe
 sea-prep.blob
 format-liquid.bundle.js
+*.exe
