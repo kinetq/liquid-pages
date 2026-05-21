@@ -19,13 +19,9 @@
 
   <!-- Include ItemTemplates as content to copy to output -->
   <ItemGroup>
-    <None Remove="Monikers.imagemanifest" />
     <None Remove="Overview.md" />
   </ItemGroup>
   <ItemGroup>
-    <content Include="Monikers.imagemanifest">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </content>
     <Content Include="Overview.md" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +53,44 @@
       <Link>formatter.exe</Link>
     </Content>
   </ItemGroup>
+
+  <!-- Build the Language Server before building the extension -->
+  <Target Name="BuildLanguageServer" BeforeTargets="BeforeBuild">
+    <Message Text="Building Liquid Language Server..." Importance="high" />
+    <MSBuild Projects="..\Kinetq.LiquidPages.LanguageServer\Kinetq.LiquidPages.LanguageServer.csproj" Properties="Configuration=$(Configuration)" />
+    <Message Text="Liquid Language Server built successfully" Importance="high" />
+  </Target>
+
+  <!-- Copy Language Server files after build -->
+  <Target Name="CopyLanguageServerFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <LanguageServerSourceDir>..\Kinetq.LiquidPages.LanguageServer\bin\$(Configuration)\net9.0</LanguageServerSourceDir>
+      <LanguageServerTargetDir>$(OutputPath)</LanguageServerTargetDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <LanguageServerFiles Include="$(LanguageServerSourceDir)\**\*.*" />
+    </ItemGroup>
+
+    <Message Text="Copying Language Server files from $(LanguageServerSourceDir) to $(LanguageServerTargetDir)..." Importance="high" />
+    <Copy SourceFiles="@(LanguageServerFiles)" DestinationFolder="$(LanguageServerTargetDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+
+    <!-- Mark files for VSIX inclusion -->
+    <ItemGroup>
+      <Content Include="$(LanguageServerTargetDir)\liquid-language-server.exe">
+        <IncludeInVSIX>true</IncludeInVSIX>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="$(LanguageServerTargetDir)\*.dll">
+        <IncludeInVSIX>true</IncludeInVSIX>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="$(LanguageServerTargetDir)\formatter.exe">
+        <IncludeInVSIX>true</IncludeInVSIX>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
 
   <!-- Build the formatter executable before building the extension -->
   <Target Name="BuildFormatter" BeforeTargets="BeforeBuild">
