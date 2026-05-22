@@ -54,42 +54,36 @@
     </Content>
   </ItemGroup>
 
+  <!-- Static Content items for language server files staged into LanguageServer\ subfolder.
+       These are evaluated before Build so the VSIX packager includes them. -->
+  <ItemGroup>
+    <Content Include="LanguageServer\**\*.*" Exclude="LanguageServer\.gitkeep">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
   <!-- Build the Language Server before building the extension -->
   <Target Name="BuildLanguageServer" BeforeTargets="BeforeBuild">
-    <Message Text="Building Liquid Language Server..." Importance="high" />
-    <MSBuild Projects="..\Kinetq.LiquidPages.LanguageServer\Kinetq.LiquidPages.LanguageServer.csproj" Properties="Configuration=$(Configuration)" />
-    <Message Text="Liquid Language Server built successfully" Importance="high" />
+    <Message Text="Publishing Liquid Language Server (self-contained, win-x64)..." Importance="high" />
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\..\Kinetq.LiquidPages.LanguageServer\Kinetq.LiquidPages.LanguageServer.csproj&quot; -c $(Configuration) -r win-x64 --self-contained true -o &quot;$(MSBuildProjectDirectory)\..\Kinetq.LiquidPages.LanguageServer\bin\$(Configuration)\net9.0\publish\&quot;" />
+    <Message Text="Liquid Language Server published successfully" Importance="high" />
   </Target>
 
-  <!-- Copy Language Server files after build -->
-  <Target Name="CopyLanguageServerFiles" AfterTargets="Build">
+  <!-- Copy Language Server files into the project's LanguageServer subfolder BEFORE Build so VSIX packaging picks them up -->
+  <Target Name="CopyLanguageServerFiles" AfterTargets="BuildLanguageServer" BeforeTargets="Build">
     <PropertyGroup>
-      <LanguageServerSourceDir>..\Kinetq.LiquidPages.LanguageServer\bin\$(Configuration)\net9.0</LanguageServerSourceDir>
-      <LanguageServerTargetDir>$(OutputPath)</LanguageServerTargetDir>
+      <LanguageServerSourceDir>$(MSBuildProjectDirectory)\..\Kinetq.LiquidPages.LanguageServer\bin\$(Configuration)\net9.0\publish</LanguageServerSourceDir>
+      <LanguageServerStagingDir>$(MSBuildProjectDirectory)\LanguageServer</LanguageServerStagingDir>
     </PropertyGroup>
 
     <ItemGroup>
       <LanguageServerFiles Include="$(LanguageServerSourceDir)\**\*.*" />
     </ItemGroup>
 
-    <Message Text="Copying Language Server files from $(LanguageServerSourceDir) to $(LanguageServerTargetDir)..." Importance="high" />
-    <Copy SourceFiles="@(LanguageServerFiles)" DestinationFolder="$(LanguageServerTargetDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
-
-    <!-- Mark files for VSIX inclusion -->
-    <ItemGroup>
-      <Content Include="$(LanguageServerTargetDir)\liquid-language-server.exe">
-        <IncludeInVSIX>true</IncludeInVSIX>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="$(LanguageServerTargetDir)\*.dll">
-        <IncludeInVSIX>true</IncludeInVSIX>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="$(LanguageServerTargetDir)\formatter.exe">
-        <IncludeInVSIX>true</IncludeInVSIX>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
+    <Message Text="Copying Language Server files from $(LanguageServerSourceDir) to $(LanguageServerStagingDir)..." Importance="high" />
+    <Copy SourceFiles="@(LanguageServerFiles)" DestinationFolder="$(LanguageServerStagingDir)\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
 
   <!-- Build the formatter executable before building the extension -->

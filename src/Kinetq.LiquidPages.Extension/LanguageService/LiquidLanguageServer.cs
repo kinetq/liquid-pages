@@ -2,43 +2,90 @@
 using Microsoft.VisualStudio.Extensibility.LanguageServer;
 using Microsoft.VisualStudio.RpcContracts.LanguageServerProvider;
 using Nerdbank.Streams;
-using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Reflection;
 
 namespace Kinetq.LiquidPages.Extension.LanguageService;
-
-[Experimental("VSEXTPREVIEW_LSP")]
+#pragma warning disable VSEXTPREVIEW_LSP
 [VisualStudioContribution]
-internal class LiquidLanguageServerProvider : LanguageServerProvider
+public class LiquidLanguageServerProvider : LanguageServerProvider
 {
     private readonly TraceSource _traceSource;
     public LiquidLanguageServerProvider(
         ExtensionCore container, 
-        VisualStudioExtensibility extensibilityObject, 
-        TraceSource traceSource)
+        VisualStudioExtensibility extensibilityObject)
         : base(container, extensibilityObject)
     {
-        LanguageServerOptions.InitializationOptions = JToken.Parse(@"[{""server"":""initialize""}]");
-        _traceSource = traceSource;
+        _traceSource = new TraceSource("Kinetq.LiquidPages.Extension.LanguageServer", SourceLevels.All);
     }
-    
+
+    public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration => new(
+        "%LiquidPages.LiquidLanguageServerProvider.DisplayName%",
+        [DocumentFilter.FromDocumentType(LiquidDocumentTypeConfiguration.LiquidDocumentType)]);
+
+    protected override void Dispose(bool isDisposing)
+    {
+        _traceSource.TraceInformation($"Disposing Liquid Language Server.");
+        base.Dispose(isDisposing);
+    }
+
+    protected override Task InitializeAsync(CancellationToken cancellationToken)
+    {
+        _traceSource.TraceInformation($"Initializing Liquid Language Server.");
+        return base.InitializeAsync(cancellationToken);
+    }
+
+    public override Task OnServerInitializationResultAsync(ServerInitializationResult serverInitializationResult, LanguageServerInitializationFailureInfo? initializationFailureInfo, CancellationToken cancellationToken)
+    {
+        _traceSource.TraceInformation($"OnServerInitializationResultAsync called with result: {serverInitializationResult}");
+
+        if (serverInitializationResult == ServerInitializationResult.Failed)
+        {
+            _traceSource.TraceInformation($"Server initialization FAILED. Failure info available: {initializationFailureInfo != null}");
+            Enabled = false;
+        }
+        else
+        {
+            _traceSource.TraceInformation("Server initialization succeeded");
+        }
+
+        return base.OnServerInitializationResultAsync(serverInitializationResult, initializationFailureInfo, cancellationToken);
+    }
+
     public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
+        _traceSource.TraceInformation("CreateServerConnectionAsync called - LANGUAGE SERVER IS ACTIVATING!");
+
         // Get the path to the language server executable
         var assemblyLocation = Assembly.GetExecutingAssembly().Location;
         var extensionDirectory = Path.GetDirectoryName(assemblyLocation)!;
         var languageServerExe = Path.Combine(extensionDirectory, "liquid-language-server.exe");
 
+        _traceSource.TraceInformation($"Assembly location: {assemblyLocation}");
+        _traceSource.TraceInformation($"Extension directory: {extensionDirectory}");
+        _traceSource.TraceInformation($"Looking for language server at: {languageServerExe}");
+
         if (!File.Exists(languageServerExe))
         {
-            _traceSource.TraceEvent(TraceEventType.Error, 0, $"Language server executable not found at: {languageServerExe}");
-            throw new FileNotFoundException($"Language server executable not found at: {languageServerExe}");
+            var error = $"Language server executable not found at: {languageServerExe}";
+            _traceSource.TraceInformation($"ERROR: {error}");
+
+            // List all exe files in the directory to help debug
+            try
+            {
+                var exeFiles = Directory.GetFiles(extensionDirectory, "*.exe");
+                _traceSource.TraceInformation($"Available exe files in directory: {string.Join(", ", exeFiles.Select(Path.GetFileName))}");
+            }
+            catch (Exception ex)
+            {
+                _traceSource.TraceInformation($"Failed to list exe files: {ex.Message}");
+            }
+
+            throw new FileNotFoundException(error);
         }
 
-        _traceSource.TraceEvent(TraceEventType.Information, 0, $"Starting language server: {languageServerExe}");
+        _traceSource.TraceInformation("Language server executable found, starting process...");
 
         // Start the language server process
         var startInfo = new ProcessStartInfo
@@ -51,7 +98,7 @@ internal class LiquidLanguageServerProvider : LanguageServerProvider
             CreateNoWindow = true,
             WorkingDirectory = extensionDirectory
         };
-        
+
         var process = new Process { StartInfo = startInfo };
 
         // Log stderr for debugging
@@ -59,35 +106,23 @@ internal class LiquidLanguageServerProvider : LanguageServerProvider
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                _traceSource.TraceEvent(TraceEventType.Warning, 0, $"Language Server stderr: {e.Data}");
+                _traceSource.TraceInformation($"Language Server STDERR: {e.Data}");
             }
         };
 
         if (process.Start())
         {
+            _traceSource.TraceInformation($"Language server process started with PID: {process.Id}");
             process.BeginErrorReadLine();
-            _traceSource.TraceEvent(TraceEventType.Information, 0, "Language server process started successfully");
 
-            return Task.FromResult<IDuplexPipe?>(
-                FullDuplexStream.Splice(process.StandardOutput.BaseStream, process.StandardInput.BaseStream).UsePipe());
+            var pipe = FullDuplexStream.Splice(process.StandardOutput.BaseStream, process.StandardInput.BaseStream).UsePipe();
+            _traceSource.TraceInformation("Duplex pipe created successfully");
+
+            return Task.FromResult<IDuplexPipe?>(pipe);
         }
 
-        _traceSource.TraceEvent(TraceEventType.Error, 0, "Failed to start language server process");
+        _traceSource.TraceInformation("ERROR: Failed to start language server process");
         return Task.FromResult<IDuplexPipe?>(null);
     }
-
-    public override LanguageServerProviderConfiguration LanguageServerProviderConfiguration => new(
-        "%LiquidPages.LiquidLanguageServerProvider.DisplayName%",
-        [DocumentFilter.FromDocumentType(LiquidDocumentTypeConfiguration.LiquidDocumentType)]);
-
-    public override Task OnServerInitializationResultAsync(ServerInitializationResult serverInitializationResult, LanguageServerInitializationFailureInfo? initializationFailureInfo, CancellationToken cancellationToken)
-    {
-        if (serverInitializationResult == ServerInitializationResult.Failed)
-        {
-            _traceSource.TraceInformation($"Exception: {initializationFailureInfo.Exception} Status: {initializationFailureInfo.StatusMessage}");
-            Enabled = false;
-        }
-
-        return base.OnServerInitializationResultAsync(serverInitializationResult, initializationFailureInfo, cancellationToken);
-    }
 }
+#pragma warning restore VSEXTPREVIEW_LSP

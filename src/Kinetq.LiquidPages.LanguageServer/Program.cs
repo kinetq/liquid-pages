@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Kinetq.LiquidPages.LanguageServer.Handlers;
 using Microsoft.Extensions.Logging;
+using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Server;
 
 // Set up file logging for debugging
@@ -36,15 +37,16 @@ try
             })
             .OnInitialized((server, request, response, token) =>
             {
+                response.Capabilities.DocumentFormattingProvider = true;
                 logger.LogInformation("Server initialization complete");
                 return Task.CompletedTask;
             })
-    );
+    ).ConfigureAwait(false);
 
     logger.LogInformation("Language server created successfully, waiting for exit...");
 
     // Wait for the server to exit
-    await server.WaitForExit;
+    await server.WaitForExit.ConfigureAwait(false);
 
     logger.LogInformation("Language server exited normally");
 }
