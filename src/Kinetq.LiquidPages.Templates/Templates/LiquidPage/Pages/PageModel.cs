@@ -7,7 +7,7 @@ namespace NAMESPACE_PLACEHOLDER.Pages;
 /// Liquid page model for NewPage.
 /// This class is the code-behind for NewPage.liquid
 /// </summary>
-[LiquidPage("{{RoutePath}}", "Pages/{{Name}}.liquid")]
+[LiquidPage("^/{{RoutePath}}$", "Pages/{{Name}}.liquid")]
 public class NewPageModel : LiquidPageModel
 {
     // Add your model properties here
