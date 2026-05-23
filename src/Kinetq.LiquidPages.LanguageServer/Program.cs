@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Kinetq.LiquidPages.LanguageServer.Handlers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Server;
@@ -29,6 +30,11 @@ try
                 builder.AddFile(logFile);
                 builder.SetMinimumLevel(LogLevel.Trace);
             })
+            .WithServices(services =>
+            {
+                services.AddSingleton<LiquidTextDocumentSyncHandler>();
+            })
+            .WithHandler<LiquidTextDocumentSyncHandler>()
             .WithHandler<LiquidDocumentFormattingHandler>()
             .OnInitialize((server, request, token) =>
             {

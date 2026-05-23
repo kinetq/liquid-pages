@@ -20,7 +20,11 @@ public class FormatLiquidDocummentCommand : Command
             CommandPlacement.KnownPlacements.ExtensionsMenu
         },
         // Only enable this command when a liquid file is active
-        EnabledWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveEditorContentType, "liquid")
+        EnabledWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveEditorContentType, "liquid"),
+        Shortcuts = new[]
+        {
+            new CommandShortcutConfiguration(mod1: ModifierKey.ControlShift, key1: Key.X)
+        }
     };
 
     public override async Task ExecuteCommandAsync(IClientContext context, CancellationToken cancellationToken)

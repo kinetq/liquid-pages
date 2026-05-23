@@ -11,20 +11,30 @@ namespace Kinetq.LiquidPages.LanguageServer.Handlers;
 /// </summary>
 public class LiquidDocumentFormattingHandler : IDocumentFormattingHandler
 {
+    private readonly LiquidTextDocumentSyncHandler _syncHandler;
+
+    public LiquidDocumentFormattingHandler(LiquidTextDocumentSyncHandler syncHandler)
+    {
+        _syncHandler = syncHandler;
+    }
+
     public async Task<TextEditContainer?> Handle(DocumentFormattingParams request, CancellationToken cancellationToken)
     {
         try
         {
-            // Get the document text
             var documentUri = request.TextDocument.Uri;
-            var documentPath = documentUri.GetFileSystemPath();
 
-            if (string.IsNullOrEmpty(documentPath) || !File.Exists(documentPath))
+            string content;
+            if (!_syncHandler.TryGetContent(documentUri, out content))
             {
-                return null;
-            }
+                var documentPath = documentUri.GetFileSystemPath();
+                if (string.IsNullOrEmpty(documentPath) || !File.Exists(documentPath))
+                {
+                    return null;
+                }
 
-            var content = await File.ReadAllTextAsync(documentPath, cancellationToken);
+                content = await File.ReadAllTextAsync(documentPath, cancellationToken);
+            }
 
             // Format the content
             var formattedContent = await LiquidFormatter.FormatAsync(content, cancellationToken);

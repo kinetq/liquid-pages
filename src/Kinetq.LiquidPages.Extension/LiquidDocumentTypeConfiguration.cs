@@ -12,10 +12,9 @@ public static class LiquidDocumentTypeConfiguration
     /// Inherits from HTML to get HTML syntax highlighting as the base.
     /// </summary>
     [VisualStudioContribution]
-    [Experimental("VSEXTPREVIEW_LSP")]
     public static DocumentTypeConfiguration LiquidDocumentType => new("liquid")
     {
         FileExtensions = new[] { ".liquid" },
-        BaseDocumentType = LanguageServerProvider.LanguageServerBaseDocumentType
+        BaseDocumentType = DocumentType.Custom("HTML")
     };
 }
