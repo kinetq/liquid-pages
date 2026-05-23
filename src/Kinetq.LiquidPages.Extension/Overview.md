@@ -13,15 +13,7 @@ The extension provides syntax highlighting for Liquid template files (`.liquid`)
 
 The extension includes a standalone Liquid template formatter powered by Prettier and the Shopify Liquid plugin. The formatter is bundled as a single executable (`formatter.exe`) built using Node.js Single Executable Applications (SEA), requiring no external dependencies or Node.js installation.
 
-**Developer API**: You can programmatically format Liquid templates using the `LiquidFormatter` helper class:
-
-```csharp
-using Kinetq.LiquidPages.Extension.Helpers;
-
-var formatted = await LiquidFormatter.FormatAsync(liquidContent);
-```
-
-See [Helpers/FORMATTER_USAGE.md](Helpers/FORMATTER_USAGE.md) for detailed usage examples and integration patterns.
+When your in a .liquid file, you can format the document using Control+Shift+X or by clicking "Format Liquid Document" in the Extensions Menu.
 
 ### ⚡ Quick Commands
 

@@ -1,6 +1,5 @@
 {
   "LiquidPages.AddCommand.DisplayName": "Add LiquidPage",
   "LiquidPages.AddErrorCommand.DisplayName": "Add LiquidErrorPage",
-  "LiquidPages.FormatCommand.DisplayName": "Format Liquid Document",
-  "LiquidPages.LiquidLanguageServerProvider.DisplayName": "Liquid Language Server"
+  "LiquidPages.FormatCommand.DisplayName": "Format Liquid Document"
 }
