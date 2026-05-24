@@ -3,6 +3,7 @@ using System.Text;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
+using Kinetq.LiquidPages.Pages;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
@@ -13,15 +14,18 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
     private readonly ILiquidRoutesManager _liquidRoutesManager;
     private readonly IHtmlRenderer _htmlRenderer;
     private readonly ILogger<LiquidResponseMiddleware> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
     public LiquidResponseMiddleware(
         ILiquidRoutesManager liquidRoutesManager,
         IHtmlRenderer htmlRenderer,
-        ILogger<LiquidResponseMiddleware> logger)
+        ILogger<LiquidResponseMiddleware> logger, 
+        IServiceProvider serviceProvider)
     {
         _liquidRoutesManager = liquidRoutesManager;
         _htmlRenderer = htmlRenderer;
         _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task<LiquidResponseModel> HandleRequestAsync(LiquidRequestModel request)
@@ -145,6 +149,11 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         try
         {
+            if (liquidRoute.PageModelType != null)
+            {
+                request.LiquidPageModel = (LiquidPageModel?)_serviceProvider.GetService(liquidRoute.PageModelType);
+            }
+            
             renderModel.ViewModel = await liquidRoute.Execute(request);
         }
         catch (HttpRequestException ex)

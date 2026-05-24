@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.RegularExpressions;
+using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
@@ -22,7 +23,8 @@ public class LiquidStartup : ILiquidStartup
         IEnumerable<ILiquidFilter> liquidFilters,
         ILiquidFilterManager liquidFilterManager,
         IEnumerable<ILiquidErrorRoute> liquidErrorRoutes,
-        IEnumerable<LiquidPageModel> liquidPageModels, ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
+        IEnumerable<LiquidPageModel> liquidPageModels,
+        ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
     {
         _liquidRoutesManager = liquidRoutesManager;
         _liquidRoutes = liquidRoutes;
@@ -56,30 +58,73 @@ public class LiquidStartup : ILiquidStartup
         }
     }
 
+    public async Task RegisterPageModels(Action<LiquidPagesOptionsBuilder> buildOptionsAction)
+    {
+        var optionsBuilder = new LiquidPagesOptionsBuilder();
+        buildOptionsAction(optionsBuilder);
+
+        var options = optionsBuilder.Build();
+        foreach (var optionsPageRoute in options.PageRoutes)
+        {
+            var liquidPageModel = _liquidPageModels.SingleOrDefault(x => x.GetType() == optionsPageRoute.Key);
+            if (liquidPageModel == null)
+            {
+                continue;
+            }
+
+            var liquidPageAttribute = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>();
+            if (liquidPageAttribute == null)
+            {
+                continue;
+            }
+
+            var pageModelType = liquidPageModel.GetType();
+            _liquidRoutesManager.RegisterRoute(new LiquidRoute
+            {
+                RoutePattern = new Regex(optionsPageRoute.Value),
+                LiquidTemplatePath = liquidPageAttribute.TemplatePath, // Or some other convention
+                FileProvider = liquidPageModel.GetFileProvider(),
+                PageModelType = pageModelType,
+                Execute = async (request) =>
+                {
+                    if (request.Method == "POST")
+                        await request.LiquidPageModel!.OnPostAsync(request);
+                    else
+                        await request.LiquidPageModel!.OnGetAsync(request);
+
+                    return request.LiquidPageModel;
+                }
+            });
+        }
+
+        await RegisterPageModels();
+    }
+
     public async Task RegisterPageModels()
     {
         foreach (var liquidPageModel in _liquidPageModels)
         {
+            var pageModelType = liquidPageModel.GetType();
             var liquidPageAttribute = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>();
-            if (liquidPageAttribute != null)
+            if (liquidPageAttribute != null && !string.IsNullOrEmpty(liquidPageAttribute.RoutePattern))
             {
                 _liquidRoutesManager.RegisterRoute(new LiquidRoute
                 {
                     RoutePattern = new Regex(liquidPageAttribute.RoutePattern),
                     LiquidTemplatePath = liquidPageAttribute.TemplatePath,
                     FileProvider = liquidPageModel.GetFileProvider(),
+                    PageModelType = pageModelType,
                     Execute = async (request) =>
                     {
                         if (request.Method == "POST")
-                            await liquidPageModel.OnPostAsync(request);
+                            await request.LiquidPageModel!.OnPostAsync(request);
                         else
-                            await liquidPageModel.OnGetAsync(request);
+                            await request.LiquidPageModel!.OnGetAsync(request);
 
-                        return liquidPageModel;
+                        return request.LiquidPageModel;
                     }
                 });
             }
-
 
             var liquidErrorPageAttribute =
                 liquidPageModel.GetType().GetCustomAttribute<LiquidErrorPageAttribute>();
@@ -89,14 +134,15 @@ public class LiquidStartup : ILiquidStartup
                 {
                     LiquidTemplatePath = liquidErrorPageAttribute.TemplatePath,
                     FileProvider = liquidPageModel.GetFileProvider(),
+                    PageModelType = pageModelType,
                     Execute = async (request) =>
                     {
                         if (request.Method == "POST")
-                            await liquidPageModel.OnPostAsync(request);
+                            await request.LiquidPageModel!.OnPostAsync(request);
                         else
-                            await liquidPageModel.OnGetAsync(request);
+                            await request.LiquidPageModel!.OnGetAsync(request);
 
-                        return liquidPageModel;
+                        return request.LiquidPageModel;
                     }
                 });
             }

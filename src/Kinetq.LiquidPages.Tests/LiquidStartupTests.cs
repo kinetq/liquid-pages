@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Text.RegularExpressions;
 
 namespace Kinetq.LiquidPages.Tests;
 
@@ -353,6 +354,17 @@ public class LiquidStartupTests
         public override Task OnPostAsync(LiquidRequestModel request) { OnPostCalled = true; return Task.CompletedTask; }
     }
 
+    [LiquidPage("test3.liquid")]
+    private class TestPageModel3 : LiquidPageModel
+    {
+        public bool OnGetCalled { get; private set; }
+        public bool OnPostCalled { get; private set; }
+
+        public override IFileProvider GetFileProvider() => new NullFileProvider();
+        public override Task OnGetAsync(LiquidRequestModel request) { OnGetCalled = true; return Task.CompletedTask; }
+        public override Task OnPostAsync(LiquidRequestModel request) { OnPostCalled = true; return Task.CompletedTask; }
+    }
+
     [LiquidPage("^/test2$", "test2.liquid")]
     private class TestPageModel2 : LiquidPageModel
     {
@@ -376,6 +388,52 @@ public class LiquidStartupTests
 
         // Assert
         _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterRouteCustomRoute_WhenPageModelAvailable()
+    {
+        // Arrange
+        var pageModel3 = new TestPageModel3();
+
+        var pageModels = new List<LiquidPageModel> { pageModel3 };
+        _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
+
+        string customRoutePattern = "^/test-1-1$";
+        // Act
+        await _liquidStartup.RegisterPageModels((options) =>
+        {
+            options.AddPageRoute(typeof(TestPageModel3), customRoutePattern);
+        });
+
+        // Assert
+        _liquidRoutesManagerMock.Verify(m => 
+            m.RegisterRoute(It.Is<LiquidRoute>(lr => lr.RoutePattern.ToString() == customRoutePattern)), 
+            Times.Exactly(1));
+    }
+
+    [Fact]
+    public async Task RegisterPageModels_ShouldRegisterRouteCustomRouteAndAttributeRoute_WhenPageModelAvailable()
+    {
+        // Arrange
+        var pageModel1 = new TestPageModel1();
+
+        var pageModels = new List<LiquidPageModel> { pageModel1 };
+        _liquidPageModelsMock.Setup(p => 
+            p.GetEnumerator())
+            .Returns(() => pageModels.GetEnumerator());
+
+        string customRoutePattern = "^/test-1-1$";
+        // Act
+        await _liquidStartup.RegisterPageModels((options) =>
+        {
+            options.AddPageRoute(typeof(TestPageModel1), customRoutePattern);
+        });
+
+        // Assert
+        _liquidRoutesManagerMock.Verify(m =>
+                m.RegisterRoute(It.IsAny<LiquidRoute>()),
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -435,7 +493,7 @@ public class LiquidStartupTests
 
         await _liquidStartup.RegisterPageModels();
 
-        var request = new LiquidRequestModel { Method = "GET" };
+        var request = new LiquidRequestModel { Method = "GET", LiquidPageModel = pageModel};
 
         // Act
         await registeredRoute!.Execute!(request);
@@ -460,7 +518,7 @@ public class LiquidStartupTests
 
         await _liquidStartup.RegisterPageModels();
 
-        var request = new LiquidRequestModel { Method = "POST" };
+        var request = new LiquidRequestModel { Method = "POST", LiquidPageModel = pageModel};
 
         // Act
         await registeredRoute!.Execute!(request);
@@ -486,7 +544,7 @@ public class LiquidStartupTests
         await _liquidStartup.RegisterPageModels();
 
         // Act
-        var result = await registeredRoute!.Execute!(new LiquidRequestModel { Method = "GET" });
+        var result = await registeredRoute!.Execute!(new LiquidRequestModel { Method = "GET", LiquidPageModel = pageModel});
 
         // Assert
         result.Should().BeSameAs(pageModel);

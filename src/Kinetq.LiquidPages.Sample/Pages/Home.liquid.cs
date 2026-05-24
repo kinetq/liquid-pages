@@ -1,5 +1,6 @@
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
+using Microsoft.Extensions.Logging;
 
 namespace Kinetq.LiquidPages.Sample.Pages;
 
@@ -10,6 +11,13 @@ namespace Kinetq.LiquidPages.Sample.Pages;
 [LiquidPage("^/$", "Pages/Home.liquid")]
 public class HomeModel : LiquidPageModel
 {
+    private readonly ILogger<HomeModel> _logger;
+
+    public HomeModel(ILogger<HomeModel> logger)
+    {
+        _logger = logger;
+    }
+
     public string Title { get; set; } = "Welcome to Home";
 
     public override Task OnGetAsync(LiquidRequestModel request)

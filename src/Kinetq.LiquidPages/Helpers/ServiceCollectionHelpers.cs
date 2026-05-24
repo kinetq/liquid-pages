@@ -24,7 +24,8 @@ public static class ServiceCollectionHelpers
 
         foreach (Type type in liquidPageModels)
         {
-            serviceCollection.AddScoped(typeof(LiquidPageModel), type);
+            serviceCollection.AddTransient(typeof(LiquidPageModel), type);
+            serviceCollection.AddTransient(type);
         }
 
         return serviceCollection;

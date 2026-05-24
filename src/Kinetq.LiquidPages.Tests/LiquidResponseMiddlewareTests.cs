@@ -40,8 +40,6 @@ namespace Kinetq.LiquidPages.Tests
             return Task.CompletedTask;
         }
 
-
-
         [Fact]
         public async Task GetHomePageAsync_ShouldReturnRenderedHtml_WhenRouteExists()
         {
