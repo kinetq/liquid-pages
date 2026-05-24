@@ -66,7 +66,7 @@ public class LiquidStartup : ILiquidStartup
         var options = optionsBuilder.Build();
         foreach (var optionsPageRoute in options.PageRoutes)
         {
-            var liquidPageModel = _liquidPageModels.SingleOrDefault(x => x.GetType() == optionsPageRoute.Key);
+            var liquidPageModel = _liquidPageModels.SingleOrDefault(x => x.GetType() == optionsPageRoute.PageType);
             if (liquidPageModel == null)
             {
                 continue;
@@ -81,7 +81,7 @@ public class LiquidStartup : ILiquidStartup
             var pageModelType = liquidPageModel.GetType();
             _liquidRoutesManager.RegisterRoute(new LiquidRoute
             {
-                RoutePattern = new Regex(optionsPageRoute.Value),
+                RoutePattern = new Regex(optionsPageRoute.Route),
                 LiquidTemplatePath = liquidPageAttribute.TemplatePath, // Or some other convention
                 FileProvider = liquidPageModel.GetFileProvider(),
                 PageModelType = pageModelType,

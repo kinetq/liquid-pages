@@ -2,5 +2,11 @@
 
 public class LiquidPagesOptions
 {
-    public IDictionary<Type, string> PageRoutes = new Dictionary<Type, string>();
+    public IList<PageRoute> PageRoutes = new List<PageRoute>();
+}
+
+public class PageRoute
+{
+    public string Route { get; set; }
+    public Type PageType { get; set; }
 }
