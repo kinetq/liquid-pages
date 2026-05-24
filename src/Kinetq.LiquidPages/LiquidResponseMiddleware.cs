@@ -4,6 +4,7 @@ using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
@@ -14,18 +15,18 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
     private readonly ILiquidRoutesManager _liquidRoutesManager;
     private readonly IHtmlRenderer _htmlRenderer;
     private readonly ILogger<LiquidResponseMiddleware> _logger;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public LiquidResponseMiddleware(
         ILiquidRoutesManager liquidRoutesManager,
         IHtmlRenderer htmlRenderer,
         ILogger<LiquidResponseMiddleware> logger, 
-        IServiceProvider serviceProvider)
+        IServiceScopeFactory serviceScopeFactory)
     {
         _liquidRoutesManager = liquidRoutesManager;
         _htmlRenderer = htmlRenderer;
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<LiquidResponseModel> HandleRequestAsync(LiquidRequestModel request)
@@ -151,7 +152,8 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         {
             if (liquidRoute.PageModelType != null)
             {
-                request.LiquidPageModel = (LiquidPageModel?)_serviceProvider.GetService(liquidRoute.PageModelType);
+                using var scope = _serviceScopeFactory.CreateScope();
+                request.LiquidPageModel = (LiquidPageModel?)scope.ServiceProvider.GetService(liquidRoute.PageModelType);
             }
             
             renderModel.ViewModel = await liquidRoute.Execute(request);
