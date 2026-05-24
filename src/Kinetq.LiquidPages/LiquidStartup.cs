@@ -66,7 +66,7 @@ public class LiquidStartup : ILiquidStartup
         var options = optionsBuilder.Build();
         foreach (var optionsPageRoute in options.PageRoutes)
         {
-            var liquidPageModel = _liquidPageModels.SingleOrDefault(x => x.GetType() == optionsPageRoute.PageType);
+            var liquidPageModel = _liquidPageModels.FirstOrDefault(x => x.GetType() == optionsPageRoute.PageType);
             if (liquidPageModel == null)
             {
                 continue;
