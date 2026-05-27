@@ -81,7 +81,7 @@ public class LiquidStartup : ILiquidStartup
             var pageModelType = liquidPageModel.GetType();
             _liquidRoutesManager.RegisterRoute(new LiquidRoute
             {
-                RoutePattern = new Regex(optionsPageRoute.Route),
+                RoutePattern = new Regex(optionsPageRoute.Route, RegexOptions.Compiled),
                 LiquidTemplatePath = liquidPageAttribute.TemplatePath, // Or some other convention
                 FileProvider = liquidPageModel.GetFileProvider(),
                 PageModelType = pageModelType,
@@ -110,7 +110,7 @@ public class LiquidStartup : ILiquidStartup
             {
                 _liquidRoutesManager.RegisterRoute(new LiquidRoute
                 {
-                    RoutePattern = new Regex(liquidPageAttribute.RoutePattern),
+                    RoutePattern = new Regex(liquidPageAttribute.RoutePattern, RegexOptions.Compiled),
                     LiquidTemplatePath = liquidPageAttribute.TemplatePath,
                     FileProvider = liquidPageModel.GetFileProvider(),
                     PageModelType = pageModelType,
