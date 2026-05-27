@@ -1,6 +1,8 @@
 {
-  "HtmlValidation.EnableValidation": false,
   "HtmlValidation.IgnorePatterns": [
     "**/*.liquid"
-  ]
+  ],
+  "Files.Associations": {
+    "*.liquid": "html"
+  }
 }
