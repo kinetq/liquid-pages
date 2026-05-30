@@ -48,7 +48,7 @@ namespace Kinetq.LiquidPages.Sample
                     options.TimestampFormat = "hh:mm:ss ";
                 }).SetMinimumLevel(LogLevel.Debug);
             });
-            services.AddLiquidPages();
+            services.AddLiquidPages(typeof(Program).Assembly);
 
             return services.BuildServiceProvider();
         }
