@@ -9,14 +9,141 @@
   <img src="src/Kinetq.LiquidPages.Extension/Images/Logo.png" alt="App Dashboard" width="150">
 </p>
 
-Liquid pages is a library that uitlizes Fluid under the hood to create middleware that can be used with any web server to render liquid templates. It has a MVVM philosophy similar to Razor Pages (hence the name Liquid Pages).
+LiquidPages is an open-source C# library that brings a Razor Pages–style MVVM framework to [Liquid](https://shopify.github.io/liquid/) templates. It uses [Fluid](https://github.com/sebastienros/fluid) under the hood and is designed to plug into virtually any .NET web server.
 
-## Install
+## Why?
+
+Most .NET templating solutions are tightly coupled to a specific web server or framework. LiquidPages was built to solve two problems:
+
+- **Web-server agnostic** — the middleware can hook into any web server (EmbedIO, a custom HTTP listener, or anything else you can hand a request to), so you aren't locked into a particular host.
+- **Modular by design** — Liquid templates and their page models can live in any C# project across a solution. Each route defines its own `IFileProvider`, making it straightforward to split pages across multiple projects and compose them at runtime.
+
+The result is a lightweight, portable templating layer that stays out of your way regardless of how your application is structured.
+
+## Setup
+
+### 1. Install the NuGet package
 
 ```powershell
 nuget add Kinetq.LiquidPages
 ```
 
-Documentation can be found here: https://www.kinetq.com/docs/open-source-software/liquid-pages
+### 2. Register services
+
+```csharp
+services.AddLiquidPages();
+```
+
+### 3. Register routes and filters at startup
+
+Inject `ILiquidStartup` and call the registration methods during your application's startup phase:
+
+```csharp
+await _liquidStartup.RegisterPageModels();
+await _liquidStartup.RegisterFilters();
+```
+
+### 4. Create a page model
+
+Decorate your page model with `[LiquidPage]`, providing a route regex and template path:
+
+```csharp
+[LiquidPage("^/$", "Pages/Home.liquid")]
+public class HomeModel : LiquidPageModel
+{
+    public string Title { get; set; } = "Welcome to Home";
+
+    public override Task OnGetAsync(LiquidRequestModel request)
+    {
+        return Task.CompletedTask;
+    }
+}
+```
+
+### 5. Create the Liquid template
+
+Properties on the page model are available in the template via the `view_model` object:
+
+```liquid
+{% capture page_content %}
+    <h1>{{ view_model.title }}</h1>
+{% endcapture %}
+
+{% include 'Layouts/default.liquid' %}
+```
+
+### 6. Wire up middleware (EmbedIO)
+
+For EmbedIO, install the companion package and add the module to your web server:
+
+```powershell
+nuget add Kinetq.LiquidPages.EmbedIO
+```
+
+```csharp
+var liquidWebModule = new LiquidWebModule("/")
+{
+    LiquidResponseMiddleware = _liquidResponseMiddleware,
+    ExcludedPaths = new Regex[]
+    {
+        new Regex("^/api/.*"),
+        new Regex("^/static/.*")
+    }
+};
+
+webServer.WithModule(liquidWebModule);
+```
+
+For other web servers, call `HandleRequestAsync` on the middleware from within your own request handler.
+
+## Visual Studio Extension
+
+Install the `Kinetq.LiquidPages.Extension` from the Visual Studio Marketplace for syntax highlighting, a Prettier-based formatter (`Ctrl+Shift+X`), and quick commands to scaffold new pages.
+
+Before using the **Add LiquidPage** command, install the templates package:
+
+```powershell
+dotnet new install Kinetq.LiquidPages.Templates
+```
+
+The extension automatically adds a `.filenesting.json` to your project, which nests `.liquid.cs` code-behind files under their corresponding `.liquid` template in Solution Explorer.
+
+### Without the extension
+
+If you choose not to use the extension, you will need to configure the following manually.
+
+**`.filenesting.json`** — add this to your project root to nest `.liquid.cs` files under their `.liquid` counterparts:
+
+```json
+{
+  "root": true,
+  "dependentFileProviders": {
+    "add": {
+      "extensionToExtension": {
+        "add": {
+          ".liquid.cs": [ ".liquid" ]
+        }
+      }
+    }
+  }
+}
+```
+
+**`.vs/VSWorkspaceSettings.json`** — add this to suppress HTML validation warnings inside `.liquid` files and enable HTML syntax highlighting for them in Visual Studio:
+
+```json
+{
+  "HtmlValidation.IgnorePatterns": [
+    "**/*.liquid"
+  ],
+  "Files.Associations": {
+    "*.liquid": "html"
+  }
+}
+```
+
+## Documentation
+
+Full documentation: https://www.kinetq.com/docs/open-source-software/liquid-pages
 
 If you find this project helpful, please consider giving it a ⭐!
