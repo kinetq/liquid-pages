@@ -50,6 +50,13 @@ jobs:
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           INCLUDE_SYMBOLS: true
 
+    - name: Publish Liquid GenHTTP Handler
+      uses: alirezanet/publish-nuget@v3.0.0
+      with:
+          PROJECT_FILE_PATH: src/Kinetq.LiquidPages.GenHTTP/Kinetq.LiquidPages.GenHTTP.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          INCLUDE_SYMBOLS: true
+
     - name: Publish Liquid Templates
       uses: alirezanet/publish-nuget@v3.0.0
       with:

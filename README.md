@@ -4,7 +4,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/kinetq/liquid-pages)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kinetq/liquid-pages)
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/kinetq/liquid-pages)
-
+[![View - Documentation](https://img.shields.io/badge/view-Documentation-AB54FF)](https://www.kinetq.com/docs/open-source-software/liquid-pages)
 <p align="center">
   <img src="src/Kinetq.LiquidPages.Extension/Images/Logo.png" alt="App Dashboard" width="150">
 </p>
