@@ -72,12 +72,35 @@ Properties on the page model are available in the template via the `view_model` 
 {% include 'Layouts/default.liquid' %}
 ```
 
-### 6. Wire up middleware (EmbedIO)
+### 6. Wire up middleware
 
-For EmbedIO, install the companion package and add the module to your web server:
+#### GenHTTP
+
+Install the GenHTTP companion package:
 
 ```powershell
-nuget add Kinetq.LiquidPages.EmbedIO
+dotnet add package Kinetq.LiquidPages.GenHTTP
+```
+
+Resolve `ILiquidResponseMiddleware` from your container and pass it to `LiquidHandlerBuilder`:
+
+```csharp
+var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+
+await Host.Create()
+          .Handler(new LiquidHandlerBuilder(middleware))
+          .Bind(IPAddress.Any, 8080)
+          .RunAsync();
+```
+
+`LiquidHandlerBuilder` implements `IHandlerBuilder<LiquidHandlerBuilder>`, so you can attach any GenHTTP concern (compression, caching, CORS, etc.) before the handler is built. See the [full GenHTTP documentation](docs/genhttp-liquid-pages.md) for a complete walkthrough.
+
+#### EmbedIO
+
+Install the EmbedIO companion package and add the module to your web server:
+
+```powershell
+dotnet add package Kinetq.LiquidPages.EmbedIO
 ```
 
 ```csharp
@@ -94,7 +117,7 @@ var liquidWebModule = new LiquidWebModule("/")
 webServer.WithModule(liquidWebModule);
 ```
 
-For other web servers, call `HandleRequestAsync` on the middleware from within your own request handler.
+For other web servers, call `HandleRequestAsync` on `ILiquidResponseMiddleware` from within your own request handler.
 
 ## Visual Studio Extension
 
