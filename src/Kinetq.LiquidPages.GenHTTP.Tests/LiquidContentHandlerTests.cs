@@ -26,7 +26,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             _urlPrefix = $"http://localhost:{_port}";
 
             _server = Host.Create()
-                .Handler(_mockLiquidResponseMiddleware.Object.LiquidPages())
+                .Handler(new LiquidContentHandler(_mockLiquidResponseMiddleware.Object))
                 .Bind(IPAddress.Loopback, (ushort)_port)
                 .Build();
 

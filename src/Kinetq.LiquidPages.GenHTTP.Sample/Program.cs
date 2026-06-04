@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using GenHTTP.Api.Infrastructure;
 using GenHTTP.Engine.Internal;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
@@ -25,7 +24,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
 
             var server = await Host.Create()
-                 .Handler(middleware.LiquidPages())
+                 .Handler(new LiquidHandlerBuilder(middleware))
                  .Bind(IPAddress.Any, 8080)
                  .RunAsync();
         }

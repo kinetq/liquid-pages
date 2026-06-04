@@ -45,7 +45,7 @@ public sealed class LiquidContentHandler : IHandler
             var liquidResponse = await _middleware.HandleRequestAsync(liquidRequest);
 
             return request.Respond()
-                .Status(liquidResponse.StatusCode, GetStatusPhrase(liquidResponse.StatusCode))
+                .Status((ResponseStatus)liquidResponse.StatusCode)
                 .Type(FlexibleContentType.Parse(liquidResponse.ContentType))
                 .Content(new ByteArrayContent(liquidResponse.Content))
                 .Build();
@@ -60,18 +60,4 @@ public sealed class LiquidContentHandler : IHandler
                 .Build();
         }
     }
-
-    private static string GetStatusPhrase(int statusCode) => statusCode switch
-    {
-        200 => "OK",
-        301 => "Moved Permanently",
-        302 => "Found",
-        304 => "Not Modified",
-        400 => "Bad Request",
-        401 => "Unauthorized",
-        403 => "Forbidden",
-        404 => "Not Found",
-        500 => "Internal Server Error",
-        _ => "Unknown"
-    };
 }
