@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.GenHTTP.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.GenHTTP.Tests", "src\Kinetq.LiquidPages.GenHTTP.Tests\Kinetq.LiquidPages.GenHTTP.Tests.csproj", "{03CC6025-81E4-B850-F6B8-73D2A4ED942B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Statiq", "src\Kinetq.LiquidPages.Statiq\Kinetq.LiquidPages.Statiq.csproj", "{094C5DF6-418C-4F4F-B7E8-9D4540151A63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094C5DF6-418C-4F4F-B7E8-9D4540151A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094C5DF6-418C-4F4F-B7E8-9D4540151A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094C5DF6-418C-4F4F-B7E8-9D4540151A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094C5DF6-418C-4F4F-B7E8-9D4540151A63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
