@@ -21,13 +21,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Extensio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Templates", "src\Kinetq.LiquidPages.Templates\Kinetq.LiquidPages.Templates.csproj", "{9F43F735-25B0-A2D3-1780-166383D5743F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Sample", "src\Kinetq.LiquidPages.Sample\Kinetq.LiquidPages.Sample.csproj", "{5811EC16-9EAD-413B-8544-83739D4B28A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.EmbedIO.Sample", "src\Kinetq.LiquidPages.EmbedIO.Sample\Kinetq.LiquidPages.EmbedIO.Sample.csproj", "{5811EC16-9EAD-413B-8544-83739D4B28A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.GenHTTP", "src\Kinetq.LiquidPages.GenHTTP\Kinetq.LiquidPages.GenHTTP.csproj", "{580BE3A9-09DC-451E-B94B-0A9FE4A6941E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.GenHTTP.Sample", "src\Kinetq.LiquidPages.GenHTTP.Sample\Kinetq.LiquidPages.GenHTTP.Sample.csproj", "{4378CB87-F15F-4CC0-80E6-8BCBFB3088E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.GenHTTP.Tests", "src\Kinetq.LiquidPages.GenHTTP.Tests\Kinetq.LiquidPages.GenHTTP.Tests.csproj", "{03CC6025-81E4-B850-F6B8-73D2A4ED942B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCore", "src\Kinetq.LiquidPages.AspNetCore\Kinetq.LiquidPages.AspNetCore.csproj", "{E1D9F666-A482-4281-A4E1-EB13A4601D63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCore.Sample", "src\Kinetq.LiquidPages.AspNetCore.Sample\Kinetq.LiquidPages.AspNetCore.Sample.csproj", "{9437D8E1-C271-4CBC-A886-08761F5CD17B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +79,14 @@ Global
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03CC6025-81E4-B850-F6B8-73D2A4ED942B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1D9F666-A482-4281-A4E1-EB13A4601D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1D9F666-A482-4281-A4E1-EB13A4601D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1D9F666-A482-4281-A4E1-EB13A4601D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1D9F666-A482-4281-A4E1-EB13A4601D63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	<TargetFramework>net9.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\Kinetq.LiquidPages.AspNetCore\Kinetq.LiquidPages.AspNetCore.csproj" />
+	<ProjectReference Include="..\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj" />
+  </ItemGroup>
+
+</Project>

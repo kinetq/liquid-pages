@@ -117,6 +117,38 @@ var liquidWebModule = new LiquidWebModule("/")
 webServer.WithModule(liquidWebModule);
 ```
 
+#### ASP.NET Core
+
+Install the ASP.NET Core companion package:
+
+```powershell
+dotnet add package Kinetq.LiquidPages.AspNetCore
+```
+
+Register LiquidPages services and initialize page models in `Program.cs`, then add the middleware to the pipeline:
+
+```csharp
+using Kinetq.LiquidPages.AspNetCore;
+using Kinetq.LiquidPages.Helpers;
+using Kinetq.LiquidPages.Interfaces;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddLiquidPages(typeof(Program).Assembly);
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
+    await startup.RegisterPageModels();
+}
+
+app.UseLiquidPages();
+
+await app.RunAsync();
+```
+
 For other web servers, call `HandleRequestAsync` on `ILiquidResponseMiddleware` from within your own request handler.
 
 ## Visual Studio Extension
