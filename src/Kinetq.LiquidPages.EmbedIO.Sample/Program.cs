@@ -22,14 +22,14 @@ namespace Kinetq.LiquidPages.Sample
             await startup.RegisterPageModels();
 
             var webServer = new WebServer("http://*:5662");
-            webServer.WithModule(new LiquidWebModule("/")
+            var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+            var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
+            var excludedPaths = new Regex[]
             {
-                LiquidResponseMiddleware = serviceProvider.GetService<ILiquidResponseMiddleware>(),
-                ExcludedPaths = new Regex[]
-                {
-                    new Regex("^/api/.*")
-                }
-            });
+                new Regex("^/api/.*")
+            };
+
+            webServer.WithLiquidPages(middleware, routesManager, excludedPaths);
 
             await webServer.RunAsync();
         }

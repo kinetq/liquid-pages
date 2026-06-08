@@ -4,12 +4,14 @@ using EmbedIO;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
+using Microsoft.AspNetCore.Routing;
 
 namespace Kinetq.LiquidPages.EmbedIO;
 
 public class LiquidWebModule : WebModuleBase
 {
     public ILiquidResponseMiddleware LiquidResponseMiddleware { get; init; } = null!;
+    public LiquidRoute? LiquidRoute { get; init; }
     public Regex[] ExcludedPaths { get; set; } = [];
 
     public LiquidWebModule(string baseRoute) : base(baseRoute)
@@ -33,8 +35,18 @@ public class LiquidWebModule : WebModuleBase
                 Route = request.Url.AbsolutePath,
                 QueryParams = request.Url.Query.GetQueryParams(),
                 Headers = request.Headers,
-                Method = request.HttpMethod
+                Method = request.HttpMethod,
+                LiquidRoute = LiquidRoute
             };
+
+            if (liquidRequest.LiquidRoute != null)
+            {
+                var match = MatchUrlPath(request.Url.AbsolutePath);
+                if (match != null)
+                {
+                    liquidRequest.LiquidRoute.RouteValues = new RouteValueDictionary(match.Pairs);
+                }
+            }
 
             if (request.HasEntityBody)
             {
