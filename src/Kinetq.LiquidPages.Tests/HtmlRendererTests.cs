@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Fluid;
+﻿using Fluid;
 using Fluid.Values;
 using HtmlAgilityPack;
 using Kinetq.LiquidPages.Exceptions;
@@ -54,7 +53,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _embeddedFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "index.liquid"
         };
 
@@ -74,7 +73,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _phyicalFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "index.liquid"
         };
 
@@ -94,7 +93,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _phyicalFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "index.liquid"
         };
 
@@ -124,7 +123,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _phyicalFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "malformed.liquid"
         };
 
@@ -150,7 +149,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _phyicalFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "malformed_html.liquid"
         };
 
@@ -176,7 +175,7 @@ public class HtmlRendererTests : IAsyncLifetime
         var liquidRoute = new LiquidRoute()
         {
             FileProvider = _phyicalFileProvider,
-            RoutePattern = new Regex("^/$"),
+            RouteTemplate = "/",
             LiquidTemplatePath = "index.liquid"
         };
 

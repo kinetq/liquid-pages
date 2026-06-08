@@ -10,5 +10,6 @@ public class LiquidRequestModel
     public object? Body { get; set; }
     public NameValueCollection Headers { get; set; }
     public string Method { get; set; } = "GET";
+    public LiquidRoute? LiquidRoute { get; set; }
     public LiquidPageModel? LiquidPageModel { get; set; }
 }

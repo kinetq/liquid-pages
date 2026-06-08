@@ -24,7 +24,7 @@ namespace Kinetq.LiquidPages.AspNetCore
         {
             var request = context.Request;
             var response = context.Response;
-
+            
             try
             {
                 var headers = new NameValueCollection();

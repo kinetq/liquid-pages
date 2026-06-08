@@ -20,6 +20,10 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <PropertyGroup>
     <Version>0.0.22</Version>
     <RepositoryUrl>https://github.com/kinetq/liquid-simple-server</RepositoryUrl>

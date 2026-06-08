@@ -37,7 +37,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
             QueryParams = request.QueryParams
         };
 
-        LiquidRoute? liquidRoute = _liquidRoutesManager.GetRouteForPath(request.Route, renderModel.QueryParams);
+        LiquidRoute? liquidRoute = request.LiquidRoute ?? _liquidRoutesManager.GetRouteForPath(request.Route);
         HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request);
         if (statusCode != null && (int)statusCode.Value >= 400)
         {

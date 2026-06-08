@@ -40,6 +40,7 @@ public class HtmlRenderer : IHtmlRenderer
         }
 
         string liquidTemplate = await fileInfo.GetFileContents();
+        string templateKey = $"{liquidTemplate}";
 
         _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplate, out var cachedTemplate);
 

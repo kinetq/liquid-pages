@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Text.RegularExpressions;
 
 namespace Kinetq.LiquidPages.Tests;
 
@@ -66,9 +65,9 @@ public class LiquidStartupTests
         var mockRoute2 = new Mock<ILiquidRoute>();
         var mockRoute3 = new Mock<ILiquidRoute>();
 
-        var liquidRoute1 = CreateTestLiquidRoute("^/test1$", "test1.liquid");
-        var liquidRoute2 = CreateTestLiquidRoute("^/test2$", "test2.liquid");
-        var liquidRoute3 = CreateTestLiquidRoute("^/api/users/(?<id>\\d+)$", "user.liquid");
+        var liquidRoute1 = CreateTestLiquidRoute("/test1", "test1.liquid");
+        var liquidRoute2 = CreateTestLiquidRoute("/test2", "test2.liquid");
+        var liquidRoute3 = CreateTestLiquidRoute("/api/users/{id}", "user.liquid");
 
         mockRoute1.Setup(r => r.GetRoute()).ReturnsAsync(liquidRoute1);
         mockRoute2.Setup(r => r.GetRoute()).ReturnsAsync(liquidRoute2);
@@ -93,8 +92,8 @@ public class LiquidStartupTests
         var mockRoute1 = new Mock<ILiquidRoute>();
         var mockRoute2 = new Mock<ILiquidRoute>();
 
-        var liquidRoute1 = CreateTestLiquidRoute("^/test1$", "test1.liquid");
-        var liquidRoute2 = CreateTestLiquidRoute("^/test2$", "test2.liquid");
+        var liquidRoute1 = CreateTestLiquidRoute("/test1", "test1.liquid");
+        var liquidRoute2 = CreateTestLiquidRoute("/test2", "test2.liquid");
 
         mockRoute1.Setup(r => r.GetRoute()).ReturnsAsync(liquidRoute1);
         mockRoute2.Setup(r => r.GetRoute()).ReturnsAsync(liquidRoute2);
@@ -259,8 +258,8 @@ public class LiquidStartupTests
         var mockRoute1 = new Mock<ILiquidRoute>();
         var mockRoute2 = new Mock<ILiquidRoute>();
 
-        var liquidRoute1 = CreateTestLiquidRoute("^/test1$", "test1.liquid");
-        var liquidRoute2 = CreateTestLiquidRoute("^/test2$", "test2.liquid");
+        var liquidRoute1 = CreateTestLiquidRoute("/test1", "test1.liquid");
+        var liquidRoute2 = CreateTestLiquidRoute("/test2", "test2.liquid");
 
         mockRoute1.Setup(r => r.GetRoute())
             .Callback(() => callOrder.Add("route1"))
@@ -319,11 +318,11 @@ public class LiquidStartupTests
         callOrder.Should().Equal("filter1", "registerfilter1", "filter2", "registerfilter2");
     }
 
-    private LiquidRoute CreateTestLiquidRoute(string pattern, string templatePath)
+    private LiquidRoute CreateTestLiquidRoute(string routeTemplate, string templatePath)
     {
         return new LiquidRoute
         {
-            RoutePattern = new System.Text.RegularExpressions.Regex(pattern),
+            RouteTemplate = routeTemplate,
             LiquidTemplatePath = templatePath,
             FileProvider = new Microsoft.Extensions.FileProviders.NullFileProvider(),
             Execute = async (model) => await Task.FromResult(new { Message = "Test" }),
@@ -343,7 +342,7 @@ public class LiquidStartupTests
 
     // --- Concrete test page model helpers (add alongside existing private helpers ---
 
-    [LiquidPage("^/test1$", "test1.liquid")]
+    [LiquidPage("/test1", "test1.liquid")]
     private class TestPageModel1 : LiquidPageModel
     {
         public bool OnGetCalled { get; private set; }
@@ -365,7 +364,7 @@ public class LiquidStartupTests
         public override Task OnPostAsync(LiquidRequestModel request) { OnPostCalled = true; return Task.CompletedTask; }
     }
 
-    [LiquidPage("^/test2$", "test2.liquid")]
+    [LiquidPage("/test2", "test2.liquid")]
     private class TestPageModel2 : LiquidPageModel
     {
         public override IFileProvider GetFileProvider() => new NullFileProvider();
@@ -399,7 +398,7 @@ public class LiquidStartupTests
         var pageModels = new List<LiquidPageModel> { pageModel3 };
         _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
 
-        string customRoutePattern = "^/test-1-1$";
+        string customRoutePattern = "/test-1-1";
         // Act
         await _liquidStartup.RegisterPageModels((options) =>
         {
@@ -408,7 +407,7 @@ public class LiquidStartupTests
 
         // Assert
         _liquidRoutesManagerMock.Verify(m => 
-            m.RegisterRoute(It.Is<LiquidRoute>(lr => lr.RoutePattern.ToString() == customRoutePattern)), 
+            m.RegisterRoute(It.Is<LiquidRoute>(lr => lr.RouteTemplate.ToString() == customRoutePattern)), 
             Times.Exactly(1));
     }
 
@@ -423,7 +422,7 @@ public class LiquidStartupTests
             p.GetEnumerator())
             .Returns(() => pageModels.GetEnumerator());
 
-        string customRoutePattern = "^/test-1-1$";
+        string customRoutePattern = "/test-1-1";
         // Act
         await _liquidStartup.RegisterPageModels((options) =>
         {
@@ -454,7 +453,7 @@ public class LiquidStartupTests
 
         // Assert
         registeredRoute.Should().NotBeNull();
-        registeredRoute!.RoutePattern.ToString().Should().Be("^/test1$");
+        registeredRoute!.RouteTemplate.Should().Be("/test1");
         registeredRoute.LiquidTemplatePath.Should().Be("test1.liquid");
     }
 

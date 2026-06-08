@@ -1,9 +1,12 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
-using Kinetq.LiquidPages.Interfaces;
+﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Routing;
 
 namespace Kinetq.LiquidPages.Managers;
 
@@ -27,9 +30,9 @@ public class LiquidRoutesManager : ILiquidRoutesManager
 
     public void RegisterRoute(LiquidRoute route)
     {
-        if (LiquidRoutes.Any(r => r.RoutePattern.Equals(route.RoutePattern)))
+        if (LiquidRoutes.Any(r => r.RouteTemplate.Equals(route.RouteTemplate)))
         {
-            _logger.LogWarning("Route already exists: {Route}", route.RoutePattern);
+            _logger.LogWarning("Route already exists: {Route}", route.RouteTemplate);
             return;
         }
 
@@ -55,23 +58,20 @@ public class LiquidRoutesManager : ILiquidRoutesManager
         return route;
     }
 
-    public LiquidRoute? GetRouteForPath(string path, IDictionary<string, string>? queryParams = null)
+    public LiquidRoute? GetRouteForPath(string path)
     {
+        PathString requestPath = new PathString(path);
         LiquidRoute? liquidRoute = null;
         foreach (var route in LiquidRoutes)
         {
-            var match = route.RoutePattern.Match(path);
-            if (match.Success)
+            RouteTemplate parsedTemplate = TemplateParser.Parse(route.RouteTemplate);
+            var defaults = new RouteValueDictionary();
+            var matcher = new TemplateMatcher(parsedTemplate, defaults);
+            var routeValues = new RouteValueDictionary();
+            if (matcher.TryMatch(requestPath, routeValues))
             {
-                if (queryParams != null)
-                {
-                    foreach (Group group in match.Groups)
-                    {
-                        queryParams[group.Name] = Uri.UnescapeDataString(group.Value);
-                    }
-                }
-
                 liquidRoute = route;
+                liquidRoute.RouteValues = routeValues;
                 break;
             }
         }

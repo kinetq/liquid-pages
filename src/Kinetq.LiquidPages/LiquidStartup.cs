@@ -81,7 +81,7 @@ public class LiquidStartup : ILiquidStartup
             var pageModelType = liquidPageModel.GetType();
             _liquidRoutesManager.RegisterRoute(new LiquidRoute
             {
-                RoutePattern = new Regex(optionsPageRoute.Route, RegexOptions.Compiled),
+                RouteTemplate = optionsPageRoute.RouteTemplate,
                 LiquidTemplatePath = liquidPageAttribute.TemplatePath, // Or some other convention
                 FileProvider = liquidPageModel.GetFileProvider(),
                 PageModelType = pageModelType,
@@ -106,11 +106,11 @@ public class LiquidStartup : ILiquidStartup
         {
             var pageModelType = liquidPageModel.GetType();
             var liquidPageAttribute = liquidPageModel.GetType().GetCustomAttribute<LiquidPageAttribute>();
-            if (liquidPageAttribute != null && !string.IsNullOrEmpty(liquidPageAttribute.RoutePattern))
+            if (liquidPageAttribute != null && !string.IsNullOrEmpty(liquidPageAttribute.RouteTemplate))
             {
                 _liquidRoutesManager.RegisterRoute(new LiquidRoute
                 {
-                    RoutePattern = new Regex(liquidPageAttribute.RoutePattern, RegexOptions.Compiled),
+                    RouteTemplate = liquidPageAttribute.RouteTemplate,
                     LiquidTemplatePath = liquidPageAttribute.TemplatePath,
                     FileProvider = liquidPageModel.GetFileProvider(),
                     PageModelType = pageModelType,
