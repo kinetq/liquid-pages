@@ -22,9 +22,10 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample
             await startup.RegisterPageModels();
 
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+            var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
 
             var server = await Host.Create()
-                 .Handler(new LiquidHandlerBuilder(middleware))
+                 .Handler(new LiquidHandlerBuilder(middleware, routesManager))
                  .Bind(IPAddress.Any, 8080)
                  .RunAsync();
         }

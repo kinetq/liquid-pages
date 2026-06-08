@@ -10,10 +10,12 @@ namespace Kinetq.LiquidPages.GenHTTP;
 public sealed class LiquidContentHandler : IHandler
 {
     private readonly ILiquidResponseMiddleware _middleware;
+    private readonly LiquidRoute? _liquidRoute;
 
-    public LiquidContentHandler(ILiquidResponseMiddleware middleware)
+    public LiquidContentHandler(ILiquidResponseMiddleware middleware, LiquidRoute? liquidRoute = null)
     {
         _middleware = middleware;
+        _liquidRoute = liquidRoute;
     }
 
     public ValueTask PrepareAsync() => ValueTask.CompletedTask;
@@ -31,7 +33,8 @@ public sealed class LiquidContentHandler : IHandler
             Route = request.Target.Path.ToString(),
             QueryParams = request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
             Headers = headers,
-            Method = request.Method.RawMethod
+            Method = request.Method.RawMethod,
+            LiquidRoute = _liquidRoute
         };
 
         if (request.Content != null)

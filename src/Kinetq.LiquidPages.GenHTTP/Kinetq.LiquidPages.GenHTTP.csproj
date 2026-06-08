@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="GenHTTP.Api" Version="10.5.3" />
+    <PackageReference Include="GenHTTP.Modules.Layouting" Version="10.5.0" />
   </ItemGroup>
 
 	<PropertyGroup>

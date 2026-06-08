@@ -14,6 +14,9 @@ using (var scope = app.Services.CreateScope())
     await startup.RegisterPageModels();
 }
 
-app.UseLiquidPages();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapLiquidPages();
+});
 
 await app.RunAsync();
