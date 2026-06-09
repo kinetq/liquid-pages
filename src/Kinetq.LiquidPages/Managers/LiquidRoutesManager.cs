@@ -2,10 +2,8 @@
 using Kinetq.LiquidPages.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing.Template;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Routing;
 
 namespace Kinetq.LiquidPages.Managers;
@@ -77,28 +75,5 @@ public class LiquidRoutesManager : ILiquidRoutesManager
         }
 
         return liquidRoute;
-    }
-
-    public IFileProvider? GetFileProviderForAsset(string filePath)
-    {
-        foreach (var liquidRoute in LiquidRoutes)
-        {
-            var fileInfo = liquidRoute.FileProvider.GetFileInfo(filePath);
-            if (fileInfo.Exists)
-            {
-                return liquidRoute.FileProvider;
-            }
-        }
-
-        foreach (var errorLiquidRoute in _errorRoutes.Value)
-        {
-            var fileInfo = errorLiquidRoute.Value.FileProvider.GetFileInfo(filePath);
-            if (fileInfo.Exists)
-            {
-                return errorLiquidRoute.Value.FileProvider;
-            }
-        }
-
-        return null;
     }
 }

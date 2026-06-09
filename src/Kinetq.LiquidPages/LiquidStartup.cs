@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using System.Text.RegularExpressions;
 using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
+using Microsoft.Extensions.FileProviders;
 
 namespace Kinetq.LiquidPages;
 
@@ -12,41 +12,29 @@ public class LiquidStartup : ILiquidStartup
     private readonly ILiquidRoutesManager _liquidRoutesManager;
     private readonly ILiquidFilterManager _liquidFilterManager;
     private readonly ILiquidRegisteredTypesManager _liquidRegisteredTypesManager;
-    private readonly IEnumerable<ILiquidRoute> _liquidRoutes;
+    private readonly ITemplateOptionsManager _templateOptionsManager;
     private readonly IEnumerable<ILiquidFilter> _liquidFilters;
-    private readonly IEnumerable<ILiquidErrorRoute> _liquidErrorRoutes;
     private readonly IEnumerable<LiquidPageModel> _liquidPageModels;
 
     public LiquidStartup(
         ILiquidRoutesManager liquidRoutesManager,
-        IEnumerable<ILiquidRoute> liquidRoutes,
         IEnumerable<ILiquidFilter> liquidFilters,
         ILiquidFilterManager liquidFilterManager,
-        IEnumerable<ILiquidErrorRoute> liquidErrorRoutes,
         IEnumerable<LiquidPageModel> liquidPageModels,
-        ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
+        ILiquidRegisteredTypesManager liquidRegisteredTypesManager, 
+        ITemplateOptionsManager templateOptionsManager)
     {
         _liquidRoutesManager = liquidRoutesManager;
-        _liquidRoutes = liquidRoutes;
         _liquidFilters = liquidFilters;
         _liquidFilterManager = liquidFilterManager;
-        _liquidErrorRoutes = liquidErrorRoutes;
         _liquidPageModels = liquidPageModels;
         _liquidRegisteredTypesManager = liquidRegisteredTypesManager;
+        _templateOptionsManager = templateOptionsManager;
     }
 
-    public async Task RegisterRoutes()
+    public void RegisterFileProvider(string prefix, IFileProvider fileProvider)
     {
-        foreach (var route in _liquidRoutes)
-        {
-            _liquidRoutesManager.RegisterRoute(await route.GetRoute());
-        }
-
-        foreach (var liquidErrorRoute in _liquidErrorRoutes)
-        {
-            var route = await liquidErrorRoute.GetRoute();
-            _liquidRoutesManager.RegisterErrorRoute(liquidErrorRoute.StatusCode, route);
-        }
+        _templateOptionsManager.RegisterTemplateOptions(prefix, fileProvider);
     }
 
     public async Task RegisterFilters()
@@ -82,8 +70,7 @@ public class LiquidStartup : ILiquidStartup
             _liquidRoutesManager.RegisterRoute(new LiquidRoute
             {
                 RouteTemplate = optionsPageRoute.RouteTemplate,
-                LiquidTemplatePath = liquidPageAttribute.TemplatePath, // Or some other convention
-                FileProvider = liquidPageModel.GetFileProvider(),
+                LiquidTemplatePath = liquidPageAttribute.TemplatePath,
                 PageModelType = pageModelType,
                 Execute = async (request) =>
                 {
@@ -112,7 +99,6 @@ public class LiquidStartup : ILiquidStartup
                 {
                     RouteTemplate = liquidPageAttribute.RouteTemplate,
                     LiquidTemplatePath = liquidPageAttribute.TemplatePath,
-                    FileProvider = liquidPageModel.GetFileProvider(),
                     PageModelType = pageModelType,
                     Execute = async (request) =>
                     {
@@ -133,7 +119,6 @@ public class LiquidStartup : ILiquidStartup
                 _liquidRoutesManager.RegisterErrorRoute((int)liquidErrorPageAttribute.StatusCode, new LiquidRoute
                 {
                     LiquidTemplatePath = liquidErrorPageAttribute.TemplatePath,
-                    FileProvider = liquidPageModel.GetFileProvider(),
                     PageModelType = pageModelType,
                     Execute = async (request) =>
                     {

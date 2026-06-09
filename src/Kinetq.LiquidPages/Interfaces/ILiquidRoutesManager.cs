@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Kinetq.LiquidPages.Models;
-using Microsoft.Extensions.FileProviders;
 
 namespace Kinetq.LiquidPages.Interfaces;
 
@@ -12,5 +11,4 @@ public interface ILiquidRoutesManager
     IDictionary<int, LiquidRoute> ErrorRoutes { get; }
     LiquidRoute? GetRouteForPath(string path);
     LiquidRoute? GetRouteForStatusCode(HttpStatusCode statusCode);
-    IFileProvider? GetFileProviderForAsset(string filePath);
 }

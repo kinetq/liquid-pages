@@ -10,20 +10,17 @@ namespace Kinetq.LiquidPages;
 public class HtmlRenderer : IHtmlRenderer
 {
     private readonly IFluidParserManager _fluidParserManager;
-    private readonly ILiquidFilterManager _liquidFilterManager;
-    private readonly ILiquidRegisteredTypesManager _liquidRegisteredTypesManager;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly ITemplateOptionsManager _templateOptionsManager;
 
     public HtmlRenderer(
         IFluidParserManager fluidParserManager,
-        ILiquidFilterManager liquidFilterManager,
-        ILiquidRegisteredTypesManager liquidRegisteredTypesManager,
-        ILiquidTemplateManager liquidTemplateManager)
+        ILiquidTemplateManager liquidTemplateManager, 
+        ITemplateOptionsManager templateOptionsManager)
     {
         _fluidParserManager = fluidParserManager;
-        _liquidFilterManager = liquidFilterManager;
-        _liquidRegisteredTypesManager = liquidRegisteredTypesManager;
         _liquidTemplateManager = liquidTemplateManager;
+        _templateOptionsManager = templateOptionsManager;
     }
 
     public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute? liquidRoute)
@@ -33,17 +30,16 @@ public class HtmlRenderer : IHtmlRenderer
             return null;
         }
 
-        var fileInfo = liquidRoute.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+        var options = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
+        var fileInfo = options.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
         if (!fileInfo.Exists)
         {
             return null;
         }
 
         string liquidTemplate = await fileInfo.GetFileContents();
-        string templateKey = $"{liquidTemplate}";
 
         _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplate, out var cachedTemplate);
-
         var parser = _fluidParserManager.FluidParser;
         if (cachedTemplate == null && parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
         {
@@ -56,29 +52,8 @@ public class HtmlRenderer : IHtmlRenderer
             _liquidTemplateManager.RegisterTemplate(liquidTemplate, cachedTemplate);
         }
 
-        var options = new TemplateOptions
-        {
-            FileProvider = liquidRoute.FileProvider,
-            MemberAccessStrategy = new DefaultMemberAccessStrategy()
-            {
-                MemberNameStrategy = MemberNameStrategies.SnakeCase
-            }
-        };
-
-        foreach (var registeredType in _liquidRegisteredTypesManager.RegisteredTypes)
-        {
-            options.MemberAccessStrategy.Register(registeredType);
-        }
-
-        foreach (var filterDelegate in _liquidFilterManager.LiquidFilters)
-        {
-            options.Filters.AddFilter(filterDelegate.Key, filterDelegate.Value);
-        }
-
         var templateContext = new TemplateContext(renderModel, options);
-
         string html = await cachedTemplate.RenderAsync(templateContext);
-
 
 #if DEBUG
         // Validate HTML using HtmlAgilityPack

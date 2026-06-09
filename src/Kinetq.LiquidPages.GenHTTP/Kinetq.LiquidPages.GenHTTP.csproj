@@ -16,7 +16,7 @@
   </ItemGroup>
 
 	<PropertyGroup>
-		<Version>0.0.2</Version>
+		<Version>0.0.3</Version>
 		<RepositoryUrl>https://github.com/kinetq/liquid-pages</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Description>This is a library provides a handler to add liquid middleware to GenHTTP.</Description>
