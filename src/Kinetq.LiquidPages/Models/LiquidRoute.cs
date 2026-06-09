@@ -2,7 +2,7 @@
 
 namespace Kinetq.LiquidPages.Models;
 
-internal class LiquidRoute
+public class LiquidRoute
 {
     public string RouteTemplate { get; set; }
     public string LiquidTemplatePath { get; set; }

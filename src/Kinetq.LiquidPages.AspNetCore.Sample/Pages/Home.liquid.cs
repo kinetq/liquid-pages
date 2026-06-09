@@ -18,12 +18,6 @@ public class HomeModel : LiquidPageModel
         _logger = logger;
     }
 
-    public override IFileProvider GetFileProvider()
-    {
-        string workingDirectory = Directory.GetCurrentDirectory();
-        return new PhysicalFileProvider(workingDirectory);
-    }
-
     public string Title { get; set; } = "Welcome to Home";
 
     public override Task OnGetAsync(LiquidRequestModel request)

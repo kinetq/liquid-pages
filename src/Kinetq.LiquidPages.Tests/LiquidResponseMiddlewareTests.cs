@@ -1,10 +1,7 @@
-﻿using System.Collections.Specialized;
-using System.Net;
-using Kinetq.LiquidPages.Helpers;
+﻿using System.Net;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -15,7 +12,6 @@ namespace Kinetq.LiquidPages.Tests
         private ILiquidResponseMiddleware _liquidResponseMiddleware;
         private Mock<ILiquidRoutesManager> _liquidRoutesManagerMock;
         private Mock<IHtmlRenderer> _htmlRendererMock;
-        private IFileProvider _embeddedFileProvider;
 
         public async Task InitializeAsync()
         {
@@ -31,7 +27,7 @@ namespace Kinetq.LiquidPages.Tests
                 .BuildServiceProvider();
 
             _liquidResponseMiddleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
-            _embeddedFileProvider = new EmbeddedFileProvider(typeof(LiquidResponseMiddlewareTests).Assembly, "Kinetq.LiquidPages.Tests.Templates");
+            await Task.CompletedTask;
         }
 
         public Task DisposeAsync()
@@ -51,8 +47,7 @@ namespace Kinetq.LiquidPages.Tests
                 .Returns(new LiquidRoute
                 {
                     RouteTemplate = "/",
-                    LiquidTemplatePath = "index.liquid",
-                    FileProvider = null // Not needed for this test
+                    LiquidTemplatePath = "index.liquid"
                 });
 
             _htmlRendererMock
@@ -84,8 +79,7 @@ namespace Kinetq.LiquidPages.Tests
                 .Returns(new LiquidRoute
                 {
                     RouteTemplate = "/",
-                    LiquidTemplatePath = "404.liquid",
-                    FileProvider = null
+                    LiquidTemplatePath = "404.liquid"
                 });
 
             _htmlRendererMock
@@ -108,131 +102,6 @@ namespace Kinetq.LiquidPages.Tests
             Assert.False(responseModel.StatusCode == (int)HttpStatusCode.OK);
         }
 
-        [Theory]
-        [InlineData("/styles/styles.css")]
-        [InlineData("/scripts/site.js")]
-        [InlineData("/assets/data.json")]
-        [InlineData("/assets/image.svg")]
-        [InlineData("/assets/image.png")]
-        [InlineData("/assets/image.jpeg")]
-        [InlineData("/scripts/site.js.map")]
-        public async Task GetHomePageAsync_ShouldReturnAssetFile_WhenRouteExists(string assetPath)
-        {
-            // Arrange
-            const string expectedRoute = "/";
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute))
-                .Returns(new LiquidRoute
-                {
-                    RouteTemplate = "/",
-                    LiquidTemplatePath = "index.liquid",
-                    FileProvider = _embeddedFileProvider // Not needed for this test
-                });
-
-            _htmlRendererMock
-                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync((string)null);
-
-
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
-            {
-                Route = $"{assetPath.Substring(1, assetPath.Length - 1)}",
-                QueryParams = new Dictionary<string, string>(),
-                Headers = new NameValueCollection()
-                {
-                    {"Referer", "http://localhost/"}
-                }
-            });
-
-            // Load expected CSS content from embedded file
-            var fileInfo = _embeddedFileProvider.GetFileInfo(assetPath);
-            var fileBytes = await fileInfo.GetFileContentsBytes();
-
-            // Assert
-            Assert.True(responseModel.StatusCode == (int)HttpStatusCode.OK);
-            Assert.Equal(fileBytes, responseModel.Content);
-        }
-
-        [Theory]
-        [InlineData("/styles/styles.css")]
-        [InlineData("/scripts/site.js")]
-        [InlineData("/assets/data.json")]
-        [InlineData("/assets/image.svg")]
-        [InlineData("/assets/image.png")]
-        [InlineData("/assets/image.jpeg")]
-        [InlineData("/scripts/site.js.map")]
-        public async Task GetHomePageAsync_ShouldReturnAssetFile_WhenReferrerSet_WhenRouteNotExists(string assetPath)
-        {
-            // Arrange
-            const string expectedRoute = "/";
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute))
-                .Returns((LiquidRoute)null);
-
-            _htmlRendererMock
-                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync((string)null);
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetFileProviderForAsset(It.IsAny<string>()))
-                .Returns(_embeddedFileProvider);
-
-
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
-            {
-                Route = $"{assetPath.Substring(1, assetPath.Length - 1)}",
-                QueryParams = new Dictionary<string, string>(),
-                Headers = new NameValueCollection()
-                {
-                    {"Referer", "http://localhost/"}
-                }
-            });
-
-            // Load expected CSS content from embedded file
-            var fileInfo = _embeddedFileProvider.GetFileInfo(assetPath);
-            var fileBytes = await fileInfo.GetFileContentsBytes();
-
-            // Assert
-            Assert.True(responseModel.StatusCode == (int)HttpStatusCode.OK);
-            Assert.Equal(fileBytes, responseModel.Content);
-        }
-
-        [Theory]
-        [InlineData("/styles/styles.css")]
-        [InlineData("/scripts/site.js")]
-        [InlineData("/assets/data.json")]
-        [InlineData("/assets/image.svg")]
-        [InlineData("/assets/image.png")]
-        [InlineData("/assets/image.jpeg")]
-        [InlineData("/scripts/site.js.map")]
-        public async Task GetHomePageAsync_ShouldReturnAssetFile_WhenNoRouteExists(string assetPath)
-        {
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetFileProviderForAsset(assetPath.TrimStart('/')))
-                .Returns(_embeddedFileProvider);
-
-            _htmlRendererMock
-                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync((string)null);
-
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
-            {
-                Route = $"{assetPath.Substring(1, assetPath.Length - 1)}",
-                QueryParams = new Dictionary<string, string>(),
-                Headers = new NameValueCollection()
-            });
-
-            // Load expected CSS content from embedded file
-            var fileInfo = _embeddedFileProvider.GetFileInfo(assetPath);
-            var fileBytes = await fileInfo.GetFileContentsBytes();
-
-            // Assert
-            Assert.True(responseModel.StatusCode == (int)HttpStatusCode.OK);
-            Assert.Equal(fileBytes, responseModel.Content);
-        }
-
         [Fact]
         public async Task HandleRequestAsync_ShouldReturnInternalServerError_WhenGeneralExceptionThrown_Doesnt_Exceed_CallStackLimit()
         {
@@ -244,7 +113,6 @@ namespace Kinetq.LiquidPages.Tests
             {
                 RouteTemplate = "/",
                 LiquidTemplatePath = "index.liquid",
-                FileProvider = null,
                 Execute = _ => throw expectedException
             };
 
@@ -258,7 +126,6 @@ namespace Kinetq.LiquidPages.Tests
                 {
                     RouteTemplate = "/",
                     LiquidTemplatePath = "503.liquid",
-                    FileProvider = null,
                     Execute = _ => throw expectedException
                 });
             // Act
@@ -283,7 +150,6 @@ namespace Kinetq.LiquidPages.Tests
             {
                 RouteTemplate = "/",
                 LiquidTemplatePath = "index.liquid",
-                FileProvider = null,
                 Execute = _ => throw expectedException
             };
 
@@ -298,8 +164,7 @@ namespace Kinetq.LiquidPages.Tests
                 .Returns(new LiquidRoute
                 {
                     RouteTemplate = "/",
-                    LiquidTemplatePath = "500.liquid",
-                    FileProvider = null
+                    LiquidTemplatePath = "500.liquid"
                 });
 
             _htmlRendererMock
@@ -333,7 +198,6 @@ namespace Kinetq.LiquidPages.Tests
             {
                 RouteTemplate = "/",
                 LiquidTemplatePath = "index.liquid",
-                FileProvider = null,
                 Execute = _ => throw expectedException
             };
 
@@ -344,8 +208,7 @@ namespace Kinetq.LiquidPages.Tests
                 .Returns(new LiquidRoute
                 {
                     RouteTemplate = "/",
-                    LiquidTemplatePath = "503.liquid",
-                    FileProvider = null
+                    LiquidTemplatePath = "503.liquid"
                 });
 
             _htmlRendererMock
