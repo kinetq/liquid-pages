@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 using EmbedIO;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
@@ -12,7 +11,6 @@ public class LiquidWebModule : WebModuleBase
 {
     public ILiquidResponseMiddleware LiquidResponseMiddleware { get; init; } = null!;
     public LiquidRoute? LiquidRoute { get; init; }
-    public Regex[] ExcludedPaths { get; set; } = [];
 
     public LiquidWebModule(string baseRoute) : base(baseRoute)
     {
@@ -22,11 +20,6 @@ public class LiquidWebModule : WebModuleBase
     {
         var request = context.Request;
         var response = context.Response;
-
-        if (ExcludedPaths.Any(x => x.IsMatch(request.Url.AbsolutePath)))
-        {
-            return;
-        }
 
         try
         {

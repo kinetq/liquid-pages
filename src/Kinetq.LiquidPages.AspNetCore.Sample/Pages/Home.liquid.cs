@@ -1,7 +1,6 @@
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 
 namespace Kinetq.LiquidPages.AspNetCore.Sample.Pages;
 
@@ -9,7 +8,7 @@ namespace Kinetq.LiquidPages.AspNetCore.Sample.Pages;
 /// Liquid page model for Home.
 /// This class is the code-behind for Home.liquid
 /// </summary>
-[LiquidPage("^/$", "Pages/Home.liquid")]
+[LiquidPage("/", "Pages/Home.liquid")]
 public class HomeModel : LiquidPageModel
 {
     private readonly ILogger<HomeModel> _logger;

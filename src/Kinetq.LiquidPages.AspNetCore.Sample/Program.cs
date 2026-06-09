@@ -14,6 +14,10 @@ using (var scope = app.Services.CreateScope())
     await startup.RegisterPageModels();
 }
 
+app.UseLiquidPagesErrorHandling();
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapLiquidPages();

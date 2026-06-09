@@ -1,5 +1,4 @@
 using EmbedIO;
-using EmbedIO.Routing;
 using Kinetq.LiquidPages.Interfaces;
 using System.Text.RegularExpressions;
 
@@ -19,15 +18,13 @@ public static class EmbedIOLiquidRoutingExtensions
             webServer.WithModule(new LiquidWebModule(route.RouteTemplate)
             {
                 LiquidResponseMiddleware = middleware,
-                LiquidRoute = route,
-                ExcludedPaths = excludedPaths ?? []
+                LiquidRoute = route
             });
         }
 
         webServer.WithModule(new LiquidWebModule("/")
         {
-            LiquidResponseMiddleware = middleware,
-            ExcludedPaths = excludedPaths ?? []
+            LiquidResponseMiddleware = middleware
         });
 
         return webServer;

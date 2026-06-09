@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ view_model.title }}</title>
+    <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
-    <h1>{{ title }}</h1>
-    <p>Your LiquidPages AspNetCore sample is running.</p>
+    <main>
+        <h1>{{ view_model.title }}</h1>
+        <p>Your LiquidPages AspNetCore sample is running.</p>
+    </main>
 </body>
 </html>

@@ -1,20 +1,20 @@
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
 
-namespace NAMESPACE_PLACEHOLDER.Pages;
+namespace Kinetq.LiquidPages.GenHTTP.Sample.Pages;
 
 /// <summary>
-/// Liquid page model for NewPage.
-/// This class is the code-behind for NewPage.liquid
+/// Liquid page model for ContactUs.
+/// This class is the code-behind for ContactUs.liquid
 /// </summary>
-[LiquidPage("/{{RoutePath}}", "Pages/{{Name}}.liquid")]
-public class NewPageModel : LiquidPageModel
+[LiquidPage("/test/contact-us", "Pages/ContactUs.liquid")]
+public class ContactUsModel : LiquidPageModel
 {
     // Add your model properties here
     // Properties will be available in the .liquid template using snake_case naming
     // Example: {{ view_model.title }}
 
-    public string Title { get; set; } = "Welcome to NewPage";
+    public string Title { get; set; } = "Welcome to ContactUs";
 
     public override Task OnGetAsync(LiquidRequestModel request)
     {

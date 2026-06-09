@@ -8,7 +8,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample.Pages;
 /// Liquid page model for Home.
 /// This class is the code-behind for Home.liquid
 /// </summary>
-[LiquidPage("^/$", "Pages/Home.liquid")]
+[LiquidPage("/", "Pages/Home.liquid")]
 public class HomeModel : LiquidPageModel
 {
     private readonly ILogger<HomeModel> _logger;
