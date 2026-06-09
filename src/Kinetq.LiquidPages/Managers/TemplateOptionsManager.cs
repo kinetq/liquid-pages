@@ -18,14 +18,15 @@ public class TemplateOptionsManager : ITemplateOptionsManager
         _filterManager = filterManager;
     }
 
-    public IDictionary<string, TemplateOptions> TemplateOptionsMap => 
+    public IDictionary<string, TemplateOptions> TemplateOptionsMap =>
         _templateOptionsMap.Value
             .OrderByDescending(x => x.Key.Length)
             .ToDictionary();
 
     public void RegisterTemplateOptions(string prefix, IFileProvider fileProvider)
     {
-        if (TemplateOptionsMap.TryGetValue(prefix, out var templateOptions))
+
+        if (_templateOptionsMap.Value.TryGetValue(prefix, out var templateOptions))
         {
             return;
         }
@@ -48,18 +49,23 @@ public class TemplateOptionsManager : ITemplateOptionsManager
         {
             options.Filters.AddFilter(filterDelegate.Key, filterDelegate.Value);
         }
-        
-        TemplateOptionsMap.Add(prefix, options);
+
+        _templateOptionsMap.Value.Add(prefix, options);
     }
 
     public TemplateOptions GetTemplateOptions(string path)
     {
+        if (string.IsNullOrEmpty(path))
+        {
+            path = "/";
+        }
+
         foreach (var templateOptionsMap in TemplateOptionsMap)
         {
             if (path.StartsWith(templateOptionsMap.Key, StringComparison.OrdinalIgnoreCase))
                 return templateOptionsMap.Value;
         }
-        
+
         return null;
     }
 }

@@ -3,6 +3,7 @@ using EmbedIO.Files;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
 namespace Kinetq.LiquidPages.EmbedIO.Sample
@@ -19,6 +20,9 @@ namespace Kinetq.LiquidPages.EmbedIO.Sample
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
             await startup.RegisterPageModels();
+            string workingDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            startup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
 
             var webServer = new WebServer("http://*:5662");
             
