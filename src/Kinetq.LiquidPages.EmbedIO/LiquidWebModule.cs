@@ -1,22 +1,36 @@
-﻿using System.Text;
+﻿using System.Net;
 using EmbedIO;
+using EmbedIO.Routing;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.AspNetCore.Routing;
+using System.Text;
 
 namespace Kinetq.LiquidPages.EmbedIO;
 
-public class LiquidWebModule : WebModuleBase
+public class LiquidWebModule : RoutingModuleBase
 {
     public ILiquidResponseMiddleware LiquidResponseMiddleware { get; init; } = null!;
-    public LiquidRoute? LiquidRoute { get; init; }
 
-    public LiquidWebModule(string baseRoute) : base(baseRoute)
+    public LiquidWebModule(string baseRoute, ILiquidRoutesManager routesManager) : base(baseRoute)
     {
+        foreach (var liquidRoute in routesManager.LiquidRoutes)
+        {
+            if (string.IsNullOrWhiteSpace(liquidRoute.RouteTemplate))
+            {
+                continue;
+            }
+
+            var matcher = RouteMatcher.Parse(liquidRoute.RouteTemplate, false);
+            AddHandler(HttpVerbs.Any, matcher, (context, routeMatch) => HandleLiquidRequestAsync(context, liquidRoute, routeMatch));
+        }
     }
 
-    protected override async Task OnRequestAsync(IHttpContext context)
+    protected override Task OnPathNotFoundAsync(IHttpContext context)
+        => HandleLiquidRequestAsync(context, null, null);
+
+    private async Task HandleLiquidRequestAsync(IHttpContext context, LiquidRoute? liquidRoute, RouteMatch? routeMatch)
     {
         var request = context.Request;
         var response = context.Response;
@@ -29,16 +43,13 @@ public class LiquidWebModule : WebModuleBase
                 QueryParams = request.Url.Query.GetQueryParams(),
                 Headers = request.Headers,
                 Method = request.HttpMethod,
-                LiquidRoute = LiquidRoute
+                LiquidRoute = liquidRoute,
+                ErrorStatusCode = liquidRoute == null && routeMatch == null ? (int?)HttpStatusCode.NotFound : null
             };
 
-            if (liquidRequest.LiquidRoute != null)
+            if (liquidRequest.LiquidRoute != null && routeMatch != null)
             {
-                var match = MatchUrlPath(request.Url.AbsolutePath);
-                if (match != null)
-                {
-                    liquidRequest.LiquidRoute.RouteValues = new RouteValueDictionary(match.Pairs);
-                }
+                liquidRequest.LiquidRoute.RouteValues = new RouteValueDictionary(routeMatch.Pairs);
             }
 
             if (request.HasEntityBody)
@@ -70,5 +81,5 @@ public class LiquidWebModule : WebModuleBase
         }
     }
 
-    public override bool IsFinalHandler => false;
+    public override bool IsFinalHandler => true;
 }

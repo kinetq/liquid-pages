@@ -1,12 +1,11 @@
 ﻿using EmbedIO;
-using Kinetq.LiquidPages.EmbedIO;
+using EmbedIO.Files;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 
-namespace Kinetq.LiquidPages.Sample
+namespace Kinetq.LiquidPages.EmbedIO.Sample
 { public class Program
     {
         static void Main(string[] args)
@@ -22,14 +21,15 @@ namespace Kinetq.LiquidPages.Sample
             await startup.RegisterPageModels();
 
             var webServer = new WebServer("http://*:5662");
+            
+            var staticFolderPath = Path.Combine(AppContext.BaseDirectory, "Static");
+            webServer.WithStaticFolder("/Static", staticFolderPath, true, m => m
+                .WithContentCaching());
+
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
             var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
-            var excludedPaths = new Regex[]
-            {
-                new Regex("^/api/.*")
-            };
+            webServer.WithLiquidPages(middleware, routesManager);
 
-            webServer.WithLiquidPages(middleware, routesManager, excludedPaths);
 
             await webServer.RunAsync();
         }

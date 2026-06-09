@@ -1,8 +1,8 @@
+using System.Net;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
-using System.Net;
 
-namespace Kinetq.LiquidPages.Sample.ErrorPages;
+namespace Kinetq.LiquidPages.EmbedIO.Sample.ErrorPages;
 
 /// <summary>
 /// Liquid page model for NotFound.

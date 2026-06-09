@@ -6,6 +6,8 @@ using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Moq;
+using Kinetq.LiquidPages.Managers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Kinetq.LiquidPages.EmbedIO.Tests
@@ -21,7 +23,8 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
         public async Task InitializeAsync()
         {
             _mockLiquidResponseMiddleware = new Mock<ILiquidResponseMiddleware>();
-            _liquidWebModule = new LiquidWebModule("/")
+            var routesManager = new LiquidRoutesManager(new NullLogger<LiquidRoutesManager>());
+            _liquidWebModule = new LiquidWebModule("/", routesManager)
             {
                 LiquidResponseMiddleware = _mockLiquidResponseMiddleware.Object
             };
