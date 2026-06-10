@@ -88,7 +88,7 @@ public class HtmlRendererTests : IAsyncLifetime
             QueryParams = new Dictionary<string, string>()
         };
 
-        string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
         Assert.NotNull(html);
     }
 
@@ -107,7 +107,7 @@ public class HtmlRendererTests : IAsyncLifetime
             QueryParams = new Dictionary<string, string>()
         };
 
-        string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
         Assert.NotNull(html);
     }
 

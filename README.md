@@ -3,7 +3,6 @@
 ![NuGet Downloads](https://img.shields.io/nuget/dt/Kinetq.LiquidPages)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/kinetq/liquid-pages)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kinetq/liquid-pages)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/kinetq/liquid-pages)
 [![View - Documentation](https://img.shields.io/badge/view-Documentation-AB54FF)](https://www.kinetq.com/docs/open-source-software/liquid-pages)
 <p align="center">
   <img src="src/Kinetq.LiquidPages.Extension/Images/Logo.png" alt="App Dashboard" width="150">
@@ -34,21 +33,30 @@ nuget add Kinetq.LiquidPages
 services.AddLiquidPages();
 ```
 
-### 3. Register routes and filters at startup
+### 3. Register routes, filters, and template file providers at startup
 
 Inject `ILiquidStartup` and call the registration methods during your application's startup phase:
 
 ```csharp
 await _liquidStartup.RegisterPageModels();
 await _liquidStartup.RegisterFilters();
+_liquidStartup.RegisterFileProvider("/", fileProvider);
 ```
+
+`RegisterFileProvider` is how template options are now registered for each route prefix. This is required so LiquidPages can resolve templates from the correct source (physical files, embedded files, etc.).
+
+See the sample projects for concrete startup usage:
+
+- `src/Kinetq.LiquidPages.AspNetCore.Sample/Program.cs`
+- `src/Kinetq.LiquidPages.EmbedIO.Sample/Program.cs`
+- `src/Kinetq.LiquidPages.GenHTTP.Sample/Program.cs`
 
 ### 4. Create a page model
 
 Decorate your page model with `[LiquidPage]`, providing a route regex and template path:
 
 ```csharp
-[LiquidPage("^/$", "Pages/Home.liquid")]
+[LiquidPage("/", "Pages/Home.liquid")]
 public class HomeModel : LiquidPageModel
 {
     public string Title { get; set; } = "Welcome to Home";
@@ -74,7 +82,7 @@ Properties on the page model are available in the template via the `view_model` 
 
 ### 6. Wire up middleware
 
-#### GenHTTP
+#### GenHTTP middleware
 
 Install the GenHTTP companion package:
 
@@ -82,42 +90,45 @@ Install the GenHTTP companion package:
 dotnet add package Kinetq.LiquidPages.GenHTTP
 ```
 
-Resolve `ILiquidResponseMiddleware` from your container and pass it to `LiquidHandlerBuilder`:
+Resolve `ILiquidResponseMiddleware` and `ILiquidRoutesManager` from your container and pass both to `LiquidHandlerBuilder`:
 
 ```csharp
 var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
 
 await Host.Create()
-          .Handler(new LiquidHandlerBuilder(middleware))
+          .Handler(new LiquidHandlerBuilder(middleware, routesManager))
           .Bind(IPAddress.Any, 8080)
           .RunAsync();
 ```
 
 `LiquidHandlerBuilder` implements `IHandlerBuilder<LiquidHandlerBuilder>`, so you can attach any GenHTTP concern (compression, caching, CORS, etc.) before the handler is built. See the [full GenHTTP documentation](docs/genhttp-liquid-pages.md) for a complete walkthrough.
 
-#### EmbedIO
+#### EmbedIO middleware
 
-Install the EmbedIO companion package and add the module to your web server:
+Install the EmbedIO companion package and attach LiquidPages to your `WebServer`:
 
 ```powershell
 dotnet add package Kinetq.LiquidPages.EmbedIO
 ```
 
 ```csharp
-var liquidWebModule = new LiquidWebModule("/")
-{
-    LiquidResponseMiddleware = _liquidResponseMiddleware,
-    ExcludedPaths = new Regex[]
-    {
-        new Regex("^/api/.*"),
-        new Regex("^/static/.*")
-    }
-};
+var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
 
-webServer.WithModule(liquidWebModule);
+webServer.WithLiquidPages(middleware, routesManager);
 ```
 
-#### ASP.NET Core
+If you need lower-level control, `LiquidWebModule` now takes `ILiquidRoutesManager` in its constructor:
+
+```csharp
+webServer.WithModule(new LiquidWebModule("/", routesManager)
+{
+    LiquidResponseMiddleware = middleware
+});
+```
+
+#### ASP.NET Core middleware
 
 Install the ASP.NET Core companion package:
 
@@ -125,7 +136,7 @@ Install the ASP.NET Core companion package:
 dotnet add package Kinetq.LiquidPages.AspNetCore
 ```
 
-Register LiquidPages services and initialize page models in `Program.cs`, then add the middleware to the pipeline:
+Register LiquidPages services, initialize startup registrations, and map LiquidPages endpoints:
 
 ```csharp
 using Kinetq.LiquidPages.AspNetCore;
@@ -142,9 +153,18 @@ using (var scope = app.Services.CreateScope())
 {
     var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
     await startup.RegisterPageModels();
+    await startup.RegisterFilters();
+
+    string workingDirectory = Directory.GetCurrentDirectory();
+    startup.RegisterFileProvider("/", new PhysicalFileProvider(workingDirectory));
 }
 
-app.UseLiquidPages();
+app.UseLiquidPagesErrorHandling();
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapLiquidPages();
+});
 
 await app.RunAsync();
 ```
