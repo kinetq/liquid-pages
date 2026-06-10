@@ -6,6 +6,8 @@ using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Moq;
+using Kinetq.LiquidPages.Managers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Kinetq.LiquidPages.EmbedIO.Tests
@@ -21,7 +23,8 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
         public async Task InitializeAsync()
         {
             _mockLiquidResponseMiddleware = new Mock<ILiquidResponseMiddleware>();
-            _liquidWebModule = new LiquidWebModule("/")
+            var routesManager = new LiquidRoutesManager(new NullLogger<LiquidRoutesManager>());
+            _liquidWebModule = new LiquidWebModule("/", routesManager)
             {
                 LiquidResponseMiddleware = _mockLiquidResponseMiddleware.Object
             };
@@ -146,48 +149,6 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             var response = await httpClient.GetAsync(_urlPrefix);
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task WebServer_ShouldNotCallHandleRequestAsync_WhenPathIsExcluded()
-        {
-            _liquidWebModule.ExcludedPaths = new[] { new Regex("^/excluded$") };
-
-            _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()))
-                .ReturnsAsync(new LiquidResponseModel()
-                {
-                    Content = Encoding.UTF8.GetBytes("<h1>Should Not Reach</h1>")
-                });
-
-            using var httpClient = new HttpClient();
-
-            var response = await httpClient.GetAsync($"{_urlPrefix}excluded");
-
-            _mockLiquidResponseMiddleware.Verify(
-                m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()),
-                Times.Never);
-        }
-
-        [Fact]
-        public async Task WebServer_ShouldCallHandleRequestAsync_WhenPathIsNotExcluded()
-        {
-            _liquidWebModule.ExcludedPaths = new[] { new Regex("/excluded") };
-
-            _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()))
-                .ReturnsAsync(new LiquidResponseModel()
-                {
-                    Content = Encoding.UTF8.GetBytes("<h1>Page Found</h1>")
-                });
-
-            using var httpClient = new HttpClient();
-
-            var response = await httpClient.GetAsync($"{_urlPrefix}not-excluded");
-
-            _mockLiquidResponseMiddleware.Verify(
-                m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()),
-                Times.Once);
         }
 
         public Task DisposeAsync()

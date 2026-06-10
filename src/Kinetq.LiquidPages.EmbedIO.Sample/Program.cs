@@ -1,12 +1,12 @@
 ﻿using EmbedIO;
-using Kinetq.LiquidPages.EmbedIO;
+using EmbedIO.Files;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 
-namespace Kinetq.LiquidPages.Sample
+namespace Kinetq.LiquidPages.EmbedIO.Sample
 { public class Program
     {
         static void Main(string[] args)
@@ -20,16 +20,20 @@ namespace Kinetq.LiquidPages.Sample
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
             await startup.RegisterPageModels();
+            string workingDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            startup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
 
             var webServer = new WebServer("http://*:5662");
-            webServer.WithModule(new LiquidWebModule("/")
-            {
-                LiquidResponseMiddleware = serviceProvider.GetService<ILiquidResponseMiddleware>(),
-                ExcludedPaths = new Regex[]
-                {
-                    new Regex("^/api/.*")
-                }
-            });
+            
+            var staticFolderPath = Path.Combine(AppContext.BaseDirectory, "Static");
+            webServer.WithStaticFolder("/Static", staticFolderPath, true, m => m
+                .WithContentCaching());
+
+            var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+            var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
+            webServer.WithLiquidPages(middleware, routesManager);
+
 
             await webServer.RunAsync();
         }

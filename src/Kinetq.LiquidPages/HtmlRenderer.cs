@@ -10,24 +10,28 @@ namespace Kinetq.LiquidPages;
 public class HtmlRenderer : IHtmlRenderer
 {
     private readonly IFluidParserManager _fluidParserManager;
-    private readonly ILiquidFilterManager _liquidFilterManager;
-    private readonly ILiquidRegisteredTypesManager _liquidRegisteredTypesManager;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly ITemplateOptionsManager _templateOptionsManager;
 
-    public HtmlRenderer(IFluidParserManager fluidParserManager, ILiquidFilterManager liquidFilterManager, ILiquidRegisteredTypesManager liquidRegisteredTypesManager)
+    public HtmlRenderer(
+        IFluidParserManager fluidParserManager,
+        ILiquidTemplateManager liquidTemplateManager, 
+        ITemplateOptionsManager templateOptionsManager)
     {
         _fluidParserManager = fluidParserManager;
-        _liquidFilterManager = liquidFilterManager;
-        _liquidRegisteredTypesManager = liquidRegisteredTypesManager;
+        _liquidTemplateManager = liquidTemplateManager;
+        _templateOptionsManager = templateOptionsManager;
     }
 
-    public async Task<string> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute)
+    public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute? liquidRoute)
     {
         if (liquidRoute == null)
         {
             return null;
         }
 
-        var fileInfo = liquidRoute.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+        var options = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
+        var fileInfo = options.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
         if (!fileInfo.Exists)
         {
             return null;
@@ -35,44 +39,34 @@ public class HtmlRenderer : IHtmlRenderer
 
         string liquidTemplate = await fileInfo.GetFileContents();
 
+        _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplate, out var cachedTemplate);
         var parser = _fluidParserManager.FluidParser;
-        if (parser.TryParse(liquidTemplate, out IFluidTemplate fluidTemplate, out string error))
+        if (cachedTemplate == null && parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
         {
-            var options = new TemplateOptions
+            if (!string.IsNullOrEmpty(error))
             {
-                FileProvider = liquidRoute.FileProvider,
-                MemberAccessStrategy = new DefaultMemberAccessStrategy()
-                {
-                    MemberNameStrategy = MemberNameStrategies.SnakeCase
-                }
-            };
-
-            foreach (var registeredType in _liquidRegisteredTypesManager.RegisteredTypes)
-            {
-                options.MemberAccessStrategy.Register(registeredType);
+                throw new LiquidSyntaxException(error);
             }
 
-            foreach (var filterDelegate in _liquidFilterManager.LiquidFilters)
-            {
-                options.Filters.AddFilter(filterDelegate.Key, filterDelegate.Value);
-            }
-
-            var templateContext = new TemplateContext(renderModel, options);
-
-            string html = await fluidTemplate.RenderAsync(templateContext);
-
-            // Validate HTML using HtmlAgilityPack
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
-
-            if (htmlDoc.ParseErrors != null && htmlDoc.ParseErrors.Any())
-            {
-                throw new HtmlSyntaxException(htmlDoc.ParseErrors);
-            }
-
-            return html;
+            cachedTemplate = template;
+            _liquidTemplateManager.RegisterTemplate(liquidTemplate, cachedTemplate);
         }
 
-        throw new LiquidSyntaxException(error);
+        var templateContext = new TemplateContext(renderModel, options);
+        string html = await cachedTemplate.RenderAsync(templateContext);
+
+#if DEBUG
+        // Validate HTML using HtmlAgilityPack
+        var htmlDoc = new HtmlDocument();
+        htmlDoc.LoadHtml(html);
+
+        if (htmlDoc.ParseErrors != null && htmlDoc.ParseErrors.Any())
+        {
+            throw new HtmlSyntaxException(htmlDoc.ParseErrors);
+        }
+#endif
+
+
+        return html;
     }
 }

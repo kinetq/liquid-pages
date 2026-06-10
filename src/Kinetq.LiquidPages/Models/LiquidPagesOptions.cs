@@ -7,6 +7,6 @@ public class LiquidPagesOptions
 
 public class PageRoute
 {
-    public string Route { get; set; }
+    public string RouteTemplate { get; set; }
     public Type PageType { get; set; }
 }

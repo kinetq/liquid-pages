@@ -1,9 +1,10 @@
-﻿using System.Net;
-using GenHTTP.Engine.Internal;
+﻿using GenHTTP.Engine.Internal;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace Kinetq.LiquidPages.GenHTTP.Sample
 {
@@ -20,11 +21,15 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
             await startup.RegisterPageModels();
+            string workingDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            startup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
 
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+            var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
 
             var server = await Host.Create()
-                 .Handler(new LiquidHandlerBuilder(middleware))
+                 .Handler(new LiquidHandlerBuilder(middleware, routesManager))
                  .Bind(IPAddress.Any, 8080)
                  .RunAsync();
         }

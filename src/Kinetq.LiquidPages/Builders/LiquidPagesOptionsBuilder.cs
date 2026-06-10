@@ -10,13 +10,13 @@ public class LiquidPagesOptionsBuilder
     {
         _liquidPagesOptions.PageRoutes.Add(new PageRoute()
         {
-            Route = route,
+            RouteTemplate = route,
             PageType = pageType
         });
         return this;
     }
 
-    public LiquidPagesOptions Build()
+     internal LiquidPagesOptions Build()
     {
         return _liquidPagesOptions;
     }

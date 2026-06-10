@@ -15,6 +15,8 @@ public static class ServiceCollectionHelpers
         serviceCollection.AddSingleton<ILiquidRegisteredTypesManager, LiquidRegisteredTypesManager>();
         serviceCollection.AddSingleton<ILiquidRoutesManager, LiquidRoutesManager>();
         serviceCollection.AddSingleton<IFluidParserManager, FluidParserManager>();
+        serviceCollection.AddSingleton<ILiquidTemplateManager, LiquidTemplateManager>();
+        serviceCollection.AddSingleton<ITemplateOptionsManager, TemplateOptionsManager>();
         serviceCollection.AddScoped<IHtmlRenderer, HtmlRenderer>();
         serviceCollection.AddScoped<ILiquidResponseMiddleware, LiquidResponseMiddleware>();
         serviceCollection.AddScoped<ILiquidStartup, LiquidStartup>();
