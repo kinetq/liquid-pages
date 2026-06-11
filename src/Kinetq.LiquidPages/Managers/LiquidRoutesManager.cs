@@ -1,10 +1,7 @@
 ﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using Microsoft.AspNetCore.Routing;
 
 namespace Kinetq.LiquidPages.Managers;
 
@@ -54,27 +51,5 @@ public class LiquidRoutesManager : ILiquidRoutesManager
     {
         _errorRoutes.Value.TryGetValue((int)statusCode, out var route);
         return route;
-    }
-
-    public LiquidRoute? GetRouteForPath(string path, out RouteValueDictionary routeValues)
-    {
-        PathString requestPath = new PathString(path);
-        routeValues = new RouteValueDictionary();
-        LiquidRoute? liquidRoute = null;
-        foreach (var route in LiquidRoutes)
-        {
-            RouteTemplate parsedTemplate = TemplateParser.Parse(route.RouteTemplate);
-            var defaults = new RouteValueDictionary();
-            var matcher = new TemplateMatcher(parsedTemplate, defaults);
-            var matchedRouteValues = new RouteValueDictionary();
-            if (matcher.TryMatch(requestPath, matchedRouteValues))
-            {
-                liquidRoute = route;
-                routeValues = matchedRouteValues;
-                break;
-            }
-        }
-
-        return liquidRoute;
     }
 }

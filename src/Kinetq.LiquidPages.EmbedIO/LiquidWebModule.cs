@@ -49,7 +49,7 @@ public class LiquidWebModule : RoutingModuleBase
 
             if (routeMatch != null)
             {
-                liquidRequest.RouteValues = new RouteValueDictionary(routeMatch.Pairs);
+                liquidRequest.RouteValues = (IDictionary<string, object?>)routeMatch.Pairs.ToDictionary();
             }
 
             if (request.HasEntityBody)

@@ -43,7 +43,7 @@ public static class ApplicationBuilderExtensions
                 LiquidRoute = context.GetEndpoint()?.Metadata.GetMetadata<LiquidRoute>()
             };
 
-            liquidRequest.RouteValues = context.Request.RouteValues;
+            liquidRequest.RouteValues = context.Request.RouteValues.ToDictionary();
 
             const string errorPrefix = "/__liquid-error/";
             if (liquidRequest.Route.StartsWith(errorPrefix, StringComparison.OrdinalIgnoreCase))

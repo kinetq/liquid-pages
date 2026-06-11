@@ -14,6 +14,10 @@
     <ProjectReference Include="..\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
 	<PropertyGroup>
 		<Version>0.0.2</Version>
 		<RepositoryUrl>https://github.com/kinetq/liquid-pages</RepositoryUrl>

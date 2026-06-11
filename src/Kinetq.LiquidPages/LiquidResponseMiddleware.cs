@@ -3,7 +3,6 @@ using System.Text;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -42,14 +41,12 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
             return await GetErrorRouteResponse(requestedStatusCode, renderModel, request);
         }
 
-        RouteValueDictionary routeValues = request.RouteValues;
         LiquidRoute? liquidRoute = request.LiquidRoute;
         if (liquidRoute == null)
         {
-            liquidRoute = _liquidRoutesManager.GetRouteForPath(request.Route, out routeValues);
+            return await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request);
         }
 
-        request.RouteValues = routeValues;
         HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request);
         if (statusCode != null && (int)statusCode.Value >= 400)
         {

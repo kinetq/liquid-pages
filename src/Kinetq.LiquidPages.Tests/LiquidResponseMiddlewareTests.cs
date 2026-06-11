@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -42,15 +41,11 @@ namespace Kinetq.LiquidPages.Tests
             // Arrange
             const string expectedRoute = "/";
             const string expectedRenderedHtml = "<html><body>Welcome to Home Page</body></html>";
-            var matchedRouteValues = new RouteValueDictionary();
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute, out matchedRouteValues))
-                .Returns(new LiquidRoute
-                {
-                    RouteTemplate = "/",
-                    LiquidTemplatePath = "index.liquid"
-                });
+            var liquidRoute = new LiquidRoute
+            {
+                RouteTemplate = "/",
+                LiquidTemplatePath = "index.liquid"
+            };
 
             _htmlRendererMock
                 .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
@@ -60,6 +55,7 @@ namespace Kinetq.LiquidPages.Tests
             var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
+                LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
             });
 
@@ -85,9 +81,8 @@ namespace Kinetq.LiquidPages.Tests
                 });
 
             _htmlRendererMock
-                .SetupSequence(x => 
+                .Setup(x =>
                     x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync((string)null) // First call returns null to simulate not found
                 .ReturnsAsync(expectedRenderedHtml);
 
             // Act
@@ -117,11 +112,6 @@ namespace Kinetq.LiquidPages.Tests
                 LiquidTemplatePath = "index.liquid",
                 Execute = _ => throw expectedException
             };
-            var matchedRouteValues = new RouteValueDictionary();
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute, out matchedRouteValues))
-                .Returns(liquidRoute);
 
             _liquidRoutesManagerMock
                 .Setup(x => x.GetRouteForStatusCode(HttpStatusCode.InternalServerError))
@@ -135,6 +125,7 @@ namespace Kinetq.LiquidPages.Tests
             var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
+                LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
             });
 
@@ -155,11 +146,6 @@ namespace Kinetq.LiquidPages.Tests
                 LiquidTemplatePath = "index.liquid",
                 Execute = _ => throw expectedException
             };
-            var matchedRouteValues = new RouteValueDictionary();
-
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute, out matchedRouteValues))
-                .Returns(liquidRoute);
 
             const string expectedRenderedHtml = "<html><body>Unhandled Exception</body></html>";
 
@@ -181,6 +167,7 @@ namespace Kinetq.LiquidPages.Tests
             var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
+                LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
             });
 
@@ -204,7 +191,6 @@ namespace Kinetq.LiquidPages.Tests
                 LiquidTemplatePath = "index.liquid",
                 Execute = _ => throw expectedException
             };
-            var matchedRouteValues = new RouteValueDictionary();
 
             const string expectedRenderedHtml = "<html><body>Service Unavailable</body></html>";
 
@@ -220,14 +206,11 @@ namespace Kinetq.LiquidPages.Tests
                 .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
                 .ReturnsAsync(expectedRenderedHtml);
 
-            _liquidRoutesManagerMock
-                .Setup(x => x.GetRouteForPath(expectedRoute, out matchedRouteValues))
-                .Returns(liquidRoute);
-
             // Act
             var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
+                LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
             });
 
