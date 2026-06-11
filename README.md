@@ -38,8 +38,8 @@ services.AddLiquidPages();
 Inject `ILiquidStartup` and call the registration methods during your application's startup phase:
 
 ```csharp
-await _liquidStartup.RegisterPageModels();
-await _liquidStartup.RegisterFilters();
+_liquidStartup.RegisterPageModels();
+_liquidStartup.RegisterFilters();
 _liquidStartup.RegisterFileProvider("/", fileProvider);
 ```
 

@@ -37,16 +37,16 @@ public class LiquidStartup : ILiquidStartup
         _templateOptionsManager.RegisterTemplateOptions(prefix, fileProvider);
     }
 
-    public async Task RegisterFilters()
+    public void RegisterFilters()
     {
         foreach (var liquidFilter in _liquidFilters)
         {
-            var filter = await liquidFilter.GetFilter();
+            var filter = liquidFilter.GetFilter();
             _liquidFilterManager.RegisterFilter(filter.Name, filter.FilterDelegate);
         }
     }
 
-    public async Task RegisterPageModels(Action<LiquidPagesOptionsBuilder> buildOptionsAction)
+    public void RegisterPageModels(Action<LiquidPagesOptionsBuilder> buildOptionsAction)
     {
         var optionsBuilder = new LiquidPagesOptionsBuilder();
         buildOptionsAction(optionsBuilder);
@@ -84,10 +84,10 @@ public class LiquidStartup : ILiquidStartup
             });
         }
 
-        await RegisterPageModels();
+        RegisterPageModels();
     }
 
-    public async Task RegisterPageModels()
+    public void RegisterPageModels()
     {
         foreach (var liquidPageModel in _liquidPageModels)
         {

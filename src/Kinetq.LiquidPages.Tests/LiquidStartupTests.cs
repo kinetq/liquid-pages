@@ -60,15 +60,15 @@ public class LiquidStartupTests
         var filterDelegate2 = new FilterDelegate((input, args, tmpl) => new ValueTask<FluidValue>());
         var filterDelegate3 = new FilterDelegate((input, args, tmpl) => new ValueTask<FluidValue>());
 
-        mockFilter1.Setup(f => f.GetFilter()).ReturnsAsync(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
-        mockFilter2.Setup(f => f.GetFilter()).ReturnsAsync(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
-        mockFilter3.Setup(f => f.GetFilter()).ReturnsAsync(new LiquidFilter { Name = "trim", FilterDelegate = filterDelegate3 });
+        mockFilter1.Setup(f => f.GetFilter()).Returns(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
+        mockFilter2.Setup(f => f.GetFilter()).Returns(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
+        mockFilter3.Setup(f => f.GetFilter()).Returns(new LiquidFilter { Name = "trim", FilterDelegate = filterDelegate3 });
 
         var filters = new List<ILiquidFilter> { mockFilter1.Object, mockFilter2.Object, mockFilter3.Object };
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterFilters();
+        _liquidStartup.RegisterFilters();
 
         // Assert
         mockFilter1.Verify(f => f.GetFilter(), Times.Once);
@@ -86,14 +86,14 @@ public class LiquidStartupTests
         var filterDelegate1 = new FilterDelegate((input, args, tmpl) => new ValueTask<FluidValue>());
         var filterDelegate2 = new FilterDelegate((input, args, tmpl) => new ValueTask<FluidValue>());
 
-        mockFilter1.Setup(f => f.GetFilter()).ReturnsAsync(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
-        mockFilter2.Setup(f => f.GetFilter()).ReturnsAsync(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
+        mockFilter1.Setup(f => f.GetFilter()).Returns(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
+        mockFilter2.Setup(f => f.GetFilter()).Returns(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
 
         var filters = new List<ILiquidFilter> { mockFilter1.Object, mockFilter2.Object };
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterFilters();
+        _liquidStartup.RegisterFilters();
 
         // Assert
         _liquidFilterManagerMock.Verify(m => m.RegisterFilter("uppercase", filterDelegate1), Times.Once);
@@ -108,7 +108,7 @@ public class LiquidStartupTests
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterFilters();
+        _liquidStartup.RegisterFilters();
 
         // Assert
         _liquidFilterManagerMock.Verify(m => m.RegisterFilter(It.IsAny<string>(), It.IsAny<FilterDelegate>()), Times.Never);
@@ -121,13 +121,13 @@ public class LiquidStartupTests
         var mockFilter = new Mock<ILiquidFilter>();
         var expectedException = new InvalidOperationException("Filter exception");
 
-        mockFilter.Setup(f => f.GetFilter()).ThrowsAsync(expectedException);
+        mockFilter.Setup(f => f.GetFilter()).Throws(expectedException);
 
         var filters = new List<ILiquidFilter> { mockFilter.Object };
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _liquidStartup.RegisterFilters());
+        var exception = Assert.Throws<InvalidOperationException>(() => _liquidStartup.RegisterFilters());
         exception.Should().Be(expectedException);
     }
 
@@ -144,10 +144,10 @@ public class LiquidStartupTests
 
         mockFilter1.Setup(f => f.GetFilter())
             .Callback(() => callOrder.Add("filter1"))
-            .ReturnsAsync(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
+            .Returns(new LiquidFilter { Name = "uppercase", FilterDelegate = filterDelegate1 });
         mockFilter2.Setup(f => f.GetFilter())
             .Callback(() => callOrder.Add("filter2"))
-            .ReturnsAsync(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
+            .Returns(new LiquidFilter { Name = "lowercase", FilterDelegate = filterDelegate2 });
 
         _liquidFilterManagerMock.Setup(m => m.RegisterFilter("uppercase", filterDelegate1))
             .Callback(() => callOrder.Add("registerfilter1"));
@@ -158,7 +158,7 @@ public class LiquidStartupTests
         _liquidFiltersMock.Setup(f => f.GetEnumerator()).Returns(filters.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterFilters();
+        _liquidStartup.RegisterFilters();
 
         // Assert
         callOrder.Should().Equal("filter1", "registerfilter1", "filter2", "registerfilter2");
@@ -217,7 +217,7 @@ public class LiquidStartupTests
         _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         // Assert
         _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Exactly(2));
@@ -234,10 +234,7 @@ public class LiquidStartupTests
 
         string customRoutePattern = "/test-1-1";
         // Act
-        await _liquidStartup.RegisterPageModels((options) =>
-        {
-            options.AddPageRoute(typeof(TestPageModel3), customRoutePattern);
-        });
+        _liquidStartup.RegisterPageModels((options) => { options.AddPageRoute(typeof(TestPageModel3), customRoutePattern); });
 
         // Assert
         _liquidRoutesManagerMock.Verify(m => 
@@ -258,10 +255,7 @@ public class LiquidStartupTests
 
         string customRoutePattern = "/test-1-1";
         // Act
-        await _liquidStartup.RegisterPageModels((options) =>
-        {
-            options.AddPageRoute(typeof(TestPageModel1), customRoutePattern);
-        });
+        _liquidStartup.RegisterPageModels((options) => { options.AddPageRoute(typeof(TestPageModel1), customRoutePattern); });
 
         // Assert
         _liquidRoutesManagerMock.Verify(m =>
@@ -283,7 +277,7 @@ public class LiquidStartupTests
             .Callback<LiquidRoute>(r => registeredRoute = r);
 
         // Act
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         // Assert
         registeredRoute.Should().NotBeNull();
@@ -304,7 +298,7 @@ public class LiquidStartupTests
             .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
             .Callback<LiquidRoute>(r => registeredRoute = r);
 
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         var request = new LiquidRequestModel { Method = "GET", LiquidPageModel = pageModel};
 
@@ -329,7 +323,7 @@ public class LiquidStartupTests
             .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
             .Callback<LiquidRoute>(r => registeredRoute = r);
 
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         var request = new LiquidRequestModel { Method = "POST", LiquidPageModel = pageModel};
 
@@ -354,7 +348,7 @@ public class LiquidStartupTests
             .Setup(m => m.RegisterRoute(It.IsAny<LiquidRoute>()))
             .Callback<LiquidRoute>(r => registeredRoute = r);
 
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         // Act
         var result = await registeredRoute!.Execute!(new LiquidRequestModel { Method = "GET", LiquidPageModel = pageModel});
@@ -371,7 +365,7 @@ public class LiquidStartupTests
         _liquidPageModelsMock.Setup(p => p.GetEnumerator()).Returns(pageModels.GetEnumerator());
 
         // Act
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         // Assert
         _liquidRoutesManagerMock.Verify(m => m.RegisterRoute(It.IsAny<LiquidRoute>()), Times.Never);
@@ -392,7 +386,7 @@ public class LiquidStartupTests
             );
 
         // Act
-        await _liquidStartup.RegisterPageModels();
+        _liquidStartup.RegisterPageModels();
 
         // Assert
         _liquidRegisteredTypesManagerMock.Verify(m => m.RegisterType(typeof(NavItemViewModel)), Times.Once);

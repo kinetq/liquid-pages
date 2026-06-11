@@ -12,7 +12,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
-    await startup.RegisterPageModels();
+    startup.RegisterPageModels();
 
     string workingDirectory = Directory.GetCurrentDirectory();
     startup.RegisterFileProvider("/", new PhysicalFileProvider(workingDirectory));

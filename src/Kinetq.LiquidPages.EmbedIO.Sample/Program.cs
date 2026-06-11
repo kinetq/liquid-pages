@@ -19,7 +19,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Sample
             var serviceProvider = GetContainer();
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
-            await startup.RegisterPageModels();
+            startup.RegisterPageModels();
             string workingDirectory = Directory.GetCurrentDirectory();
             string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
             startup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
