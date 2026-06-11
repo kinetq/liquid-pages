@@ -47,9 +47,9 @@ public class LiquidWebModule : RoutingModuleBase
                 ErrorStatusCode = liquidRoute == null && routeMatch == null ? (int?)HttpStatusCode.NotFound : null
             };
 
-            if (liquidRequest.LiquidRoute != null && routeMatch != null)
+            if (routeMatch != null)
             {
-                liquidRequest.LiquidRoute.RouteValues = new RouteValueDictionary(routeMatch.Pairs);
+                liquidRequest.RouteValues = new RouteValueDictionary(routeMatch.Pairs);
             }
 
             if (request.HasEntityBody)

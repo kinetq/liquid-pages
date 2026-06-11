@@ -164,7 +164,7 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
         _liquidRoutesManager.RegisterRoute(route);
 
         // Act
-        var result = _liquidRoutesManager.GetRouteForPath("/test");
+        var result = _liquidRoutesManager.GetRouteForPath("/test", out _);
 
         // Assert
         result.Should().NotBeNull();
@@ -179,7 +179,7 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
         _liquidRoutesManager.RegisterRoute(route);
 
         // Act
-        var result = _liquidRoutesManager.GetRouteForPath("/nomatch");
+        var result = _liquidRoutesManager.GetRouteForPath("/nomatch", out _);
 
         // Assert
         result.Should().BeNull();
@@ -195,7 +195,7 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
         _liquidRoutesManager.RegisterRoute(route2);
 
         // Act
-        var result = _liquidRoutesManager.GetRouteForPath("/test");
+        var result = _liquidRoutesManager.GetRouteForPath("/test", out _);
 
         // Assert
         result.Should().NotBeNull();
@@ -203,20 +203,20 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
     }
 
     [Fact]
-    public void GetRouteForPath_ShouldPopulateQueryParams_WhenParameterizedRouteMatches()
+    public void GetRouteForPath_ShouldPopulateRouteValues_WhenParameterizedRouteMatches()
     {
         // Arrange
         var route = CreateTestRoute("/users/{id}");
         _liquidRoutesManager.RegisterRoute(route);
 
         // Act
-        var result = _liquidRoutesManager.GetRouteForPath("/users/123");
+        var result = _liquidRoutesManager.GetRouteForPath("/users/123", out var routeValues);
 
         // Assert
         result.Should().NotBeNull();
         result.Should().Be(route);
-        result!.RouteValues.Should().ContainKey("id");
-        result.RouteValues["id"]?.ToString().Should().Be("123");
+        routeValues.Should().ContainKey("id");
+        routeValues["id"]?.ToString().Should().Be("123");
     }
 
     [Fact]
@@ -227,12 +227,12 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
         _liquidRoutesManager.RegisterRoute(route);
 
         // Act
-        var result = _liquidRoutesManager.GetRouteForPath("/search/hello%20world");
+        var result = _liquidRoutesManager.GetRouteForPath("/search/hello%20world", out var routeValues);
 
         // Assert
         result.Should().NotBeNull();
-        result!.RouteValues.Should().ContainKey("query");
-        result.RouteValues["query"]?.ToString().Should().Match(x => x == "hello world" || x == "hello%20world");
+        routeValues.Should().ContainKey("query");
+        routeValues["query"]?.ToString().Should().Match(x => x == "hello world" || x == "hello%20world");
     }
 
     [Fact]

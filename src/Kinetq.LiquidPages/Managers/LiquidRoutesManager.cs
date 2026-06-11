@@ -56,20 +56,21 @@ public class LiquidRoutesManager : ILiquidRoutesManager
         return route;
     }
 
-    public LiquidRoute? GetRouteForPath(string path)
+    public LiquidRoute? GetRouteForPath(string path, out RouteValueDictionary routeValues)
     {
         PathString requestPath = new PathString(path);
+        routeValues = new RouteValueDictionary();
         LiquidRoute? liquidRoute = null;
         foreach (var route in LiquidRoutes)
         {
             RouteTemplate parsedTemplate = TemplateParser.Parse(route.RouteTemplate);
             var defaults = new RouteValueDictionary();
             var matcher = new TemplateMatcher(parsedTemplate, defaults);
-            var routeValues = new RouteValueDictionary();
-            if (matcher.TryMatch(requestPath, routeValues))
+            var matchedRouteValues = new RouteValueDictionary();
+            if (matcher.TryMatch(requestPath, matchedRouteValues))
             {
                 liquidRoute = route;
-                liquidRoute.RouteValues = routeValues;
+                routeValues = matchedRouteValues;
                 break;
             }
         }
