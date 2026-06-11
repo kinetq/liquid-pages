@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
-
-namespace Kinetq.LiquidPages.Models;
+﻿namespace Kinetq.LiquidPages.Models;
 
 public class LiquidRoute
 {
@@ -8,6 +6,5 @@ public class LiquidRoute
     public string LiquidTemplatePath { get; set; }
     public Func<LiquidRequestModel, Task<object>> Execute { get; set; }
     public IDictionary<string, string> QueryParams { get; set; } = new Dictionary<string, string>();
-    public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
     public Type? PageModelType { get; set; }
 }
