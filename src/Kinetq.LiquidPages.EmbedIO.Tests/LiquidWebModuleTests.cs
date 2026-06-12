@@ -24,6 +24,12 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
         {
             _mockLiquidResponseMiddleware = new Mock<ILiquidResponseMiddleware>();
             var routesManager = new LiquidRoutesManager(new NullLogger<LiquidRoutesManager>());
+            routesManager.RegisterRoute(new LiquidRoute
+            {
+                RouteTemplate = "/users/{id}",
+                LiquidTemplatePath = "users.liquid",
+                Execute = model => Task.FromResult<object>(new { Id = model.RouteValues?["id"] })
+            });
             _liquidWebModule = new LiquidWebModule("/", routesManager)
             {
                 LiquidResponseMiddleware = _mockLiquidResponseMiddleware.Object
@@ -149,6 +155,29 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             var response = await httpClient.GetAsync(_urlPrefix);
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task WebServer_ShouldPopulateRouteValues_WhenRouteMatches()
+        {
+            LiquidRequestModel capturedRequest = null;
+
+            _mockLiquidResponseMiddleware
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>()))
+                .Callback<LiquidRequestModel>(req => capturedRequest = req)
+                .ReturnsAsync(new LiquidResponseModel
+                {
+                    Content = Encoding.UTF8.GetBytes("ok")
+                });
+
+            using var httpClient = new HttpClient();
+
+            await httpClient.GetAsync($"{_urlPrefix}users/42");
+
+            Assert.NotNull(capturedRequest);
+            Assert.NotNull(capturedRequest.RouteValues);
+            Assert.True(capturedRequest.RouteValues.ContainsKey("id"));
+            Assert.Equal("42", capturedRequest.RouteValues["id"]?.ToString());
         }
 
         public Task DisposeAsync()
