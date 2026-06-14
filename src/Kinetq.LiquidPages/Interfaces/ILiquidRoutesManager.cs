@@ -10,4 +10,5 @@ public interface ILiquidRoutesManager
     IList<LiquidRoute> LiquidRoutes { get; }
     IDictionary<int, LiquidRoute> ErrorRoutes { get; }
     LiquidRoute? GetRouteForStatusCode(HttpStatusCode statusCode);
+    void ClearRoutes();
 }

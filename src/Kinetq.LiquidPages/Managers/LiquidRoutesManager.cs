@@ -52,4 +52,11 @@ public class LiquidRoutesManager : ILiquidRoutesManager
         _errorRoutes.Value.TryGetValue((int)statusCode, out var route);
         return route;
     }
+    
+    public void ClearRoutes()
+    {
+        _liquidRoutes.Value.Clear();
+        _errorRoutes.Value.Clear();
+        _logger.LogDebug("Cleared all routes");
+    }
 }
