@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCore.Sample", "src\Kinetq.LiquidPages.AspNetCore.Sample\Kinetq.LiquidPages.AspNetCore.Sample.csproj", "{9437D8E1-C271-4CBC-A886-08761F5CD17B}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kinetq.LiquidPages.Suave", "src\Kinetq.LiquidPages.Suave\Kinetq.LiquidPages.Suave.fsproj", "{27FCC29B-4438-4DEC-845B-DCCD611B4077}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
