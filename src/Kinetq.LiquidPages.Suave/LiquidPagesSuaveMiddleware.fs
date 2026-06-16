@@ -37,15 +37,27 @@ module LiquidPagesExtensions =
                         async {
                             // Map Suave's HttpRequest to LiquidRequestModel
                             let requestModel =
-                                new LiquidRequestModel(
+                                LiquidRequestModel(
                                     Route = ctx.request.url.LocalPath,
-                                    QueryParams = ctx.request.query |> Seq.map (fun (k, v) -> k, v.Value) |> dict,
-                                    Headers = ctx.request.headers |> Seq.map (fun (k, v) -> k, v) |> dict,
-                                    Body = ctx.request.rawForm |> System.Text.Encoding.UTF8.GetString,
-                                    // Additional properties like Method, etc.
                                     Method = ctx.request.method.ToString(),
                                     LiquidRoute = route
                                 )
+
+                            requestModel.Headers <-
+                                let nvc = System.Collections.Specialized.NameValueCollection()
+                                ctx.request.headers
+                                |> List.iter (fun (k, v) -> nvc.Add(k, v))
+                                nvc
+
+                            requestModel.Body <-
+                                match ctx.request.rawForm with
+                                | null -> ""
+                                | bytes -> System.Text.Encoding.UTF8.GetString(bytes)
+
+                            requestModel.QueryParams <- 
+                                ctx.request.query 
+                                |> List.map (fun (k, v) -> k, v |> Option.defaultValue "")
+                                |> dict
 
                             // Execute the route's handler (it returns a Task<LiquidResponseModel>)
                             let! responseModel =
