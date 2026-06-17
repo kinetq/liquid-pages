@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCore.Sample", "src\Kinetq.LiquidPages.AspNetCore.Sample\Kinetq.LiquidPages.AspNetCore.Sample.csproj", "{9437D8E1-C271-4CBC-A886-08761F5CD17B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW", "src\Kinetq.LiquidPages.SimpleW\Kinetq.LiquidPages.SimpleW.csproj", "{0A5458C6-019B-4E83-90C6-C2909F557399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Sample", "Kinetq.LiquidPages.SimpleW.Sample\Kinetq.LiquidPages.SimpleW.Sample.csproj", "{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9437D8E1-C271-4CBC-A886-08761F5CD17B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A5458C6-019B-4E83-90C6-C2909F557399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A5458C6-019B-4E83-90C6-C2909F557399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A5458C6-019B-4E83-90C6-C2909F557399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A5458C6-019B-4E83-90C6-C2909F557399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

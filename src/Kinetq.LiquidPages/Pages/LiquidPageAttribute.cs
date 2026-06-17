@@ -5,7 +5,7 @@ public sealed class LiquidPageAttribute : Attribute
 {
     public string? RouteTemplate { get; }
     public string TemplatePath { get; }
-
+ 
     public LiquidPageAttribute(string routeTemplate, string templatePath)
     {
         RouteTemplate = routeTemplate;

@@ -1,0 +1,64 @@
+﻿using Kinetq.LiquidPages.Helpers;
+using Kinetq.LiquidPages.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using SimpleW;
+using SimpleW.Modules;
+using SimpleW.Observability;
+using System.Net;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+
+namespace Kinetq.LiquidPages.SimpleW.Sample
+{
+    class Program
+    {
+
+        static async Task Main()
+        {
+            var container = GetContainer();
+
+            // listen to all IPs port 2015
+            var server = new SimpleWServer(IPAddress.Any, 2015);
+
+            var liquidRoutesManager = container.GetService<ILiquidRoutesManager>();
+            var liquidResponseMiddleware = container.GetService<ILiquidResponseMiddleware>();
+            var liquidStartup = container.GetService<ILiquidStartup>();
+            
+            liquidStartup.RegisterPageModels();
+            
+            string workingDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            liquidStartup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
+            server.UseStaticFilesModule(options => {
+                options.Path =  Path.Join(projectDirectory, "Static");                  // serve your files located here
+                options.Prefix = "/Static";                           // to "/" endpoint
+                options.CacheTimeout = TimeSpan.FromDays(1);    // cached for 24h
+                options.AutoIndex = true;                       // enable autoindex if no index.html exists in the directory
+            });
+            server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware));
+
+            // run server
+            await server.RunAsync();
+        }
+
+        static IServiceProvider GetContainer()
+        {
+            // Create the container builder.
+            var services = new ServiceCollection().AddLogging(builder =>
+            {
+                builder.ClearProviders();
+                // Clear Microsoft's default providers (like eventlogs and others)
+                builder.AddSimpleConsole(options =>
+                {
+                    options.IncludeScopes = true;
+                    options.SingleLine = true;
+                    options.TimestampFormat = "hh:mm:ss ";
+                }).SetMinimumLevel(LogLevel.Debug);
+            });
+            services.AddLiquidPages(typeof(Program).Assembly);
+
+            return services.BuildServiceProvider();
+        }
+    }
+}
