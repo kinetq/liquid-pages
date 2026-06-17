@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Static\css\site.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ErrorPages\NotFound.liquid" />
+    <None Include="Layouts\default.liquid" />
+    <None Include="Pages\Home.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kinetq.LiquidPages.Suave\Kinetq.LiquidPages.Suave.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.2" />
+  </ItemGroup>
+
+</Project>

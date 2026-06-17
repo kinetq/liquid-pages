@@ -27,10 +27,10 @@ module LiquidPagesExtensions =
                     // Use the route's pattern as a regex filter
                     let pathFilter =
                         // Handle special case for the home route (typically "^/$")
-                        if route.RouteRegex = "^/$" then
+                        if route.RouteTemplate = "^/$" then
                             path "/"
                         else
-                            pathRegex route.RouteRegex
+                            pathRegex route.RouteTemplate
 
                     // Build the WebPart: when the pattern matches, invoke the route's handler
                     pathFilter >=> (fun ctx ->

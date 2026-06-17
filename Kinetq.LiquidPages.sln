@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCo
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kinetq.LiquidPages.Suave", "src\Kinetq.LiquidPages.Suave\Kinetq.LiquidPages.Suave.fsproj", "{27FCC29B-4438-4DEC-845B-DCCD611B4077}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kinetq.LiquidPages.Suave.Sample", "src\Kinetq.LiquidPages.Suave.Sample\Kinetq.LiquidPages.Suave.Sample.fsproj", "{7520EC5B-96B8-4216-9E15-872CE39178C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27FCC29B-4438-4DEC-845B-DCCD611B4077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7520EC5B-96B8-4216-9E15-872CE39178C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7520EC5B-96B8-4216-9E15-872CE39178C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7520EC5B-96B8-4216-9E15-872CE39178C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7520EC5B-96B8-4216-9E15-872CE39178C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

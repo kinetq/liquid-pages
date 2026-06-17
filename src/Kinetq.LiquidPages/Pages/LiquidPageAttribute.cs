@@ -6,18 +6,11 @@ namespace Kinetq.LiquidPages.Pages;
 public sealed class LiquidPageAttribute : Attribute
 {
     public string? RouteTemplate { get; }
-    public Regex? RouteRegex { get; }
     public string TemplatePath { get; }
 
     public LiquidPageAttribute(string routeTemplate, string templatePath)
     {
         RouteTemplate = routeTemplate;
-        TemplatePath = templatePath;
-    }
-
-    public LiquidPageAttribute(Regex routeRegex, string templatePath)
-    {
-        RouteRegex = routeRegex;
         TemplatePath = templatePath;
     }
 
