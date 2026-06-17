@@ -8,6 +8,8 @@
   <img src="src/Kinetq.LiquidPages.Extension/Images/Logo.png" alt="App Dashboard" width="150">
 </p>
 
+If you find this project helpful, please consider giving it a ⭐!
+
 LiquidPages is an open-source C# library that brings a Razor Pages–style MVVM framework to [Liquid](https://shopify.github.io/liquid/) templates. It uses [Fluid](https://github.com/sebastienros/fluid) under the hood and is designed to plug into virtually any .NET web server.
 
 ## Why?
@@ -254,5 +256,3 @@ If you choose not to use the extension, you will need to configure the following
 ## Documentation
 
 Full documentation: https://www.kinetq.com/docs/open-source-software/liquid-pages
-
-If you find this project helpful, please consider giving it a ⭐!
