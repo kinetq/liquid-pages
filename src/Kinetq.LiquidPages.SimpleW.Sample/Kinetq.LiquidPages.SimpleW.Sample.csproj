@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Kinetq.LiquidPages.SimpleW\Kinetq.LiquidPages.SimpleW.csproj" />
+    <ProjectReference Include="..\Kinetq.LiquidPages.SimpleW\Kinetq.LiquidPages.SimpleW.csproj" />
   </ItemGroup>
 
 </Project>

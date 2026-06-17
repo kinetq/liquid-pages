@@ -35,9 +35,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.AspNetCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW", "src\Kinetq.LiquidPages.SimpleW\Kinetq.LiquidPages.SimpleW.csproj", "{0A5458C6-019B-4E83-90C6-C2909F557399}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Sample", "Kinetq.LiquidPages.SimpleW.Sample\Kinetq.LiquidPages.SimpleW.Sample.csproj", "{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Tests", "src\Kinetq.LiquidPages.SimpleW.Tests\Kinetq.LiquidPages.SimpleW.Tests.csproj", "{C791C19F-1681-41B1-9000-D2BED1A6C15F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Sample", "src\Kinetq.LiquidPages.SimpleW.Sample\Kinetq.LiquidPages.SimpleW.Sample.csproj", "{8F629534-2E5B-0C7C-6049-44644837DD40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,14 +97,14 @@ Global
 		{0A5458C6-019B-4E83-90C6-C2909F557399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A5458C6-019B-4E83-90C6-C2909F557399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A5458C6-019B-4E83-90C6-C2909F557399}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFD589F5-1B28-4F94-A9AD-5E4C53172C24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C791C19F-1681-41B1-9000-D2BED1A6C15F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C791C19F-1681-41B1-9000-D2BED1A6C15F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C791C19F-1681-41B1-9000-D2BED1A6C15F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C791C19F-1681-41B1-9000-D2BED1A6C15F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F629534-2E5B-0C7C-6049-44644837DD40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F629534-2E5B-0C7C-6049-44644837DD40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F629534-2E5B-0C7C-6049-44644837DD40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F629534-2E5B-0C7C-6049-44644837DD40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
