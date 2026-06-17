@@ -36,7 +36,10 @@ namespace Kinetq.LiquidPages.SimpleW.Sample
                 options.CacheTimeout = TimeSpan.FromDays(1);    // cached for 24h
                 options.AutoIndex = true;                       // enable autoindex if no index.html exists in the directory
             });
-            server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware));
+            server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
+            {
+                MapFallback404 = true
+            });
 
             // run server
             await server.RunAsync();

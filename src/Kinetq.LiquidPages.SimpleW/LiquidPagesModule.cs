@@ -6,7 +6,6 @@ using SimpleW.Modules;
 using System.Buffers;
 using System.Collections.Specialized;
 using System.Text;
-using HttpRequestException = SimpleW.HttpRequestException;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -21,12 +20,22 @@ namespace Kinetq.LiquidPages.SimpleW
             _liquidResponseMiddleware = liquidResponseMiddleware;
         }
 
+        public bool MapFallback404 { get; set; } = false;
+
         public void Install(SimpleWServer server)
         {
             foreach (var liquidRoute in _routesManager.LiquidRoutes)
             {
                 server.MapGet(liquidRoute.RouteTemplate, () => liquidRoute);
                 server.MapPost(liquidRoute.RouteTemplate, () => liquidRoute);
+            }
+
+            if (MapFallback404)
+            {
+                server.Router.MapFallback(async (HttpSession session) =>
+                {
+                    await RenderLiquidViewAsync(session, null, 404).ConfigureAwait(false);
+                });
             }
 
             // wrap existing handler-result (default is JSON sender) 
@@ -41,15 +50,7 @@ namespace Kinetq.LiquidPages.SimpleW
                     return;
                 }
 
-                try
-                {
-
-                    await next(session, result).ConfigureAwait(false);
-                }
-                catch (HttpRequestException ex)
-                {
-                    await RenderLiquidViewAsync(session, null, ex.StatusCode).ConfigureAwait(false);
-                }
+                await next(session, result).ConfigureAwait(false);
             });
         }
 

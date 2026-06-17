@@ -50,6 +50,7 @@ See the sample projects for concrete startup usage:
 - `src/Kinetq.LiquidPages.AspNetCore.Sample/Program.cs`
 - `src/Kinetq.LiquidPages.EmbedIO.Sample/Program.cs`
 - `src/Kinetq.LiquidPages.GenHTTP.Sample/Program.cs`
+- `Kinetq.LiquidPages.SimpleW.Sample/Program.cs`
 
 ### 4. Create a page model
 
@@ -167,6 +168,39 @@ app.UseEndpoints(endpoints =>
 });
 
 await app.RunAsync();
+```
+
+#### SimpleW middleware
+
+Install the SimpleW companion package:
+
+```powershell
+dotnet add package Kinetq.LiquidPages.SimpleW
+```
+
+Resolve `ILiquidRoutesManager`, `ILiquidResponseMiddleware`, and `ILiquidStartup` from your container, then register page models and file providers before attaching `LiquidPagesModule`:
+
+```csharp
+using Kinetq.LiquidPages.Helpers;
+using Kinetq.LiquidPages.Interfaces;
+using Microsoft.Extensions.FileProviders;
+using SimpleW;
+
+var liquidRoutesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
+var liquidResponseMiddleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+var liquidStartup = serviceProvider.GetRequiredService<ILiquidStartup>();
+
+await liquidStartup.RegisterPageModels();
+await liquidStartup.RegisterFilters();
+liquidStartup.RegisterFileProvider("/", new PhysicalFileProvider(Directory.GetCurrentDirectory()));
+
+var server = new SimpleWServer(IPAddress.Any, 2015);
+server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
+{
+    MapFallback404 = true
+});
+
+await server.RunAsync();
 ```
 
 For other web servers, call `HandleRequestAsync` on `ILiquidResponseMiddleware` from within your own request handler.
