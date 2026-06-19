@@ -1,0 +1,86 @@
+imports:
+    - https://raw.githubusercontent.com/dotnet/crank/main/src/Microsoft.Crank.Jobs.Bombardier/bombardier.yml
+
+jobs:
+  aspnetcore-liquid:
+    sources:
+      liquidpages:
+        localFolder: .
+    project: liquidpages/src/Kinetq.LiquidPages.AspNetCore.Sample/Kinetq.LiquidPages.AspNetCore.Sample.csproj
+  razorpages-sample:
+    sources:
+      liquidpages:
+        localFolder: .
+    project: liquidpages/src/Kinetq.LiquidPages.RazorPages.Sample/Kinetq.LiquidPages.RazorPages.Sample.csproj
+  embedio-sample:
+    sources:
+      liquidpages:
+        repository: https://github.com/kinetq/liquid-simple-server
+        branchOrCommit: master
+    project: liquidpages/src/Kinetq.LiquidPages.EmbedIO.Sample/Kinetq.LiquidPages.EmbedIO.Sample.csproj
+  genhttp-sample:
+    sources:
+      liquidpages:
+        repository: https://github.com/kinetq/liquid-simple-server
+        branchOrCommit: master
+    project: liquidpages/src/Kinetq.LiquidPages.GenHTTP.Sample/Kinetq.LiquidPages.GenHTTP.Sample.csproj
+  simplew-sample:
+    sources:
+      liquidpages:
+        repository: https://github.com/kinetq/liquid-simple-server
+        branchOrCommit: master
+    project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Sample/Kinetq.LiquidPages.SimpleW.Sample.csproj
+
+scenarios:
+  aspnetcore-liquid:
+    application:
+      job: aspnetcore-liquid
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5000
+        path: /
+  razorpages-home:
+    application:
+      job: razorpages-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5000
+        path: /
+  embedio-home:
+    application:
+      job: embedio-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 5662
+        path: /
+  genhttp-home:
+    application:
+      job: genhttp-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 8080
+        path: /
+  simplew-home:
+    application:
+      job: simplew-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 2015
+        path: /
+
+profiles:
+  local:
+    variables:
+      serverAddress: localhost
+    jobs: 
+      application:
+        endpoints: 
+          - http://localhost:5010
+      load:
+        endpoints: 
+          - http://localhost:5010

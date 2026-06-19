@@ -1,9 +1,9 @@
 ﻿using Fluid;
-using HtmlAgilityPack;
 using Kinetq.LiquidPages.Exceptions;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
+using System.Text.Encodings.Web;
 
 namespace Kinetq.LiquidPages;
 
@@ -23,7 +23,7 @@ public class HtmlRenderer : IHtmlRenderer
         _templateOptionsManager = templateOptionsManager;
     }
 
-    public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute? liquidRoute)
+    public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute)
     {
         if (liquidRoute == null)
         {
@@ -31,42 +31,68 @@ public class HtmlRenderer : IHtmlRenderer
         }
 
         var options = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
-        var fileInfo = options.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
-        if (!fileInfo.Exists)
-        {
-            return null;
-        }
 
-        string liquidTemplate = await fileInfo.GetFileContents();
+        string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
 
-        _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplate, out var cachedTemplate);
-        var parser = _fluidParserManager.FluidParser;
-        if (cachedTemplate == null && parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
+        _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
+        if (cachedTemplate == null)
         {
-            if (!string.IsNullOrEmpty(error))
+            var parser = _fluidParserManager.FluidParser; 
+            var fileInfo = options.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            if (!fileInfo.Exists)
             {
-                throw new LiquidSyntaxException(error);
+                return null;
             }
+            
+            string liquidTemplate = await fileInfo.GetFileContents();
+            if (parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
+            {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new LiquidSyntaxException(error);
+                }
 
-            cachedTemplate = template;
-            _liquidTemplateManager.RegisterTemplate(liquidTemplate, cachedTemplate);
+                cachedTemplate = template;
+                _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+            }
         }
 
         var templateContext = new TemplateContext(renderModel, options);
         string html = await cachedTemplate.RenderAsync(templateContext);
 
-#if DEBUG
-        // Validate HTML using HtmlAgilityPack
-        var htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(html);
-
-        if (htmlDoc.ParseErrors != null && htmlDoc.ParseErrors.Any())
-        {
-            throw new HtmlSyntaxException(htmlDoc.ParseErrors);
-        }
-#endif
-
-
         return html;
+    }
+
+    public async Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, StreamWriter streamWriter)
+    {
+        var options = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
+
+        string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
+
+        _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
+        if (cachedTemplate == null)
+        {
+            var parser = _fluidParserManager.FluidParser;
+            var fileInfo = options.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            if (!fileInfo.Exists)
+            {
+                return;
+            }
+
+            string liquidTemplate = await fileInfo.GetFileContents();
+            if (parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
+            {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new LiquidSyntaxException(error);
+                }
+
+                cachedTemplate = template;
+                _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+            }
+        }
+
+        var templateContext = new TemplateContext(renderModel, options);
+        await cachedTemplate.RenderAsync(streamWriter, HtmlEncoder.Default, templateContext);
     }
 }

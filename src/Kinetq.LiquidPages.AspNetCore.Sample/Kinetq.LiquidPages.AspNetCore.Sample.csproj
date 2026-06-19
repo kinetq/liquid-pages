@@ -8,8 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Content Include="**\*.liquid" Exclude="bin\**;obj\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	</Content>
+
 	<ProjectReference Include="..\Kinetq.LiquidPages.AspNetCore\Kinetq.LiquidPages.AspNetCore.csproj" />
 	<ProjectReference Include="..\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="**\*.liquid" />
   </ItemGroup>
 
 </Project>

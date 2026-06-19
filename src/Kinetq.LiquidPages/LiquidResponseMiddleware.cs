@@ -27,7 +27,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<LiquidResponseModel> HandleRequestAsync(LiquidRequestModel request)
+    public async Task HandleRequestAsync(LiquidRequestModel request, LiquidResponseModel response)
     {
         var renderModel = new RenderModel
         {
@@ -38,40 +38,37 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         if (request.ErrorStatusCode.HasValue)
         {
             var requestedStatusCode = (HttpStatusCode)request.ErrorStatusCode.Value;
-            return await GetErrorRouteResponse(requestedStatusCode, renderModel, request);
+            await GetErrorRouteResponse(requestedStatusCode, renderModel, request, response);
+            return;
         }
 
         LiquidRoute? liquidRoute = request.LiquidRoute;
         if (liquidRoute == null)
         {
-            return await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request);
+            await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request, response);
+            return;
         }
 
         HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request);
         if (statusCode != null && (int)statusCode.Value >= 400)
         {
-            return await GetErrorRouteResponse(statusCode.Value, renderModel, request);
+            await GetErrorRouteResponse(statusCode.Value, renderModel, request, response);
+            return;
         }
+
+        response.SetStatusCode(200);
+        response.SetContentType("text/html");
+        response.StartResponse();
 
         // Handle static routes
-        var htmlResponse = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
-        if (htmlResponse != null)
-        {
-            return new LiquidResponseModel
-            {
-                Content = Encoding.UTF8.GetBytes(htmlResponse),
-                ContentType = "text/html",
-                StatusCode = 200
-            };
-        }
-
-        return await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request);
+        await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
     }
 
-    private async Task<LiquidResponseModel> GetErrorRouteResponse(
+    private async Task GetErrorRouteResponse(
         HttpStatusCode httpStatusCode,
         RenderModel renderModel,
         LiquidRequestModel request,
+        LiquidResponseModel response,
         int callStack = 0
         )
     {
@@ -79,36 +76,25 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         HttpStatusCode? processStatusCodeRoute = await ProcessRoute(statusCodeRoute, renderModel, request);
         if (processStatusCodeRoute != null && callStack < 3)
         {
-            return await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, callStack + 1);
+            await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, response, callStack + 1);
+            return;
         }
 
         if (processStatusCodeRoute != null && callStack >= 3)
         {
-            return new LiquidResponseModel
-            {
-                Content = Encoding.UTF8.GetBytes($"<h1>500 - Internal Server Error</h1>"),
-                ContentType = "text/html",
-                StatusCode = (int)HttpStatusCode.InternalServerError
-            };
+            response.SetStatusCode((int)HttpStatusCode.InternalServerError);
+            response.SetContentType("text/html");
+            response.StartResponse();
+
+            await response.BodyWriter.WriteAsync("<h1>500 - Internal Server Error</h1>");
+            return;
         }
 
-        var statusCodeHtmlResponse = await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute);
-        if (!string.IsNullOrEmpty(statusCodeHtmlResponse))
-        {
-            return new LiquidResponseModel
-            {
-                Content = Encoding.UTF8.GetBytes(statusCodeHtmlResponse),
-                ContentType = "text/html",
-                StatusCode = (int)httpStatusCode
-            };
-        }
-
-        return new LiquidResponseModel
-        {
-            Content = Encoding.UTF8.GetBytes($"<h1>500 - Internal Server Error</h1>"),
-            ContentType = "text/html",
-            StatusCode = (int)HttpStatusCode.InternalServerError
-        };
+        response.SetStatusCode((int)httpStatusCode);
+        response.SetContentType("text/html");
+        response.StartResponse();
+        
+        await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute, response.BodyWriter);
     }
 
     private async Task<HttpStatusCode?> ProcessRoute(

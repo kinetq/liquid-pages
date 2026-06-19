@@ -4,5 +4,5 @@ namespace Kinetq.LiquidPages.Interfaces;
 
 public interface ILiquidResponseMiddleware
 {
-    Task<LiquidResponseModel> HandleRequestAsync(LiquidRequestModel request);
+    Task HandleRequestAsync(LiquidRequestModel request, LiquidResponseModel response);
 }

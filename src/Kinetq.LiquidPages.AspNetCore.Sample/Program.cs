@@ -13,9 +13,8 @@ using (var scope = app.Services.CreateScope())
 {
     var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
     startup.RegisterPageModels();
-
-    string workingDirectory = Directory.GetCurrentDirectory();
-    startup.RegisterFileProvider("/", new PhysicalFileProvider(workingDirectory));
+    
+    startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
 }
 
 app.UseLiquidPagesErrorHandling();

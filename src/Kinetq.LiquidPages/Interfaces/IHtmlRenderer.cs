@@ -4,5 +4,6 @@ namespace Kinetq.LiquidPages.Interfaces;
 
 public interface IHtmlRenderer
 {
-    Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute? liquidRoute);
+    Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute);
+    Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, StreamWriter streamWriter);
 }

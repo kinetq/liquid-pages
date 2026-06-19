@@ -1,8 +1,9 @@
 ﻿namespace Kinetq.LiquidPages.Models;
 
 public class LiquidResponseModel
-{
-    public string ContentType { get; set; }
-    public byte[] Content { get; set; }
-    public int StatusCode { get; set; }
+{ 
+    public StreamWriter BodyWriter { get; set; }
+    public Action<int> SetStatusCode { get; set; } = _ => { };
+    public Action<string> SetContentType { get; set; } = _ => { };
+    public Action StartResponse { get; set; } = () => { };
 }
