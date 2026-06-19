@@ -25,15 +25,14 @@ public class HtmlRenderer : IHtmlRenderer
 
     public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute)
     {
-        liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
-
+        var templateOptions = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
         string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
 
         _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
         if (cachedTemplate == null)
         {
             var parser = _fluidParserManager.FluidParser; 
-            var fileInfo = liquidRoute.TemplateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            var fileInfo = templateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
             if (!fileInfo.Exists)
             {
                 return null;
@@ -52,7 +51,7 @@ public class HtmlRenderer : IHtmlRenderer
             }
         }
 
-        var templateContext = new TemplateContext(renderModel, liquidRoute.TemplateOptions);
+        var templateContext = new TemplateContext(renderModel, templateOptions);
         string html = await cachedTemplate.RenderAsync(templateContext);
 
         return html;
@@ -60,14 +59,14 @@ public class HtmlRenderer : IHtmlRenderer
 
     public async Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, TextWriter streamWriter)
     {
-        liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
+        var templateOptions = _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
         string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
 
         _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
         if (cachedTemplate == null)
         {
             var parser = _fluidParserManager.FluidParser;
-            var fileInfo = liquidRoute.TemplateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            var fileInfo = templateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
             if (!fileInfo.Exists)
             {
                 return;
@@ -86,7 +85,7 @@ public class HtmlRenderer : IHtmlRenderer
             }
         }
 
-        var templateContext = new TemplateContext(renderModel, liquidRoute.TemplateOptions);
+        var templateContext = new TemplateContext(renderModel, templateOptions);
         await cachedTemplate.RenderAsync(streamWriter, HtmlEncoder.Default, templateContext);
     }
 }
