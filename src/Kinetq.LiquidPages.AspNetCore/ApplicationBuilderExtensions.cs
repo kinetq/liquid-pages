@@ -40,10 +40,9 @@ public static class ApplicationBuilderExtensions
                 QueryParams = (request.QueryString.Value ?? string.Empty).GetQueryParams(),
                 Headers = headers,
                 Method = request.Method,
-                LiquidRoute = context.GetEndpoint()?.Metadata.GetMetadata<LiquidRoute>()
+                LiquidRoute = context.GetEndpoint()?.Metadata.GetMetadata<LiquidRoute>(),
+                RouteValues = context.Request.RouteValues.ToDictionary()
             };
-
-            liquidRequest.RouteValues = context.Request.RouteValues.ToDictionary();
 
             const string errorPrefix = "/__liquid-error/";
             if (liquidRequest.Route.StartsWith(errorPrefix, StringComparison.OrdinalIgnoreCase))

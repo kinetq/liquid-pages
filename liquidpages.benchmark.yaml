@@ -15,20 +15,19 @@ jobs:
   embedio-sample:
     sources:
       liquidpages:
-        repository: https://github.com/kinetq/liquid-simple-server
-        branchOrCommit: master
+        localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.EmbedIO.Sample/Kinetq.LiquidPages.EmbedIO.Sample.csproj
+
   genhttp-sample:
     sources:
       liquidpages:
-        repository: https://github.com/kinetq/liquid-simple-server
-        branchOrCommit: master
+        localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.GenHTTP.Sample/Kinetq.LiquidPages.GenHTTP.Sample.csproj
+
   simplew-sample:
     sources:
       liquidpages:
-        repository: https://github.com/kinetq/liquid-simple-server
-        branchOrCommit: master
+        localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Sample/Kinetq.LiquidPages.SimpleW.Sample.csproj
 
 scenarios:
@@ -40,7 +39,7 @@ scenarios:
       variables:
         serverPort: 5000
         path: /
-  razorpages-home:
+  aspnetcore-razor:
     application:
       job: razorpages-sample
     load:

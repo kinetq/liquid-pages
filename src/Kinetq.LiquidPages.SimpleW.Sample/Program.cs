@@ -24,14 +24,12 @@ namespace Kinetq.LiquidPages.SimpleW.Sample
             var liquidRoutesManager = container.GetService<ILiquidRoutesManager>();
             var liquidResponseMiddleware = container.GetService<ILiquidResponseMiddleware>();
             var liquidStartup = container.GetService<ILiquidStartup>();
-            
+
+            liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
             liquidStartup.RegisterPageModels();
             
-            string workingDirectory = Directory.GetCurrentDirectory();
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
-            liquidStartup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
             server.UseStaticFilesModule(options => {
-                options.Path =  Path.Join(projectDirectory, "Static");                  // serve your files located here
+                options.Path =  Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");                  // serve your files located here
                 options.Prefix = "/Static";                           // to "/" endpoint
                 options.CacheTimeout = TimeSpan.FromDays(1);    // cached for 24h
                 options.AutoIndex = true;                       // enable autoindex if no index.html exists in the directory

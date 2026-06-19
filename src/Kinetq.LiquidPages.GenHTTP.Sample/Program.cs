@@ -20,10 +20,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample
             var serviceProvider = GetContainer();
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
+            startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
             startup.RegisterPageModels();
-            string workingDirectory = Directory.GetCurrentDirectory();
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
-            startup.RegisterFileProvider("/", new PhysicalFileProvider(projectDirectory));
 
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
             var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();

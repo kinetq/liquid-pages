@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="**\*.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj" />
   </ItemGroup>
 
