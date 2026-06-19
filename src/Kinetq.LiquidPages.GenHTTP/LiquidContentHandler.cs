@@ -48,12 +48,35 @@ public sealed class LiquidContentHandler : IHandler
 
         try
         {
-            var liquidResponse = await _middleware.HandleRequestAsync(liquidRequest);
+            var responseStatusCode = 200;
+            var responseContentType = "text/html";
+
+            await using var contentStream = new MemoryStream();
+            await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
+
+            var responseModel = new LiquidResponseModel
+            {
+                BodyWriter = streamWriter,
+                SetContentType = contentType =>
+                {
+                    responseContentType = contentType;
+                },
+                SetStatusCode = statusCode =>
+                {
+                    responseStatusCode = statusCode;
+                },
+                StartResponse = _ => { }
+            };
+
+            await _middleware.HandleRequestAsync(liquidRequest, responseModel);
+            await streamWriter.FlushAsync();
+
+            var contentBytes = contentStream.ToArray();
 
             return request.Respond()
-                .Status((ResponseStatus)liquidResponse.StatusCode)
-                .Type(FlexibleContentType.Parse(liquidResponse.ContentType))
-                .Content(new ByteArrayContent(liquidResponse.Content))
+                .Status((ResponseStatus)responseStatusCode)
+                .Type(FlexibleContentType.Parse(responseContentType))
+                .Content(new ByteArrayContent(contentBytes))
                 .Build();
         }
         catch

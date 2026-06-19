@@ -28,11 +28,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
     public async Task HandleRequestAsync(LiquidRequestModel request, LiquidResponseModel response)
     {
-        var renderModel = new RenderModel
-        {
-            Route = request.Route,
-            QueryParams = request.QueryParams
-        };
+        var renderModel = new RenderModel();
 
         if (request.ErrorStatusCode.HasValue)
         {
@@ -59,7 +55,6 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         response.SetContentType("text/html");
         response.StartResponse(CancellationToken.None);
 
-        // Handle static routes
         await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
     }
 

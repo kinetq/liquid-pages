@@ -59,14 +59,26 @@ public class LiquidWebModule : RoutingModuleBase
                 liquidRequest.Body = await reader.ReadToEndAsync();
             }
 
-            var responseModel =
-                await LiquidResponseMiddleware.HandleRequestAsync(liquidRequest);
+            StreamWriter streamWriter = new StreamWriter(response.OutputStream, Encoding.UTF8, leaveOpen: true);
+            var responseModel = new LiquidResponseModel
+            {
+                BodyWriter = streamWriter,
+                SetContentType = contentType =>
+                {
+                    response.ContentType = contentType;
+                },
+                SetStatusCode = (statusCode) =>
+                {
+                    response.StatusCode = statusCode;
+                },
+                StartResponse = (cancellationToken) =>
+                {
+                    response.SendChunked = true;
+                }
+            };
 
-            response.ContentLength64 = responseModel.Content.Length;
-            response.ContentType = responseModel.ContentType;
-            response.StatusCode = responseModel.StatusCode;
-
-            await response.OutputStream.WriteAsync(responseModel.Content);
+            await LiquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
+            await streamWriter.FlushAsync();
         }
         catch (Exception ex)
         {

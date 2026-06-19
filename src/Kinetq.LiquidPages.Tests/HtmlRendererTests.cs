@@ -1,7 +1,5 @@
 ﻿using Fluid;
 using Fluid.Values;
-using HtmlAgilityPack;
-using Kinetq.LiquidPages.Exceptions;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Managers;
 using Kinetq.LiquidPages.Models;
@@ -82,11 +80,7 @@ public class HtmlRendererTests : IAsyncLifetime
             LiquidTemplatePath = "index.liquid"
         };
 
-        var renderModel = new RenderModel()
-        {
-            Route = "/",
-            QueryParams = new Dictionary<string, string>()
-        };
+        var renderModel = new RenderModel();
 
         string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
         Assert.NotNull(html);
@@ -101,11 +95,7 @@ public class HtmlRendererTests : IAsyncLifetime
             LiquidTemplatePath = "index.liquid"
         };
 
-        var renderModel = new RenderModel()
-        {
-            Route = "/physical",
-            QueryParams = new Dictionary<string, string>()
-        };
+        var renderModel = new RenderModel();
 
         string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
         Assert.NotNull(html);
@@ -122,8 +112,6 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel()
         {
-            Route = "/physical",
-            QueryParams = new Dictionary<string, string>(),
             ViewModel = new RenderViewModel()
             {
                 Page = new Page()
@@ -134,10 +122,7 @@ public class HtmlRendererTests : IAsyncLifetime
         };
 
         string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
-        HtmlDocument htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(html);
-        var headingNode = htmlDoc.DocumentNode.SelectSingleNode("//h2");
-        Assert.Equal("Test Heading", headingNode.InnerText);
+        Assert.Contains("<h2>Test Heading</h2>", html);
     }
 
     [Fact]
@@ -151,8 +136,6 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel()
         {
-            Route = "/physical",
-            QueryParams = new Dictionary<string, string>(),
             ViewModel = new RenderViewModel()
             {
                 Page = new Page()
@@ -176,8 +159,6 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel()
         {
-            Route = "/physical",
-            QueryParams = new Dictionary<string, string>(),
             ViewModel = new RenderViewModel()
             {
                 Page = new Page()
@@ -187,7 +168,9 @@ public class HtmlRendererTests : IAsyncLifetime
             }
         };
 
-        await Assert.ThrowsAsync<HtmlSyntaxException>(async () => await _htmlRenderer.RenderHtml(renderModel, liquidRoute));
+        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        Assert.NotNull(html);
+        Assert.Contains("Test Heading", html);
     }
 
     [Fact]
@@ -201,8 +184,6 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel()
         {
-            Route = "/posts",
-            QueryParams = new Dictionary<string, string>(),
             ViewModel = new RenderViewModel()
             {
                 Page = new Page()
@@ -235,11 +216,8 @@ public class HtmlRendererTests : IAsyncLifetime
                     });
 
         string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
-        HtmlDocument htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(html);
-
-        var posts = htmlDoc.DocumentNode.SelectNodes("//*[contains(@class, 'post')]");
-        Assert.Equal(2, posts.Count);
+        var postCount = html.Split("class=\"post\"").Length - 1;
+        Assert.Equal(2, postCount);
     }
 
     public Task DisposeAsync()

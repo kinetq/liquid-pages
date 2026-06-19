@@ -3,7 +3,6 @@ using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
-using System.Buffers;
 using System.Collections.Specialized;
 using System.Text;
 
@@ -76,19 +75,39 @@ namespace Kinetq.LiquidPages.SimpleW
                               new Dictionary<string, object?>()
             };
 
-            if (!request.Body.IsEmpty)
+            if (!string.IsNullOrWhiteSpace(request.BodyString))
             {
-                var stream = new MemoryStream(request.Body.ToArray());
-                using var reader = new StreamReader(stream, Encoding.UTF8, true, -1, true);
-                liquidRequest.Body = await reader.ReadToEndAsync();
+                liquidRequest.Body = request.BodyString;
             }
 
             try
             {
-                var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest);
-                await session.Response
-                    .Status(responseModel.StatusCode)
-                    .Body(responseModel.Content, responseModel.ContentType)
+                var response = session.Response;
+                var responseContentType = "text/html";
+
+                await using var contentStream = new MemoryStream();
+                await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
+
+                var responseModel = new LiquidResponseModel
+                {
+                    BodyWriter = streamWriter,
+                    SetContentType = contentType =>
+                    {
+                        responseContentType = contentType;
+                        response.ContentType(contentType);
+                    },
+                    SetStatusCode = statusCode =>
+                    {
+                        response.Status(statusCode, null);
+                    },
+                    StartResponse = _ => { }
+                };
+
+                await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
+                await streamWriter.FlushAsync();
+
+                await response
+                    .Body(contentStream.ToArray(), responseContentType)
                     .SendAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
