@@ -40,7 +40,7 @@ public class LiquidWebModule : RoutingModuleBase
             {
                 Route = request.Url.AbsolutePath,
                 QueryParams = request.Url.Query.GetQueryParams(),
-                Headers = request.Headers,
+                Headers = new EmbedIOHeaderDictionary(request.Headers),
                 Method = request.HttpMethod,
                 LiquidRoute = liquidRoute,
                 ErrorStatusCode = liquidRoute == null && routeMatch == null ? (int?)HttpStatusCode.NotFound : null

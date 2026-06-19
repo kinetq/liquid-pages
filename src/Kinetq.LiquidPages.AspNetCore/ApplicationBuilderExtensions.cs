@@ -28,17 +28,11 @@ public static class ApplicationBuilderExtensions
         async Task HandleLiquidRequest(HttpContext context)
         {
             var request = context.Request;
-            var headers = new NameValueCollection();
-            foreach (var header in request.Headers)
-            {
-                headers.Add(header.Key, header.Value.ToString());
-            }
-
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Path.Value ?? "/",
                 QueryParams = (request.QueryString.Value ?? string.Empty).GetQueryParams(),
-                Headers = headers,
+                Headers = new AspNetCoreHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = context.GetEndpoint()?.Metadata.GetMetadata<LiquidRoute>(),
                 RouteValues = context.Request.RouteValues.ToDictionary()
@@ -67,15 +61,12 @@ public static class ApplicationBuilderExtensions
             }
 
             var liquidResponseMiddleware = context.RequestServices.GetRequiredService<ILiquidResponseMiddleware>();
-
             var response = context.Response;
-            
-            Stream stream = response.BodyWriter.AsStream(leaveOpen: true);
-            StreamWriter streamWriter = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
 
+            var pipeWriterTextWriter = new PipeWriterTextWriter(response.BodyWriter, Encoding.UTF8);
             var responseModel = new LiquidResponseModel
             {
-                BodyWriter = streamWriter,
+                BodyWriter = pipeWriterTextWriter,
                 SetContentType = contentType =>
                 {
                     response.ContentType = contentType;
@@ -84,14 +75,14 @@ public static class ApplicationBuilderExtensions
                 {
                     response.StatusCode = statusCode;
                 },
-                StartResponse = (cancellationToken) =>
+                StartResponse = async void (cancellationToken) =>
                 {
-                    response.StartAsync(cancellationToken).ConfigureAwait(false);
+                    await response.StartAsync(cancellationToken);
                 }
             };
 
             await liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
-            await streamWriter.FlushAsync();
+            await pipeWriterTextWriter.FlushAsync();
             // Note: We don't call EndAsync here as the StreamWriter might be reused if there are other middleware chained.
             // The framework will handle the final disposal of the response body stream.
         }

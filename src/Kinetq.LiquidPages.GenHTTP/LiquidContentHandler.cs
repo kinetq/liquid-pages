@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Text;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Protocol;
@@ -24,17 +23,11 @@ public sealed class LiquidContentHandler : IHandler
     {
         var requestPath = request.Target.Path.ToString();
 
-        var headers = new NameValueCollection();
-        foreach (var (key, value) in request.Headers)
-        {
-            headers[key] = value;
-        }
-
         var liquidRequest = new LiquidRequestModel
         {
             Route = requestPath,
             QueryParams = request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            Headers = headers,
+            Headers = new GenHTTPHeaderDictionary(request.Headers),
             Method = request.Method.RawMethod,
             LiquidRoute = _liquidRoute,
             RouteValues = ExtractRouteValues(_liquidRoute?.RouteTemplate, requestPath)

@@ -56,17 +56,11 @@ namespace Kinetq.LiquidPages.SimpleW
         private async ValueTask RenderLiquidViewAsync(HttpSession session, LiquidRoute? liquidRoute = null, int? statusCode = null)
         {
             var request = session.Request;
-            var headers = new NameValueCollection();
-            foreach (var header in request.Headers.EnumerateAll())
-            {
-                headers.Add(header.Key, header.Value);
-            }
-
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Path,
                 QueryParams = (request.QueryString).GetQueryParams(),
-                Headers = headers,
+                Headers = new SimpleWHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = liquidRoute,
                 ErrorStatusCode = statusCode,
@@ -96,9 +90,9 @@ namespace Kinetq.LiquidPages.SimpleW
                         responseContentType = contentType;
                         response.ContentType(contentType);
                     },
-                    SetStatusCode = statusCode =>
+                    SetStatusCode = sc =>
                     {
-                        response.Status(statusCode, null);
+                        response.Status(sc, null);
                     },
                     StartResponse = _ => { }
                 };

@@ -58,7 +58,7 @@ public class HtmlRenderer : IHtmlRenderer
         return html;
     }
 
-    public async Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, StreamWriter streamWriter)
+    public async Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, TextWriter streamWriter)
     {
         liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
         string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";

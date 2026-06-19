@@ -1,4 +1,6 @@
 ﻿using GenHTTP.Engine.Internal;
+using GenHTTP.Modules.IO;
+using GenHTTP.Modules.Layouting;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,8 +28,13 @@ namespace Kinetq.LiquidPages.GenHTTP.Sample
             var middleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
             var routesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
 
+            var staticResources = Resources.From(ResourceTree.FromDirectory(Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static")));
+            var app = Layout.Create()
+                .Add("Static", staticResources)
+                .Add(new LiquidHandlerBuilder(middleware, routesManager));
+
             var server = await Host.Create()
-                 .Handler(new LiquidHandlerBuilder(middleware, routesManager))
+                 .Handler(app)
                  .Bind(IPAddress.Any, 8080)
                  .RunAsync();
         }
