@@ -80,7 +80,8 @@ public class LiquidStartup : ILiquidStartup
                         await request.LiquidPageModel!.OnGetAsync(request);
 
                     return request.LiquidPageModel;
-                }
+                },
+                TemplateOptions = _templateOptionsManager.GetTemplateOptions(optionsPageRoute.RouteTemplate)
             });
         }
 
@@ -108,7 +109,8 @@ public class LiquidStartup : ILiquidStartup
                             await request.LiquidPageModel!.OnGetAsync(request);
 
                         return request.LiquidPageModel;
-                    }
+                    },
+                    TemplateOptions = _templateOptionsManager.GetTemplateOptions(liquidPageAttribute.RouteTemplate)
                 });
             }
 
