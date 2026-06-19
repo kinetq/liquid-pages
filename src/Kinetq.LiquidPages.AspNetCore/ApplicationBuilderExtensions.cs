@@ -68,13 +68,33 @@ public static class ApplicationBuilderExtensions
             }
 
             var liquidResponseMiddleware = context.RequestServices.GetRequiredService<ILiquidResponseMiddleware>();
-            var responseModel = await liquidResponseMiddleware.HandleRequestAsync(liquidRequest);
 
             var response = context.Response;
-            response.ContentLength = responseModel.Content.Length;
-            response.ContentType = responseModel.ContentType;
-            response.StatusCode = responseModel.StatusCode;
-            await response.Body.WriteAsync(responseModel.Content);
+            
+            Stream stream = response.BodyWriter.AsStream(leaveOpen: true);
+            StreamWriter streamWriter = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
+
+            var responseModel = new LiquidResponseModel
+            {
+                BodyWriter = streamWriter,
+                SetContentType = contentType =>
+                {
+                    response.ContentType = contentType;
+                },
+                SetStatusCode = (statusCode) =>
+                {
+                    response.StatusCode = statusCode;
+                },
+                StartResponse = (cancellationToken) =>
+                {
+                    response.StartAsync(cancellationToken).ConfigureAwait(false);
+                }
+            };
+
+            await liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
+            await streamWriter.FlushAsync();
+            // Note: We don't call EndAsync here as the StreamWriter might be reused if there are other middleware chained.
+            // The framework will handle the final disposal of the response body stream.
         }
 
         foreach (var route in routesManager.LiquidRoutes)

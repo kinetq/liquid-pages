@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Text;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
@@ -58,7 +57,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         response.SetStatusCode(200);
         response.SetContentType("text/html");
-        response.StartResponse();
+        response.StartResponse(CancellationToken.None);
 
         // Handle static routes
         await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
@@ -84,7 +83,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         {
             response.SetStatusCode((int)HttpStatusCode.InternalServerError);
             response.SetContentType("text/html");
-            response.StartResponse();
+            response.StartResponse(CancellationToken.None);
 
             await response.BodyWriter.WriteAsync("<h1>500 - Internal Server Error</h1>");
             return;
@@ -92,7 +91,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         response.SetStatusCode((int)httpStatusCode);
         response.SetContentType("text/html");
-        response.StartResponse();
+        response.StartResponse(CancellationToken.None);
         
         await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute, response.BodyWriter);
     }
