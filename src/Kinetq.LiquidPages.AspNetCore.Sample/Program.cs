@@ -19,11 +19,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseLiquidPagesErrorHandling();
 app.UseStaticFiles();
-app.UseRouting();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapLiquidPages();
-});
+app.UseLiquidPages();
 
 await app.RunAsync();

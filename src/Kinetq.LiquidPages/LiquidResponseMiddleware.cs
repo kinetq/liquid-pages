@@ -53,7 +53,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         response.SetStatusCode(200);
         response.SetContentType("text/html");
-        response.StartResponse(CancellationToken.None);
+        response.StartResponse?.Invoke(CancellationToken.None);
 
         await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
     }
@@ -78,7 +78,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         {
             response.SetStatusCode((int)HttpStatusCode.InternalServerError);
             response.SetContentType("text/html");
-            response.StartResponse(CancellationToken.None);
+            response.StartResponse?.Invoke(CancellationToken.None);
 
             await response.BodyWriter.WriteAsync("<h1>500 - Internal Server Error</h1>");
             return;
@@ -86,7 +86,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         response.SetStatusCode((int)httpStatusCode);
         response.SetContentType("text/html");
-        response.StartResponse(CancellationToken.None);
+        response.StartResponse?.Invoke(CancellationToken.None);
         
         await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute, response.BodyWriter);
     }
