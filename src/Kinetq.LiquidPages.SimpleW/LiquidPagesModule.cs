@@ -63,9 +63,9 @@ namespace Kinetq.LiquidPages.SimpleW
                 Method = request.Method,
                 LiquidRoute = liquidRoute,
                 ErrorStatusCode = statusCode,
-                RouteValues = session.Request.RouteValues?
-                                  .ToDictionary(pair => pair.Key, pair => (object?)pair.Value) ??
-                              new Dictionary<string, object?>()
+                RouteValues = session.Request.RouteValues != null
+                    ? new SimpleWRouteValuesDictionary(session.Request.RouteValues)
+                    : EmptyRouteValuesDictionary.Instance
             };
 
             if (!string.IsNullOrWhiteSpace(request.BodyString))

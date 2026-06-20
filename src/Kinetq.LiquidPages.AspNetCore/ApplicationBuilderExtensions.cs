@@ -35,7 +35,7 @@ public static class ApplicationBuilderExtensions
                 Headers = new AspNetCoreHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = context.GetEndpoint()?.Metadata.GetMetadata<LiquidRoute>(),
-                RouteValues = context.Request.RouteValues.ToDictionary()
+                RouteValues = new AspNetCoreRouteValuesDictionary(context.Request.RouteValues)
             };
 
             const string errorPrefix = "/__liquid-error/";

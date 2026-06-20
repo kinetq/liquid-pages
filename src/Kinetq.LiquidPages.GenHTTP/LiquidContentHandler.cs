@@ -30,7 +30,7 @@ public sealed class LiquidContentHandler : IHandler
             Headers = new GenHTTPHeaderDictionary(request.Headers),
             Method = request.Method.RawMethod,
             LiquidRoute = _liquidRoute,
-            RouteValues = ExtractRouteValues(_liquidRoute?.RouteTemplate, requestPath)
+            RouteValues = new GenHTTPRouteValuesDictionary(ExtractRouteValues(_liquidRoute?.RouteTemplate, requestPath))
         };
         
         if (request.Content != null)
@@ -83,7 +83,7 @@ public sealed class LiquidContentHandler : IHandler
         }
     }
 
-    private static IDictionary<string, object?> ExtractRouteValues(string? routeTemplate, string requestPath)
+    private static IReadOnlyDictionary<string, object?> ExtractRouteValues(string? routeTemplate, string requestPath)
     {
         var routeValues = new Dictionary<string, object?>();
 

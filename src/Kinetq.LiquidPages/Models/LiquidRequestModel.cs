@@ -7,7 +7,7 @@ public class LiquidRequestModel
 {
     public string Route { get; set; }
     public IDictionary<string, string> QueryParams { get; set; } = new Dictionary<string, string>();
-    public IDictionary<string, object?> RouteValues { get; set; } = new Dictionary<string, object?>();
+    public IReadOnlyRouteValuesDictionary RouteValues { get; set; } = EmptyRouteValuesDictionary.Instance;
     public object? Body { get; set; }
     public IReadOnlyHeaderDictionary? Headers { get; set; }
     public string Method { get; set; } = "GET";
