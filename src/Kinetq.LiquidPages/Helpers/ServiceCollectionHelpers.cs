@@ -17,8 +17,8 @@ public static class ServiceCollectionHelpers
         serviceCollection.AddSingleton<IFluidParserManager, FluidParserManager>();
         serviceCollection.AddSingleton<ILiquidTemplateManager, LiquidTemplateManager>();
         serviceCollection.AddSingleton<ITemplateOptionsManager, TemplateOptionsManager>();
-        serviceCollection.AddScoped<IHtmlRenderer, HtmlRenderer>();
         serviceCollection.AddScoped<ILiquidResponseMiddleware, LiquidResponseMiddleware>();
+        serviceCollection.AddScoped<IHtmlRenderer, HtmlRenderer>();
         serviceCollection.AddScoped<ILiquidStartup, LiquidStartup>();
 
         IEnumerable<Type> liquidPageModels = assembliesToScan

@@ -5,6 +5,7 @@ using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using System.Text;
+using Kinetq.LiquidPages.Builders;
 
 namespace Kinetq.LiquidPages.EmbedIO;
 
@@ -57,8 +58,9 @@ public class LiquidWebModule : RoutingModuleBase
                 liquidRequest.Body = await reader.ReadToEndAsync();
             }
 
+            response.SendChunked = true;
             StreamWriter streamWriter = new StreamWriter(response.OutputStream, Encoding.UTF8, leaveOpen: true);
-            var responseModel = new LiquidResponseModel
+            var responseModel = new LiquidResponseBuilder
             {
                 BodyWriter = streamWriter,
                 SetContentType = contentType =>
@@ -68,10 +70,6 @@ public class LiquidWebModule : RoutingModuleBase
                 SetStatusCode = (statusCode) =>
                 {
                     response.StatusCode = statusCode;
-                },
-                StartResponse = (cancellationToken) =>
-                {
-                    response.SendChunked = true;
                 }
             };
 

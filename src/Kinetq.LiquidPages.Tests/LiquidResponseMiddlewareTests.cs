@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text;
+using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -229,7 +230,7 @@ namespace Kinetq.LiquidPages.Tests
             Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusCodeAccessor());
         }
 
-        private static (LiquidResponseModel ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
+        private static (LiquidResponseBuilder ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
@@ -237,12 +238,11 @@ namespace Kinetq.LiquidPages.Tests
             var statusCode = 0;
             var contentType = string.Empty;
 
-            var responseModel = new LiquidResponseModel
+            var responseModel = new LiquidResponseBuilder
             {
                 BodyWriter = writer,
                 SetStatusCode = value => statusCode = value,
-                SetContentType = value => contentType = value,
-                StartResponse = _ => { }
+                SetContentType = value => contentType = value
             };
 
             return (responseModel, stream, () => statusCode, () => contentType);

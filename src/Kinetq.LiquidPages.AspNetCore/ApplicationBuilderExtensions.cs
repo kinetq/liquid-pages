@@ -2,17 +2,17 @@ using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using Kinetq.LiquidPages.Builders;
 using Microsoft.IO;
 
 namespace Kinetq.LiquidPages.AspNetCore;
 
 public static class ApplicationBuilderExtensions
 {
-    private static readonly RecyclableMemoryStreamManager manager = new RecyclableMemoryStreamManager();
+    private static readonly RecyclableMemoryStreamManager Manager = new RecyclableMemoryStreamManager();
 
     public static IApplicationBuilder UseLiquidPagesErrorHandling(this IApplicationBuilder app)
     {
@@ -67,9 +67,9 @@ public static class ApplicationBuilderExtensions
         var liquidResponseMiddleware = context.RequestServices.GetRequiredService<ILiquidResponseMiddleware>();
         var response = context.Response;
 
-        using var pooledMemoryStream = manager.GetStream();
+        using var pooledMemoryStream = Manager.GetStream();
 
-        var responseModel = new LiquidResponseModel
+        var responseModel = new LiquidResponseBuilder
         {
             BodyWriter = new StreamWriter(pooledMemoryStream),
             SetContentType = contentType =>

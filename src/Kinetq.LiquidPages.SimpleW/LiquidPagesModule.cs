@@ -4,6 +4,7 @@ using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
 using System.Text;
+using Kinetq.LiquidPages.Builders;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -81,7 +82,7 @@ namespace Kinetq.LiquidPages.SimpleW
                 await using var contentStream = new MemoryStream();
                 await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
 
-                var responseModel = new LiquidResponseModel
+                var responseModel = new LiquidResponseBuilder
                 {
                     BodyWriter = streamWriter,
                     SetContentType = contentType =>
@@ -92,13 +93,12 @@ namespace Kinetq.LiquidPages.SimpleW
                     SetStatusCode = sc =>
                     {
                         response.Status(sc, null);
-                    },
-                    StartResponse = _ => { }
+                    }
                 };
 
                 await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
                 await streamWriter.FlushAsync();
-
+                
                 await response
                     .Body(contentStream.ToArray(), responseContentType)
                     .SendAsync().ConfigureAwait(false);
