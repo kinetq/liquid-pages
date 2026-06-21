@@ -46,6 +46,7 @@ _liquidStartup.RegisterFileProvider("/", fileProvider);
 ```
 
 `RegisterFileProvider` is how template options are now registered for each route prefix. This is required so LiquidPages can resolve templates from the correct source (physical files, embedded files, etc.).
+**It should always be AFTER `RegisterPageModels` so page model types are available when the provider is registered.**
 
 See the sample projects for concrete startup usage:
 

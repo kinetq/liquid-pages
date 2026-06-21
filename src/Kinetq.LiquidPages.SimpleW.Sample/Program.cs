@@ -25,9 +25,9 @@ namespace Kinetq.LiquidPages.SimpleW.Sample
             var liquidResponseMiddleware = container.GetService<ILiquidResponseMiddleware>();
             var liquidStartup = container.GetService<ILiquidStartup>();
 
-            liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
             liquidStartup.RegisterPageModels();
-            
+            liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
+
             server.UseStaticFilesModule(options => {
                 options.Path =  Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");                  // serve your files located here
                 options.Prefix = "/Static";                           // to "/" endpoint
