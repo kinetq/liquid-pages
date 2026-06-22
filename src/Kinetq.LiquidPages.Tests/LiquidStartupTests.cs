@@ -169,6 +169,9 @@ public class LiquidStartupTests
     {
         // Arrange
         var fileProvider = new NullFileProvider();
+        _liquidRegisteredTypesManagerMock
+            .SetupGet(x => x.RegisteredTypes)
+            .Returns(new List<Type> { typeof(TestPageModel1) });
 
         // Act
         _liquidStartup.RegisterFileProvider("/test", fileProvider);
