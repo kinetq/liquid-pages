@@ -16,6 +16,12 @@ public class HtmlRendererTests : IAsyncLifetime
     private IFileProvider _embeddedFileProvider;
     private IFileProvider _physicalFileProvider;
 
+    private enum RenderHtmlMethod
+    {
+        PrefixAndTemplatePath,
+        LiquidRouteAndStreamWriter
+    }
+
     public Task InitializeAsync()
     {
         var templateOptionsManagerMock = new Mock<ITemplateOptionsManager>();
@@ -43,6 +49,7 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IFluidParserManager, FluidParserManager>();
+        serviceCollection.AddSingleton<ILiquidPartialsManager, LiquidPartialsManager>();
         serviceCollection.AddSingleton<ILiquidTemplateManager, LiquidTemplateManager>();
         serviceCollection.AddSingleton(templateOptionsManagerMock.Object);
         serviceCollection.AddSingleton<IHtmlRenderer, HtmlRenderer>();
@@ -71,8 +78,30 @@ public class HtmlRendererTests : IAsyncLifetime
         return options;
     }
 
-    [Fact]
-    private async Task Can_Find_Embedded_Templates()
+    private async Task<string?> RenderHtml(
+        RenderModel renderModel,
+        LiquidRoute liquidRoute,
+        RenderHtmlMethod renderHtmlMethod)
+    {
+        switch (renderHtmlMethod)
+        {
+            case RenderHtmlMethod.PrefixAndTemplatePath:
+                return await _htmlRenderer.RenderHtml(liquidRoute.RouteTemplate, liquidRoute.LiquidTemplatePath, renderModel);
+            case RenderHtmlMethod.LiquidRouteAndStreamWriter:
+                using (var streamWriter = new StringWriter())
+                {
+                    await _htmlRenderer.RenderHtml(renderModel, liquidRoute, streamWriter);
+                    return streamWriter.ToString();
+                }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(renderHtmlMethod), renderHtmlMethod, null);
+        }
+    }
+
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Can_Find_Embedded_Templates(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -82,12 +111,14 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel();
 
-        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string? html = await RenderHtml(renderModel, liquidRoute, renderHtmlMethod);
         Assert.NotNull(html);
     }
 
-    [Fact]
-    private async Task Can_Find_Physical_Templates()
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Can_Find_Physical_Templates(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -97,12 +128,14 @@ public class HtmlRendererTests : IAsyncLifetime
 
         var renderModel = new RenderModel();
 
-        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string? html = await RenderHtml(renderModel, liquidRoute, renderHtmlMethod);
         Assert.NotNull(html);
     }
 
-    [Fact]
-    private async Task Can_Render_View_Model()
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Can_Render_View_Model(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -121,12 +154,14 @@ public class HtmlRendererTests : IAsyncLifetime
             }
         };
 
-        string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string html = await RenderHtml(renderModel, liquidRoute, renderHtmlMethod);
         Assert.Contains("<h2>Test Heading</h2>", html);
     }
 
-    [Fact]
-    private async Task Rertuns_Errors_For_Malformed_Liquid_Syntax()
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Rertuns_Errors_For_Malformed_Liquid_Syntax(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -145,11 +180,23 @@ public class HtmlRendererTests : IAsyncLifetime
             }
         };
 
-        await Assert.ThrowsAsync<ArgumentNullException>(async () => await _htmlRenderer.RenderHtml(renderModel, liquidRoute));
+        switch (renderHtmlMethod)
+        {
+            case RenderHtmlMethod.PrefixAndTemplatePath:
+                await Assert.ThrowsAsync<ArgumentNullException>(async () => await RenderHtml(renderModel, liquidRoute, renderHtmlMethod));
+                break;
+            case RenderHtmlMethod.LiquidRouteAndStreamWriter:
+                await Assert.ThrowsAsync<NullReferenceException>(async () => await RenderHtml(renderModel, liquidRoute, renderHtmlMethod));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(renderHtmlMethod), renderHtmlMethod, null);
+        }
     }
 
-    [Fact]
-    private async Task Rertuns_Errors_For_Malformed_HTML_Syntax()
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Rertuns_Errors_For_Malformed_HTML_Syntax(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -168,13 +215,15 @@ public class HtmlRendererTests : IAsyncLifetime
             }
         };
 
-        string? html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string? html = await RenderHtml(renderModel, liquidRoute, renderHtmlMethod);
         Assert.NotNull(html);
         Assert.Contains("Test Heading", html);
     }
 
-    [Fact]
-    private async Task Returns_Posts_From_Registered_Filter()
+    [Theory]
+    [InlineData(RenderHtmlMethod.PrefixAndTemplatePath)]
+    [InlineData(RenderHtmlMethod.LiquidRouteAndStreamWriter)]
+    private async Task Returns_Posts_From_Registered_Filter(RenderHtmlMethod renderHtmlMethod)
     {
         var liquidRoute = new LiquidRoute()
         {
@@ -215,7 +264,7 @@ public class HtmlRendererTests : IAsyncLifetime
                         return FluidValue.Create(posts, context.Options);
                     });
 
-        string html = await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
+        string html = await RenderHtml(renderModel, liquidRoute, renderHtmlMethod);
         var postCount = html.Split("class=\"post\"").Length - 1;
         Assert.Equal(2, postCount);
     }
