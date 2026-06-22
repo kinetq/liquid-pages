@@ -12,27 +12,35 @@ public class HtmlRenderer : IHtmlRenderer
     private readonly IFluidParserManager _fluidParserManager;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ITemplateOptionsManager _templateOptionsManager;
+    private readonly ILiquidPartialsManager _liquidPartialsManager;
 
     public HtmlRenderer(
         IFluidParserManager fluidParserManager,
         ILiquidTemplateManager liquidTemplateManager, 
-        ITemplateOptionsManager templateOptionsManager)
+        ITemplateOptionsManager templateOptionsManager, 
+        ILiquidPartialsManager liquidPartialsManager)
     {
         _fluidParserManager = fluidParserManager;
         _liquidTemplateManager = liquidTemplateManager;
         _templateOptionsManager = templateOptionsManager;
+        _liquidPartialsManager = liquidPartialsManager;
     }
 
-    public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute)
+    public async Task<string?> RenderHtml(
+        string prefix, 
+        string templatePath,
+        RenderModel renderModel)
     {
-        liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
-        string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
+        string liquidTemplateCacheKey = $"{prefix}-{templatePath}";
+        
+        LiquidPartial partial = _liquidPartialsManager.GetPartial(liquidTemplateCacheKey);
+        partial.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(prefix);
 
         _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
         if (cachedTemplate == null)
         {
             var parser = _fluidParserManager.FluidParser; 
-            var fileInfo = liquidRoute.TemplateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            var fileInfo = partial.TemplateOptions.FileProvider.GetFileInfo(templatePath);
             if (!fileInfo.Exists)
             {
                 return null;
@@ -51,7 +59,7 @@ public class HtmlRenderer : IHtmlRenderer
             }
         }
 
-        var templateContext = new TemplateContext(renderModel, liquidRoute.TemplateOptions);
+        var templateContext = new TemplateContext(renderModel, partial.TemplateOptions);
         string html = await cachedTemplate.RenderAsync(templateContext);
 
         return html;
