@@ -11,11 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="**\*.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Kinetq.LiquidPages\Kinetq.LiquidPages.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
-    <Version>0.0.5</Version>
+    <Version>0.0.6</Version>
     <RepositoryUrl>https://github.com/kinetq/liquid-pages</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>This is a library provides a web module to add liquid middleware to EmbedIO.</Description>

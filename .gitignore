@@ -295,3 +295,5 @@ format-liquid.bundle.js
 # Language server staging folder (populated at build time)
 src/Kinetq.LiquidPages.Extension/LanguageServer/*
 !src/Kinetq.LiquidPages.Extension/LanguageServer/.gitkeep
+
+/liquid_results*

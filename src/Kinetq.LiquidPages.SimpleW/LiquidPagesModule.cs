@@ -3,9 +3,8 @@ using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
-using System.Buffers;
-using System.Collections.Specialized;
 using System.Text;
+using Kinetq.LiquidPages.Builders;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -57,38 +56,51 @@ namespace Kinetq.LiquidPages.SimpleW
         private async ValueTask RenderLiquidViewAsync(HttpSession session, LiquidRoute? liquidRoute = null, int? statusCode = null)
         {
             var request = session.Request;
-            var headers = new NameValueCollection();
-            foreach (var header in request.Headers.EnumerateAll())
-            {
-                headers.Add(header.Key, header.Value);
-            }
-
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Path,
                 QueryParams = (request.QueryString).GetQueryParams(),
-                Headers = headers,
+                Headers = new SimpleWHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = liquidRoute,
                 ErrorStatusCode = statusCode,
-                RouteValues = session.Request.RouteValues?
-                                  .ToDictionary(pair => pair.Key, pair => (object?)pair.Value) ??
-                              new Dictionary<string, object?>()
+                RouteValues = session.Request.RouteValues != null
+                    ? new SimpleWRouteValuesDictionary(session.Request.RouteValues)
+                    : EmptyRouteValuesDictionary.Instance
             };
 
-            if (!request.Body.IsEmpty)
+            if (!string.IsNullOrWhiteSpace(request.BodyString))
             {
-                var stream = new MemoryStream(request.Body.ToArray());
-                using var reader = new StreamReader(stream, Encoding.UTF8, true, -1, true);
-                liquidRequest.Body = await reader.ReadToEndAsync();
+                liquidRequest.Body = request.BodyString;
             }
 
             try
             {
-                var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest);
-                await session.Response
-                    .Status(responseModel.StatusCode)
-                    .Body(responseModel.Content, responseModel.ContentType)
+                var response = session.Response;
+                var responseContentType = "text/html";
+
+                await using var contentStream = new MemoryStream();
+                await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
+
+                var responseModel = new LiquidResponseBuilder
+                {
+                    BodyWriter = streamWriter,
+                    SetContentType = contentType =>
+                    {
+                        responseContentType = contentType;
+                        response.ContentType(contentType);
+                    },
+                    SetStatusCode = sc =>
+                    {
+                        response.Status(sc, null);
+                    }
+                };
+
+                await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
+                await streamWriter.FlushAsync();
+                
+                await response
+                    .Body(contentStream.ToArray(), responseContentType)
                     .SendAsync().ConfigureAwait(false);
             }
             catch (Exception ex)

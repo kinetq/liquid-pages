@@ -1,7 +1,7 @@
-using System.Collections.Specialized;
 using System.Text;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Protocol;
+using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 
@@ -24,20 +24,14 @@ public sealed class LiquidContentHandler : IHandler
     {
         var requestPath = request.Target.Path.ToString();
 
-        var headers = new NameValueCollection();
-        foreach (var (key, value) in request.Headers)
-        {
-            headers[key] = value;
-        }
-
         var liquidRequest = new LiquidRequestModel
         {
             Route = requestPath,
             QueryParams = request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            Headers = headers,
+            Headers = new GenHTTPHeaderDictionary(request.Headers),
             Method = request.Method.RawMethod,
             LiquidRoute = _liquidRoute,
-            RouteValues = ExtractRouteValues(_liquidRoute?.RouteTemplate, requestPath)
+            RouteValues = new GenHTTPRouteValuesDictionary(ExtractRouteValues(_liquidRoute?.RouteTemplate, requestPath))
         };
         
         if (request.Content != null)
@@ -48,12 +42,34 @@ public sealed class LiquidContentHandler : IHandler
 
         try
         {
-            var liquidResponse = await _middleware.HandleRequestAsync(liquidRequest);
+            var responseStatusCode = 200;
+            var responseContentType = "text/html";
+
+            await using var contentStream = new MemoryStream();
+            await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
+
+            var responseModel = new LiquidResponseBuilder
+            {
+                BodyWriter = streamWriter,
+                SetContentType = contentType =>
+                {
+                    responseContentType = contentType;
+                },
+                SetStatusCode = statusCode =>
+                {
+                    responseStatusCode = statusCode;
+                }
+            };
+
+            await _middleware.HandleRequestAsync(liquidRequest, responseModel);
+            await streamWriter.FlushAsync();
+
+            var contentBytes = contentStream.ToArray();
 
             return request.Respond()
-                .Status((ResponseStatus)liquidResponse.StatusCode)
-                .Type(FlexibleContentType.Parse(liquidResponse.ContentType))
-                .Content(new ByteArrayContent(liquidResponse.Content))
+                .Status((ResponseStatus)responseStatusCode)
+                .Type(FlexibleContentType.Parse(responseContentType))
+                .Content(new ByteArrayContent(contentBytes))
                 .Build();
         }
         catch
@@ -67,7 +83,7 @@ public sealed class LiquidContentHandler : IHandler
         }
     }
 
-    private static IDictionary<string, object?> ExtractRouteValues(string? routeTemplate, string requestPath)
+    private static IReadOnlyDictionary<string, object?> ExtractRouteValues(string? routeTemplate, string requestPath)
     {
         var routeValues = new Dictionary<string, object?>();
 

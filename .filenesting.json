@@ -4,7 +4,7 @@
     "add": {
       "extensionToExtension": {
         "add": {
-          ".liquid.cs": [ ".liquid" ]
+          ".liquid": [ ".liquid.cs" ]
         }
       }
     }

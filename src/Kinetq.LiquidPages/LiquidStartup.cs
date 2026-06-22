@@ -34,6 +34,12 @@ public class LiquidStartup : ILiquidStartup
 
     public void RegisterFileProvider(string prefix, IFileProvider fileProvider)
     {
+        if (!_liquidRegisteredTypesManager.RegisteredTypes.Any())
+        {
+            throw new Exception(
+                "There are no registered types! Call RegisterPageModels before registering the file provider.");
+        }
+        
         _templateOptionsManager.RegisterTemplateOptions(prefix, fileProvider);
     }
 

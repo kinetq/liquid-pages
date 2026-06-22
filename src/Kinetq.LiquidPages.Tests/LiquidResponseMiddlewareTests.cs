@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Text;
+using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,9 @@ namespace Kinetq.LiquidPages.Tests
         {
             _liquidRoutesManagerMock = new Mock<ILiquidRoutesManager>();
             _htmlRendererMock = new Mock<IHtmlRenderer>();
+            _htmlRendererMock
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>(), It.IsAny<StreamWriter>()))
+                .Returns(Task.CompletedTask);
 
             var serviceCollection = new ServiceCollection();
             var serviceProvider = serviceCollection
@@ -48,22 +53,24 @@ namespace Kinetq.LiquidPages.Tests
             };
 
             _htmlRendererMock
-                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync(expectedRenderedHtml);
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>(), It.IsAny<StreamWriter>()))
+                .Returns((RenderModel _, LiquidRoute _, StreamWriter writer) => writer.WriteAsync(expectedRenderedHtml));
+
+            var (responseModel, responseStream, statusCodeAccessor, _) = CreateResponseModel();
 
             // Act
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
                 LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
-            });
+            }, responseModel);
 
-            var actualHtml = System.Text.Encoding.UTF8.GetString(responseModel.Content);
+            var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
 
             // Assert
             Assert.Equal(expectedRenderedHtml, actualHtml);
-            Assert.True(responseModel.StatusCode == (int)HttpStatusCode.OK);
+            Assert.True(statusCodeAccessor() == (int)HttpStatusCode.OK);
         }
 
         [Fact]
@@ -81,22 +88,23 @@ namespace Kinetq.LiquidPages.Tests
                 });
 
             _htmlRendererMock
-                .Setup(x =>
-                    x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync(expectedRenderedHtml);
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>(), It.IsAny<StreamWriter>()))
+                .Returns((RenderModel _, LiquidRoute _, StreamWriter writer) => writer.WriteAsync(expectedRenderedHtml));
+
+            var (responseModel, responseStream, statusCodeAccessor, _) = CreateResponseModel();
 
             // Act
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = "/",
                 QueryParams = new Dictionary<string, string>()
-            });
+            }, responseModel);
 
-            var actualHtml = System.Text.Encoding.UTF8.GetString(responseModel.Content);
+            var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
 
             // Assert
             Assert.Equal(expectedRenderedHtml, actualHtml);
-            Assert.False(responseModel.StatusCode == (int)HttpStatusCode.OK);
+            Assert.False(statusCodeAccessor() == (int)HttpStatusCode.OK);
         }
 
         [Fact]
@@ -121,16 +129,18 @@ namespace Kinetq.LiquidPages.Tests
                     LiquidTemplatePath = "503.liquid",
                     Execute = _ => throw expectedException
                 });
+            var (responseModel, _, statusCodeAccessor, _) = CreateResponseModel();
+
             // Act
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
                 LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
-            });
+            }, responseModel);
 
             // Assert
-            Assert.Equal((int)HttpStatusCode.InternalServerError, responseModel.StatusCode);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, statusCodeAccessor());
         }
 
         [Fact]
@@ -158,21 +168,21 @@ namespace Kinetq.LiquidPages.Tests
                 });
 
             _htmlRendererMock
-                .SetupSequence(x =>
-                    x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync((string)null) // First call returns null to simulate not found
-                .ReturnsAsync(expectedRenderedHtml);
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>(), It.IsAny<StreamWriter>()))
+                .Returns((RenderModel _, LiquidRoute _, StreamWriter writer) => writer.WriteAsync(expectedRenderedHtml));
+
+            var (responseModel, _, statusCodeAccessor, _) = CreateResponseModel();
 
             // Act
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
                 LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
-            });
+            }, responseModel);
 
             // Assert
-            Assert.Equal((int)HttpStatusCode.InternalServerError, responseModel.StatusCode);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, statusCodeAccessor());
         }
 
         [Fact]
@@ -203,19 +213,39 @@ namespace Kinetq.LiquidPages.Tests
                 });
 
             _htmlRendererMock
-                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>()))
-                .ReturnsAsync(expectedRenderedHtml);
+                .Setup(x => x.RenderHtml(It.IsAny<RenderModel>(), It.IsAny<LiquidRoute>(), It.IsAny<StreamWriter>()))
+                .Returns((RenderModel _, LiquidRoute _, StreamWriter writer) => writer.WriteAsync(expectedRenderedHtml));
+
+            var (responseModel, _, statusCodeAccessor, _) = CreateResponseModel();
 
             // Act
-            var responseModel = await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
+            await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
                 LiquidRoute = liquidRoute,
                 QueryParams = new Dictionary<string, string>()
-            });
+            }, responseModel);
 
             // Assert
-            Assert.Equal((int)HttpStatusCode.ServiceUnavailable, responseModel.StatusCode);
+            Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusCodeAccessor());
+        }
+
+        private static (LiquidResponseBuilder ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
+            writer.AutoFlush = true;
+            var statusCode = 0;
+            var contentType = string.Empty;
+
+            var responseModel = new LiquidResponseBuilder
+            {
+                BodyWriter = writer,
+                SetStatusCode = value => statusCode = value,
+                SetContentType = value => contentType = value
+            };
+
+            return (responseModel, stream, () => statusCode, () => contentType);
         }
     }
 }

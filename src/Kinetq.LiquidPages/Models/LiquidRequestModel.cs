@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Pages;
 
 namespace Kinetq.LiquidPages.Models;
@@ -7,9 +7,9 @@ public class LiquidRequestModel
 {
     public string Route { get; set; }
     public IDictionary<string, string> QueryParams { get; set; } = new Dictionary<string, string>();
-    public IDictionary<string, object?> RouteValues { get; set; } = new Dictionary<string, object?>();
+    public IReadOnlyRouteValuesDictionary RouteValues { get; set; } = EmptyRouteValuesDictionary.Instance;
     public object? Body { get; set; }
-    public NameValueCollection Headers { get; set; } = new NameValueCollection();
+    public IReadOnlyHeaderDictionary? Headers { get; set; }
     public string Method { get; set; } = "GET";
     public int? ErrorStatusCode { get; set; }
     public LiquidRoute? LiquidRoute { get; set; }

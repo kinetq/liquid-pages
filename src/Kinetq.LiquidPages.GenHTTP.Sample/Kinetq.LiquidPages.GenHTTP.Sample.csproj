@@ -11,8 +11,21 @@
 		<ProjectReference Include="..\Kinetq.LiquidPages.GenHTTP\Kinetq.LiquidPages.GenHTTP.csproj" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="**\*.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Static\css\site.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 	<ItemGroup>
-		<PackageReference Include="GenHTTP.Core" Version="10.5.0" />
+		<PackageReference Include="GenHTTP.Core" Version="10.5.3" />
+		<PackageReference Include="GenHTTP.Modules.IO" Version="10.5.3" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.2" />
 	</ItemGroup>
 
