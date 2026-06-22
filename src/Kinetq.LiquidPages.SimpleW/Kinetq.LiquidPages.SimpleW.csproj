@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SimpleW" Version="26.0.1-alpha.20260606-1878" />
+    <PackageReference Include="SimpleW" Version="26.0.1" />
   </ItemGroup>
 
   <ItemGroup>
