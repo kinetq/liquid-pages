@@ -1,10 +1,10 @@
-﻿namespace Kinetq.LiquidPages.Builders;
+﻿using System.IO.Pipelines;
 
-public abstract class LiquidResponseBuilder<T>
-{
-    public T Response { get; set; }
-    public abstract void Initialize(T response, TextWriter bodyWriter);
+namespace Kinetq.LiquidPages.Builders;
+
+public class LiquidResponseBuilder
+{ 
     public TextWriter BodyWriter { get; set; }
-    public abstract void SetStatusCode(int statusCode, string? message = null);
-    public abstract void SetContentType(string contentType);
+    public Action<int> SetStatusCode { get; set; } = _ => { };
+    public Action<string> SetContentType { get; set; } = _ => { };
 }

@@ -77,18 +77,30 @@ namespace Kinetq.LiquidPages.SimpleW
             try
             {
                 var response = session.Response;
+                var responseContentType = "text/html";
 
                 await using var contentStream = new MemoryStream();
                 await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
 
-                var responseModel = new SimpleWResponseBuilder();
-                responseModel.Initialize(response, streamWriter);
-                
+                var responseModel = new LiquidResponseBuilder
+                {
+                    BodyWriter = streamWriter,
+                    SetContentType = contentType =>
+                    {
+                        responseContentType = contentType;
+                        response.ContentType(contentType);
+                    },
+                    SetStatusCode = sc =>
+                    {
+                        response.Status(sc, null);
+                    }
+                };
+
                 await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
                 await streamWriter.FlushAsync();
                 
                 await response
-                    .Body(contentStream.ToArray())
+                    .Body(contentStream.ToArray(), responseContentType)
                     .SendAsync().ConfigureAwait(false);
             }
             catch (Exception ex)

@@ -1,6 +1,8 @@
 ﻿using System.Net;
+using System.Text;
 using GenHTTP.Api.Infrastructure;
 using GenHTTP.Engine.Internal;
+using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
@@ -67,8 +69,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             LiquidRequestModel? capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
-                .Callback<LiquidRequestModel, GenHTTPResponseBuilder>((req, response) =>
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
@@ -91,8 +93,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             LiquidRequestModel? capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
-                .Callback<LiquidRequestModel, GenHTTPResponseBuilder>((req, response) =>
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
@@ -106,7 +108,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             await httpClient.PostAsync(_urlPrefix, new StringContent("{\"test\": 0}"));
 
             _mockLiquidResponseMiddleware.Verify(
-                m => m.HandleRequestAsync(It.Is<LiquidRequestModel>(r => r.Body != null), It.IsAny<GenHTTPResponseBuilder>()),
+                m => m.HandleRequestAsync(It.Is<LiquidRequestModel>(r => r.Body != null), It.IsAny<LiquidResponseBuilder>()),
                 Times.Once);
 
             Assert.NotNull(capturedRequest);
@@ -117,7 +119,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         public async Task Server_ShouldReturn500_WhenHandleRequestAsyncThrows()
         {
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
                 .ThrowsAsync(new Exception("Simulated failure"));
 
             using var httpClient = new HttpClient();
@@ -131,8 +133,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         public async Task Server_ShouldCallHandleRequestAsync_WhenPathIsRequested()
         {
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
-                .Callback<LiquidRequestModel, GenHTTPResponseBuilder>((_, response) =>
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((_, response) =>
                 {
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
@@ -145,7 +147,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             await httpClient.GetAsync($"{_urlPrefix}/some-page");
 
             _mockLiquidResponseMiddleware.Verify(
-                m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()),
+                m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()),
                 Times.Once);
         }
 
@@ -155,8 +157,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             LiquidRequestModel? capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
-                .Callback<LiquidRequestModel, GenHTTPResponseBuilder>((req, response) =>
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
@@ -180,8 +182,8 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             LiquidRequestModel? capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<GenHTTPResponseBuilder>()))
-                .Callback<LiquidRequestModel, GenHTTPResponseBuilder>((req, response) =>
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);

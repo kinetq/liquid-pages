@@ -19,8 +19,8 @@ namespace Kinetq.LiquidPages.EmbedIO.Sample
             var serviceProvider = GetContainer();
             var startup = serviceProvider.GetService<ILiquidStartup>();
 
-            startup.RegisterPageModels();
             startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
+            startup.RegisterPageModels();
 
             var webServer = new WebServer("http://*:5662");
             

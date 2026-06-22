@@ -60,8 +60,18 @@ public class LiquidWebModule : RoutingModuleBase
 
             response.SendChunked = true;
             StreamWriter streamWriter = new StreamWriter(response.OutputStream, Encoding.UTF8, leaveOpen: true);
-            var responseModel = new EmbedIOResponseBuilder();
-            responseModel.Initialize(response, streamWriter);
+            var responseModel = new LiquidResponseBuilder
+            {
+                BodyWriter = streamWriter,
+                SetContentType = contentType =>
+                {
+                    response.ContentType = contentType;
+                },
+                SetStatusCode = (statusCode) =>
+                {
+                    response.StatusCode = statusCode;
+                }
+            };
 
             await LiquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
             await streamWriter.FlushAsync();
