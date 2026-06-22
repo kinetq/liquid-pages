@@ -15,6 +15,7 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
     public class LiquidContentHandlerTests : IAsyncLifetime
     {
         private Mock<ILiquidResponseMiddleware> _mockLiquidResponseMiddleware;
+        private LiquidRoute _liquidRoute;
         private IServer _server;
         private string _urlPrefix;
         private int _port;
@@ -22,12 +23,13 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         public async Task InitializeAsync()
         {
             _mockLiquidResponseMiddleware = new Mock<ILiquidResponseMiddleware>();
+            _liquidRoute = new LiquidRoute();
 
             _port = HttpHelpers.GetRandomUnusedPort();
             _urlPrefix = $"http://localhost:{_port}";
 
             _server = Host.Create()
-                .Handler(new LiquidContentHandler(_mockLiquidResponseMiddleware.Object))
+                .Handler(new LiquidContentHandler(_mockLiquidResponseMiddleware.Object, _liquidRoute))
                 .Bind(IPAddress.Loopback, (ushort)_port)
                 .Build();
 
@@ -174,6 +176,33 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             Assert.NotNull(capturedRequest);
             Assert.True(capturedRequest.QueryParams.ContainsKey("foo"));
             Assert.Equal("bar", capturedRequest.QueryParams["foo"]);
+        }
+
+        [Fact]
+        public async Task Server_ShouldPassRouteValues_OnLiquidRequestModel()
+        {
+            LiquidRequestModel? capturedRequest = null;
+
+            _liquidRoute.RouteTemplate = "/page/{page}";
+            
+            _mockLiquidResponseMiddleware
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
+                .Callback<LiquidRequestModel, LiquidResponseBuilder>((req, response) =>
+                {
+                    capturedRequest = req;
+                    response.SetStatusCode(200);
+                    response.SetContentType("text/html");
+                    response.BodyWriter.Write("<h1>Page Found</h1>");
+                })
+                .Returns(Task.CompletedTask);
+
+            using var httpClient = new HttpClient();
+
+            await httpClient.GetAsync($"{_urlPrefix}/page/1");
+
+            Assert.NotNull(capturedRequest);
+            Assert.True(capturedRequest.RouteValues.ContainsKey("page"));
+            Assert.Equal("1", capturedRequest.RouteValues["page"]);
         }
 
         [Fact]
