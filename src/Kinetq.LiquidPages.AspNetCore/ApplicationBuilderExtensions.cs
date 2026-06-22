@@ -69,18 +69,8 @@ public static class ApplicationBuilderExtensions
 
         using var pooledMemoryStream = Manager.GetStream();
 
-        var responseModel = new LiquidResponseBuilder
-        {
-            BodyWriter = new StreamWriter(pooledMemoryStream),
-            SetContentType = contentType =>
-            {
-                response.ContentType = contentType;
-            },
-            SetStatusCode = (statusCode) =>
-            {
-                response.StatusCode = statusCode;
-            }
-        };
+        var responseModel = new AspNetCoreResponseBuilder();
+        responseModel.Initialize(response, new StreamWriter(pooledMemoryStream));
 
         await liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
         await responseModel.BodyWriter.FlushAsync();

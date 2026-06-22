@@ -1,7 +1,6 @@
 using System.Text;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Protocol;
-using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 
@@ -48,27 +47,17 @@ public sealed class LiquidContentHandler : IHandler
             await using var contentStream = new MemoryStream();
             await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
 
-            var responseModel = new LiquidResponseBuilder
-            {
-                BodyWriter = streamWriter,
-                SetContentType = contentType =>
-                {
-                    responseContentType = contentType;
-                },
-                SetStatusCode = statusCode =>
-                {
-                    responseStatusCode = statusCode;
-                }
-            };
+            var responseModel = new GenHTTPResponseBuilder();
 
+            var responseBuilder = request.Respond();
+            responseModel.Initialize(responseBuilder, streamWriter);
+            
             await _middleware.HandleRequestAsync(liquidRequest, responseModel);
             await streamWriter.FlushAsync();
 
             var contentBytes = contentStream.ToArray();
 
-            return request.Respond()
-                .Status((ResponseStatus)responseStatusCode)
-                .Type(FlexibleContentType.Parse(responseContentType))
+            return responseBuilder
                 .Content(new ByteArrayContent(contentBytes))
                 .Build();
         }
