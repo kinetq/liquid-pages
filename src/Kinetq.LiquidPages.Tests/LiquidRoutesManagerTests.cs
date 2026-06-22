@@ -38,8 +38,7 @@ public class LiquidRoutesManagerTests : IAsyncLifetime
         {
             RouteTemplate = routeTemplate,
             LiquidTemplatePath = templatePath,
-            Execute = async (model) => await Task.FromResult(new { Message = "Test" }),
-            QueryParams = new Dictionary<string, string>()
+            Execute = async (model) => await Task.FromResult(new { Message = "Test" })
         };
     }
 
