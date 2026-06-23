@@ -247,7 +247,7 @@ If you choose not to use the extension, you will need to configure the following
     "add": {
       "extensionToExtension": {
         "add": {
-          ".liquid.cs": [ ".liquid" ]
+          ".liquid": [ ".liquid.cs" ]
         }
       }
     }
@@ -261,10 +261,7 @@ If you choose not to use the extension, you will need to configure the following
 {
   "HtmlValidation.IgnorePatterns": [
     "**/*.liquid"
-  ],
-  "Files.Associations": {
-    "*.liquid": "html"
-  }
+  ]
 }
 ```
 
