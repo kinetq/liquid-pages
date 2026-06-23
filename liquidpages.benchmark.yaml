@@ -29,6 +29,11 @@ jobs:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Sample/Kinetq.LiquidPages.SimpleW.Sample.csproj
+  simplew-razor-sample:
+    sources:
+      liquidpages:
+        localFolder: .
+    project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Razor.Sample/Kinetq.LiquidPages.SimpleW.Razor.Sample.csproj
 
 scenarios:
   aspnetcore-liquid:
@@ -66,6 +71,14 @@ scenarios:
   simplew-home:
     application:
       job: simplew-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 2015
+        path: /
+  simplew-razor-home:
+    application:
+      job: simplew-razor-sample
     load:
       job: bombardier
       variables:
