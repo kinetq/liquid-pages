@@ -6,8 +6,8 @@
 ## Tasks
    - ✅ 02.01-web-sample-entrypoints: Upgrade ASP.NET Core sample entry points to net10.0 ([Content](tasks/02.01-web-sample-entrypoints/task.md), [Progress](tasks/02.01-web-sample-entrypoints/progress-details.md))
    - 🔄 02.01-web-sample-entrypoints: Upgrade ASP.NET Core sample entry points to net10.0 ([Content](tasks/02.01-web-sample-entrypoints/task.md))
-   - 🔄 02.01-web-sample-entrypoints: Upgrade ASP.NET Core sample entry points to net10.0 ([Content](tasks/02.01-web-sample-entrypoints/task.md))
-   - 🔲 02.01-web-sample-entrypoints: Upgrade ASP.NET Core sample entry points to net10.0
+   - ✅ 02.02-console-and-simplew-samples: Upgrade console-style sample hosts to net10.0 ([Content](tasks/02.02-console-and-simplew-samples/task.md), [Progress](tasks/02.02-console-and-simplew-samples/progress-details.md))
+   - 🔄 02.02-console-and-simplew-samples: Upgrade console-style sample hosts to net10.0 ([Content](tasks/02.02-console-and-simplew-samples/task.md))
    - 🔲 02.02-console-and-simplew-samples: Upgrade console-style sample hosts to net10.0
    - 🔲 02.03-maui-sample-controls-runtime: Upgrade MAUI sample project and control/runtime surface to net10.0
 - 🔲 03-upgrade-shared-libraries: Upgrade shared framework libraries and adapters to net10.0 ([Content](tasks/03-upgrade-shared-libraries/task.md))
