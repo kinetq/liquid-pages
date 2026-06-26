@@ -1,0 +1,23 @@
+{% capture page_content %}
+  {{ page_content }}
+{% endcapture %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LiquidPages Avalonia Sample</title>
+  <link rel="stylesheet" href="app://Static/css/site.css" />
+</head>
+<body>
+  <nav>
+	<a href="app://">Home</a>
+	<a href="app://hello/world">Hello Route</a>
+	<a href="app://missing">Missing Route</a>
+  </nav>
+  <main>
+	{{ page_content }}
+  </main>
+</body>
+</html>
