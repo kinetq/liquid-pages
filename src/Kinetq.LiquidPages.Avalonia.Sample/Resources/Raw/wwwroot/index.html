@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiquidPages Hybrid Host</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fb;
+        }
+
+        #status {
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #445;
+            background: #eef2ff;
+            border-bottom: 1px solid #d7def7;
+        }
+
+        #contentFrame {
+            width: 100%;
+            height: calc(100% - 39px);
+            border: none;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="status">Ready</div>
+    <iframe id="contentFrame" title="Liquid response content"></iframe>
+
+    <script>
+        function decodeBase64Utf8(base64) {
+            if (!base64) {
+                return "";
+            }
+
+            const bytes = Uint8Array.from(window.atob(base64), character => character.charCodeAt(0));
+            return new TextDecoder().decode(bytes);
+        }
+
+        window.renderContentFromBase64 = function (htmlBase64, statusBase64) {
+            const html = decodeBase64Utf8(htmlBase64);
+            const status = decodeBase64Utf8(statusBase64);
+
+            document.getElementById("status").textContent = status;
+            document.getElementById("contentFrame").srcdoc = html;
+        };
+    </script>
+</body>
+</html>
