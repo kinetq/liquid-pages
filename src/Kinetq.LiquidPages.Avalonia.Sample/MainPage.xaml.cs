@@ -1,9 +1,10 @@
-﻿using System.Text;
-using Kinetq.LiquidPages.Builders;
+﻿using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Router.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Windows.ApplicationModel.WindowsAppRuntime;
+using System.Text;
 
 namespace Kinetq.LiquidPages.Avalonia.Sample;
 
@@ -40,9 +41,30 @@ public partial class MainPage : ContentPage
 
 		Browser.Loaded += async (_, _) =>
 		{
-			_webViewReady = true;
-			await OpenPathAsync(AddressEntry.Text);
-		};
+			_webViewReady = true; 
+            var response = await HandlePathAsync("/");
+            Browser.Source = new HtmlWebViewSource
+            {
+                Html = response.Body
+            };
+        };
+
+        Browser.Navigating += async (_, args) =>
+        {
+            Uri uri = new Uri(args.Url);
+            if (uri.Scheme == "data" || uri.Scheme == "about")
+            {
+                return;
+            }
+
+            args.Cancel = true;
+
+            var response = await HandlePathAsync(uri.AbsolutePath);
+            Browser.Source = new HtmlWebViewSource
+            {
+                Html = response.Body
+            };
+        };
     }
 
 	private async void NavigateButtonOnClicked(object? sender, EventArgs e)
@@ -162,7 +184,43 @@ public partial class MainPage : ContentPage
 		var htmlBase64 = Convert.ToBase64String(htmlBytes);
 		var statusBase64 = Convert.ToBase64String(statusBytes);
 
-		await Browser.EvaluateJavaScriptAsync($"window.renderContentFromBase64('{htmlBase64}','{statusBase64}')");
+		if (!await EnsureWebViewReadyForScriptAsync())
+		{
+			Browser.Source = new HtmlWebViewSource
+			{
+				Html = html
+			};
+			return;
+		}
+
+		try
+		{
+			await Browser.EvaluateJavaScriptAsync($"window.renderContentFromBase64('{htmlBase64}','{statusBase64}')");
+		}
+		catch (InvalidOperationException)
+		{
+			Browser.Source = new HtmlWebViewSource
+			{
+				Html = html
+			};
+		}
+	}
+
+	private async Task<bool> EnsureWebViewReadyForScriptAsync()
+	{
+#if WINDOWS
+		if (Browser.Handler?.PlatformView is Microsoft.UI.Xaml.Controls.WebView2 nativeWebView)
+		{
+			if (nativeWebView.CoreWebView2 == null)
+			{
+				await nativeWebView.EnsureCoreWebView2Async();
+			}
+
+			return nativeWebView.CoreWebView2 != null;
+		}
+#endif
+
+		return true;
 	}
 
 	private static string NormalizePath(string? path)

@@ -20,10 +20,9 @@
                     Clicked="NavigateButtonOnClicked" />
         </Grid>
 
-        <HybridWebView Grid.Row="1"
+        <WebView Grid.Row="1"
                        x:Name="Browser"
-                       HybridRoot="wwwroot"
-                       DefaultFile="index.html" />
+                       />
 
         <Editor Grid.Row="2"
                 x:Name="HtmlPreviewEditor"
