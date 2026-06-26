@@ -1,0 +1,40 @@
+﻿using SimpleW;
+using SimpleW.Helper.Razor;
+using SimpleW.Modules;
+using System.Net;
+
+namespace Kinetq.LiquidPages.SimpleW.Razor.Sample;
+
+class Program
+{
+    static async Task Main()
+    {
+        var server = new SimpleWServer(IPAddress.Any, 2015);
+
+        server.UseRazorModule(options =>
+              {
+                  options.ViewsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views");
+                  // or: options.ViewsPath = Path.GetFullPath("Views");
+              });
+
+        server.UseStaticFilesModule(options =>
+        {
+            options.Path = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");
+            options.Prefix = "/Static";
+            options.CacheTimeout = TimeSpan.FromDays(1);
+            options.AutoIndex = true;
+        });
+
+        server.MapGet("/", () =>
+        {
+            var model = new { Title = "SimpleW Razor Sample", H1 = "Welcome to SimpleW.Helper.Razor" };
+            return RazorResults.View("Home/Index", model)
+                .WithViewBag(vb =>
+                {
+                    vb.Title = "SimpleW Razor Sample";
+                });
+        });
+
+        await server.RunAsync();
+    }
+}

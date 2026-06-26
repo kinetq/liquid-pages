@@ -1,0 +1,9 @@
+@model dynamic
+@{
+    Layout = "_Layout";
+}
+
+@await ViewBag.Html.PartialAsync("_Header")
+
+<h1>@Model.H1</h1>
+<p>This is a boilerplate page rendered with <strong>SimpleW.Helper.Razor</strong>.</p>
