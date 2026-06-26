@@ -20,9 +20,8 @@
                     Clicked="NavigateButtonOnClicked" />
         </Grid>
 
-        <WebView Grid.Row="1"
-                       x:Name="Browser"
-                       />
+        <ContentView Grid.Row="1"
+                     x:Name="BrowserHost" />
 
         <Editor Grid.Row="2"
                 x:Name="HtmlPreviewEditor"
