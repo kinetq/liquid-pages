@@ -8,7 +8,6 @@ namespace Kinetq.LiquidPages.Avalonia.Sample;
 
 public class LiquidPagesWebView : WebView
 {
-    private string _currentRoute = "/";
     private bool _webViewReady;
 
     public IRouteTree? RouteTree { get; set; }
@@ -56,16 +55,12 @@ public class LiquidPagesWebView : WebView
     {
         var normalizedPath = NormalizePath(path);
 
-        if (RouteTree == null || LiquidResponseMiddleware == null || TemplateOptionsManager == null)
-        {
-            var errorResponse = new RenderedResponse(500, "text/plain", "LiquidPagesWebView services are not initialized.");
-            await RenderInBrowserAsync(errorResponse);
-            OnResponseRendered(normalizedPath, errorResponse);
-            return;
-        }
-
         var response = await HandlePathAsync(normalizedPath);
-        await RenderInBrowserAsync(response);
+        Source = new HtmlWebViewSource
+        {
+            Html = response.Body
+        };
+        
         OnResponseRendered(normalizedPath, response);
     }
 
@@ -76,20 +71,6 @@ public class LiquidPagesWebView : WebView
 
     private async Task<RenderedResponse> HandlePathAsync(string path)
     {
-        if (RouteTree == null || LiquidResponseMiddleware == null || TemplateOptionsManager == null)
-        {
-            return new RenderedResponse(500, "text/plain", "LiquidPagesWebView services are not initialized.");
-        }
-
-        if (IsStaticAssetRequest(path))
-        {
-            var staticResponse = await TryResolveStaticAssetAsync(path);
-            if (staticResponse != null)
-            {
-                return staticResponse.Value;
-            }
-        }
-
         var routeMatch = RouteTree.Match(path);
         var request = new LiquidRequestModel
         {
@@ -120,92 +101,7 @@ public class LiquidPagesWebView : WebView
         using var reader = new StreamReader(memoryStream, Encoding.UTF8, leaveOpen: true);
         var body = await reader.ReadToEndAsync();
 
-        if (routeMatch?.LiquidRoute?.RouteTemplate is { Length: > 0 } routeTemplate)
-        {
-            _currentRoute = routeTemplate;
-        }
-
         return new RenderedResponse(statusCode, contentType, body);
-    }
-
-    private async Task<RenderedResponse?> TryResolveStaticAssetAsync(string path)
-    {
-        if (RouteTree == null || TemplateOptionsManager == null)
-        {
-            return null;
-        }
-
-        var sourceRouteMatch = RouteTree.Match(_currentRoute) ?? RouteTree.Match("/");
-        if (sourceRouteMatch?.LiquidRoute?.RouteTemplate == null)
-        {
-            return null;
-        }
-
-        var templateOptions = sourceRouteMatch.LiquidRoute.TemplateOptions
-            ?? TemplateOptionsManager.GetTemplateOptions(sourceRouteMatch.LiquidRoute.RouteTemplate);
-        if (templateOptions?.FileProvider == null)
-        {
-            return null;
-        }
-
-        var relativePath = path.TrimStart('/');
-        var fileInfo = templateOptions.FileProvider.GetFileInfo(relativePath);
-        if (!fileInfo.Exists)
-        {
-            return null;
-        }
-
-        await using var stream = fileInfo.CreateReadStream();
-        await using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-
-        var contentType = GetContentType(path);
-        if (contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
-        {
-            var text = Encoding.UTF8.GetString(memoryStream.ToArray());
-            return new RenderedResponse(200, contentType, text);
-        }
-
-        return new RenderedResponse(200, contentType, $"Binary response ({memoryStream.Length} bytes)");
-    }
-
-    private async Task RenderInBrowserAsync(RenderedResponse response)
-    {
-        if (!_webViewReady)
-        {
-            return;
-        }
-
-        var html = response.ContentType.StartsWith("text/html", StringComparison.OrdinalIgnoreCase)
-            ? response.Body
-            : $"<html><body><pre>{System.Net.WebUtility.HtmlEncode(response.Body)}</pre></body></html>";
-
-        var htmlBytes = Encoding.UTF8.GetBytes(html);
-        var statusBytes = Encoding.UTF8.GetBytes($"Status: {response.StatusCode} | Content-Type: {response.ContentType}");
-
-        var htmlBase64 = Convert.ToBase64String(htmlBytes);
-        var statusBase64 = Convert.ToBase64String(statusBytes);
-
-        if (!await EnsureWebViewReadyForScriptAsync())
-        {
-            Source = new HtmlWebViewSource
-            {
-                Html = html
-            };
-            return;
-        }
-
-        try
-        {
-            await EvaluateJavaScriptAsync($"window.renderContentFromBase64('{htmlBase64}','{statusBase64}')");
-        }
-        catch (InvalidOperationException)
-        {
-            Source = new HtmlWebViewSource
-            {
-                Html = html
-            };
-        }
     }
 
     private async Task<bool> EnsureWebViewReadyForScriptAsync()
