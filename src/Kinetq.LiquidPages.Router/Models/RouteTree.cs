@@ -1,8 +1,8 @@
 ﻿using Kinetq.LiquidPages.Interfaces;
+using Kinetq.LiquidPages.Maui.Interfaces;
 using Kinetq.LiquidPages.Models;
-using Kinetq.LiquidPages.Router.Interfaces;
 
-namespace Kinetq.LiquidPages.Router.Models;
+namespace Kinetq.LiquidPages.Maui.Models;
 
 public class RouteTree : IRouteTree
 {

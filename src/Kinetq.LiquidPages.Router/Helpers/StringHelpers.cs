@@ -1,4 +1,4 @@
-﻿namespace Kinetq.LiquidPages.Router.Helpers;
+﻿namespace Kinetq.LiquidPages.Maui.Helpers;
 
 public static class StringHelpers
 {

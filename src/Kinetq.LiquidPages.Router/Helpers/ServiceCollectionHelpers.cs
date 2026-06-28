@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Kinetq.LiquidPages.Router.Interfaces;
-using Kinetq.LiquidPages.Router.Models;
+﻿using Kinetq.LiquidPages.Maui.Interfaces;
+using Kinetq.LiquidPages.Maui.Models;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Kinetq.LiquidPages.Router.Helpers;
+namespace Kinetq.LiquidPages.Maui.Helpers;
 
 public static class ServiceCollectionHelpers
 {

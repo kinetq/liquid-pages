@@ -1,7 +1,6 @@
 ﻿using Kinetq.LiquidPages.Interfaces;
-using Kinetq.LiquidPages.Router.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Windows.ApplicationModel.WindowsAppRuntime;
+using Kinetq.LiquidPages.Maui;
+using Kinetq.LiquidPages.Maui.Interfaces;
 
 namespace Kinetq.LiquidPages.Avalonia.Sample;
 

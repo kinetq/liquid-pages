@@ -1,10 +1,10 @@
+using System.Text;
 using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
+using Kinetq.LiquidPages.Maui.Interfaces;
 using Kinetq.LiquidPages.Models;
-using Kinetq.LiquidPages.Router.Interfaces;
-using System.Text;
 
-namespace Kinetq.LiquidPages.Avalonia.Sample;
+namespace Kinetq.LiquidPages.Maui;
 
 public class LiquidPagesWebView : WebView
 {
@@ -129,27 +129,6 @@ public class LiquidPagesWebView : WebView
         }
 
         return path.StartsWith('/') ? path : $"/{path}";
-    }
-
-    private static bool IsStaticAssetRequest(string path)
-    {
-        return Path.HasExtension(path);
-    }
-
-    private static string GetContentType(string path)
-    {
-        return Path.GetExtension(path).ToLowerInvariant() switch
-        {
-            ".css" => "text/css",
-            ".js" => "application/javascript",
-            ".html" => "text/html",
-            ".json" => "application/json",
-            ".svg" => "image/svg+xml",
-            ".png" => "image/png",
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".gif" => "image/gif",
-            _ => "application/octet-stream"
-        };
     }
 
     private readonly record struct RenderedResponse(int StatusCode, string ContentType, string Body);

@@ -1,7 +1,7 @@
 using Kinetq.LiquidPages.Helpers;
 using Kinetq.LiquidPages.Interfaces;
-using Kinetq.LiquidPages.Router.Helpers;
-using Kinetq.LiquidPages.Router.Interfaces;
+using Kinetq.LiquidPages.Maui.Helpers;
+using Kinetq.LiquidPages.Maui.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -31,9 +31,10 @@ internal static class ServiceRegistration
         using var scope = serviceProvider.CreateScope();
         var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
         startup.RegisterPageModels();
+        string projectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
         startup.RegisterFileProvider("/", new CompositeFileProvider(
             new EmbeddedFileProvider(typeof(ServiceRegistration).Assembly),
-            new PhysicalFileProvider(Path.Combine(AppContext.BaseDirectory, "Static"))));
+            new PhysicalFileProvider(projectPath)));
 
         var routeTree = scope.ServiceProvider.GetRequiredService<IRouteTree>();
         routeTree.Initialize();

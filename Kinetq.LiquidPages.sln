@@ -44,9 +44,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.RazorPag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Razor.Sample", "src\Kinetq.LiquidPages.SimpleW.Razor.Sample\Kinetq.LiquidPages.SimpleW.Razor.Sample.csproj", "{5D38A48C-1C9C-8145-E35D-E30ACBFCE199}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Router", "src\Kinetq.LiquidPages.Router\Kinetq.LiquidPages.Router.csproj", "{1144D7AA-6FC3-4E61-B8B7-40653E47996E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui", "src\Kinetq.LiquidPages.Router\Kinetq.LiquidPages.Maui.csproj", "{1144D7AA-6FC3-4E61-B8B7-40653E47996E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Avalonia.Sample", "src\Kinetq.LiquidPages.Avalonia.Sample\Kinetq.LiquidPages.Avalonia.Sample.csproj", "{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Sample", "src\Kinetq.LiquidPages.Avalonia.Sample\Kinetq.LiquidPages.Maui.Sample.csproj", "{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
