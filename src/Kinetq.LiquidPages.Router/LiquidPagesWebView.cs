@@ -8,8 +8,6 @@ namespace Kinetq.LiquidPages.Maui;
 
 public class LiquidPagesWebView : WebView
 {
-    private bool _webViewReady;
-
     public IRouteTree? RouteTree { get; set; }
 
     public ILiquidResponseMiddleware? LiquidResponseMiddleware { get; set; }
@@ -31,7 +29,6 @@ public class LiquidPagesWebView : WebView
 
     private async void OnLoaded(object? sender, EventArgs e)
     {
-        _webViewReady = true;
         await OpenPathAsync("/");
     }
 
@@ -58,7 +55,7 @@ public class LiquidPagesWebView : WebView
         var response = await HandlePathAsync(normalizedPath);
         Source = new HtmlWebViewSource
         {
-            Html = response.Body
+            Html = response.Body,
         };
         
         OnResponseRendered(normalizedPath, response);
