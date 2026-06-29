@@ -44,6 +44,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.RazorPag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.SimpleW.Razor.Sample", "src\Kinetq.LiquidPages.SimpleW.Razor.Sample\Kinetq.LiquidPages.SimpleW.Razor.Sample.csproj", "{5D38A48C-1C9C-8145-E35D-E30ACBFCE199}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui", "src\Kinetq.LiquidPages.Router\Kinetq.LiquidPages.Maui.csproj", "{1144D7AA-6FC3-4E61-B8B7-40653E47996E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Sample", "src\Kinetq.LiquidPages.Avalonia.Sample\Kinetq.LiquidPages.Maui.Sample.csproj", "{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Tests", "src\Kinetq.LiquidPages.Maui.Tests\Kinetq.LiquidPages.Maui.Tests.csproj", "{778D9908-2965-4C90-AC66-A814B8DCF6CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +124,18 @@ Global
 		{5D38A48C-1C9C-8145-E35D-E30ACBFCE199}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D38A48C-1C9C-8145-E35D-E30ACBFCE199}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D38A48C-1C9C-8145-E35D-E30ACBFCE199}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1144D7AA-6FC3-4E61-B8B7-40653E47996E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1144D7AA-6FC3-4E61-B8B7-40653E47996E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1144D7AA-6FC3-4E61-B8B7-40653E47996E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1144D7AA-6FC3-4E61-B8B7-40653E47996E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

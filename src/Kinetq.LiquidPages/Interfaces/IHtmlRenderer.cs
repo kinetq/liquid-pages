@@ -9,4 +9,5 @@ public interface IHtmlRenderer
         string templatePath,
         RenderModel renderModel);
     Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, TextWriter streamWriter);
+    Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute);
 }

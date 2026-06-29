@@ -21,7 +21,7 @@ class Program
         {
             options.Path = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");
             options.Prefix = "/Static";
-            options.CacheTimeout = TimeSpan.FromDays(1);
+            options.CacheTimeout = TimeSpan.FromDays(1d);
             options.AutoIndex = true;
         });
 

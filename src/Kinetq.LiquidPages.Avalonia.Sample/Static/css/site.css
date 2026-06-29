@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  background: #f6f8fb;
+  color: #1f2937;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #111827;
+}
+
+nav a {
+  color: #e5e7eb;
+  text-decoration: none;
+}
+
+main {
+  padding: 1rem;
+}
+
+code {
+  background: #e5e7eb;
+  padding: 0.1rem 0.25rem;
+}

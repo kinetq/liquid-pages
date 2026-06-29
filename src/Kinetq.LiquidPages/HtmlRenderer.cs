@@ -65,6 +65,38 @@ public class HtmlRenderer : IHtmlRenderer
         return html;
     }
 
+    public async Task<string?> RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute)
+    {
+        liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
+        string liquidTemplateCacheKey = $"{liquidRoute.RouteTemplate}-{liquidRoute.LiquidTemplatePath}";
+
+        _liquidTemplateManager.FluidTemplates.TryGetValue(liquidTemplateCacheKey, out var cachedTemplate);
+        if (cachedTemplate == null)
+        {
+            var parser = _fluidParserManager.FluidParser;
+            var fileInfo = liquidRoute.TemplateOptions.FileProvider.GetFileInfo(liquidRoute.LiquidTemplatePath);
+            if (!fileInfo.Exists)
+            {
+                return null;
+            }
+
+            string liquidTemplate = await fileInfo.GetFileContents();
+            if (parser.TryParse(liquidTemplate, out IFluidTemplate template, out string error))
+            {
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new LiquidSyntaxException(error);
+                }
+
+                cachedTemplate = template;
+                _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+            }
+        }
+
+        var templateContext = new TemplateContext(renderModel, liquidRoute.TemplateOptions);
+        return await cachedTemplate.RenderAsync(templateContext);
+    }
+
     public async Task RenderHtml(RenderModel renderModel, LiquidRoute liquidRoute, TextWriter streamWriter)
     {
         liquidRoute.TemplateOptions ??= _templateOptionsManager.GetTemplateOptions(liquidRoute.RouteTemplate);
