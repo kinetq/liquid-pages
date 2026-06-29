@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kinetq.LiquidPages.Router\Kinetq.LiquidPages.Maui.csproj" />
+    <ProjectReference Include="..\Kinetq.LiquidPages.Maui\Kinetq.LiquidPages.Maui.csproj" />
   </ItemGroup>
 
 </Project>
