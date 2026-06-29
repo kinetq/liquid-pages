@@ -21,6 +21,9 @@ jobs:
 
     - name: Install MAUI workloads
       run: dotnet workload install maui maui-tizen
+
+    - name: Exclude local MAUI sample from CI build
+      run: dotnet sln Kinetq.LiquidPages.sln remove src/Kinetq.LiquidPages.Avalonia.Sample/Kinetq.LiquidPages.Maui.Sample.csproj
           
     - name: Restore Solution
       run: dotnet restore Kinetq.LiquidPages.sln
