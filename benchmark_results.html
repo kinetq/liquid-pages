@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiquidPages Benchmark Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+      }
+
+      /* ── File picker ── */
+      #picker {
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+        background: #1e2130;
+        border: 1px dashed #3b4262;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      #picker h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 0.5rem;
+      }
+
+      #picker p {
+        font-size: 0.82rem;
+        color: #64748b;
+        margin-bottom: 1.25rem;
+        line-height: 1.6;
+      }
+
+      #picker label {
+        display: inline-block;
+        background: #7c3aed;
+        color: #fff;
+        padding: 0.55rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background 0.15s;
+      }
+
+      #picker label:hover {
+        background: #6d28d9;
+      }
+
+      #fileInput {
+        display: none;
+      }
+
+      #fileStatus {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #64748b;
+        min-height: 1.2em;
+      }
+
+      #fileStatus .ok {
+        color: #34d399;
+      }
+      #fileStatus .err {
+        color: #f87171;
+      }
+
+      /* ── Charts ── */
+      #charts {
+        display: none;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+        gap: 1.75rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: #1e2130;
+        border: 1px solid #2d3348;
+        border-radius: 12px;
+        padding: 1.5rem;
+      }
+
+      .card h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        margin-bottom: 0.25rem;
+      }
+
+      .card p.subtitle {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-bottom: 1.25rem;
+      }
+
+      .chart-wrap {
+        position: relative;
+        height: 280px;
+      }
+
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+      }
+
+      .summary-table th {
+        text-align: left;
+        padding: 0.45rem 0.6rem;
+        color: #64748b;
+        border-bottom: 1px solid #2d3348;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .summary-table td {
+        padding: 0.45rem 0.6rem;
+        border-bottom: 1px solid #1a1f2e;
+        white-space: nowrap;
+      }
+
+      .summary-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .summary-table td:first-child {
+        font-weight: 500;
+        color: #cbd5e1;
+      }
+
+      .badge {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>LiquidPages Benchmark Results</h1>
+      <p>
+        Bombardier load test &mdash; 256 connections &mdash; 15 seconds &mdash;
+        GET /
+      </p>
+    </header>
+
+    <!-- File picker (shown when fetch() is blocked, e.g. Chrome on file://) -->
+    <div id="picker">
+      <h2>Select the benchmark JSON files</h2>
+      <p>
+        Select all five <code>liquid_results*.json</code> files at once.<br />
+        No data leaves your machine &mdash; everything runs in the browser.
+      </p>
+      <label for="fileInput">Choose JSON files&hellip;</label>
+      <input type="file" id="fileInput" accept=".json" multiple />
+      <div id="fileStatus"></div>
+    </div>
+
+    <!-- Charts (hidden until data is loaded) -->
+    <div id="charts">
+      <div class="grid">
+        <div class="card">
+          <h2>Requests per Second</h2>
+          <p class="subtitle">
+            Mean and maximum RPS measured during the load test (higher is
+            better)
+          </p>
+          <div class="chart-wrap"><canvas id="rpsChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h2>Latency Percentiles (ms)</h2>
+          <p class="subtitle">
+            p50, p75, p90, p95, p99 latency in milliseconds (lower is better)
+          </p>
+          <div class="chart-wrap"><canvas id="latencyChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h2>Memory: Working Set (MB)</h2>
+          <p class="subtitle">
+            Peak working set memory of the server process (lower is better)
+          </p>
+          <div class="chart-wrap"><canvas id="memoryChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h2>Build &amp; Start Time (ms)</h2>
+          <p class="subtitle">
+            Time to build and time to first ready response (lower is better)
+          </p>
+          <div class="chart-wrap"><canvas id="buildChart"></canvas></div>
+        </div>
+      </div>
+
+      <div style="max-width: 1400px; margin: 2rem auto 0">
+        <div class="card">
+          <h2>Full Summary</h2>
+          <p class="subtitle">All key metrics at a glance</p>
+          <div style="overflow-x: auto; margin-top: 0.75rem">
+            <table class="summary-table">
+              <thead>
+                <tr>
+                  <th>Framework</th>
+                  <th>RPS Mean</th>
+                  <th>RPS Max</th>
+                  <th>Lat Mean (ms)</th>
+                  <th>Lat p50 (ms)</th>
+                  <th>Lat p75 (ms)</th>
+                  <th>Lat p90 (ms)</th>
+                  <th>Lat p95 (ms)</th>
+                  <th>Lat p99 (ms)</th>
+                  <th>Working Set (MB)</th>
+                  <th>Build Time (ms)</th>
+                  <th>Start Time (ms)</th>
+                </tr>
+              </thead>
+              <tbody id="summaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Source file definitions ───────────────────────────────────────────────
+      const SOURCES = [
+        {
+          filename: "liquid_results_aspnetcore.json",
+          label: "ASP.NET Core + Liquid",
+          color: "#7c3aed",
+        },
+        {
+          filename: "liquid_results_embedio.json",
+          label: "EmbedIO + Liquid",
+          color: "#2563eb",
+        },
+        {
+          filename: "liquid_results_genhttp.json",
+          label: "GenHTTP + Liquid",
+          color: "#059669",
+        },
+        {
+          filename: "liquid_results_razor.json",
+          label: "Razor Pages",
+          color: "#d97706",
+        },
+        {
+          filename: "liquid_results.json",
+          label: "SimpleW + Liquid",
+          color: "#db2777",
+        },
+      ];
+
+      // ── Parse a single JSON blob into a flat metrics object ──────────────────
+      function extractMetrics(json, label, color) {
+        const app = json.jobResults.jobs.application.results;
+        const load = json.jobResults.jobs.load.results;
+        return {
+          label,
+          color,
+          rpsMean: load["bombardier/rps/mean"],
+          rpsMax: load["bombardier/rps/max"],
+          latMean: load["bombardier/latency/mean"],
+          lat50: load["bombardier/latency/50"],
+          lat75: load["bombardier/latency/75"],
+          lat90: load["bombardier/latency/90"],
+          lat95: load["bombardier/latency/95"],
+          lat99: load["bombardier/latency/99"],
+          latMax: load["bombardier/latency/max"],
+          workingSet: app["benchmarks/working-set"],
+          buildTime: app["benchmarks/build-time"],
+          startTime: app["benchmarks/start-time"],
+        };
+      }
+
+      // ── Chart rendering ───────────────────────────────────────────────────────
+      Chart.defaults.color = "#64748b";
+      Chart.defaults.font.family =
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      Chart.defaults.font.size = 11;
+
+      const gridColor = "rgba(255,255,255,0.05)";
+      const chartInstances = {};
+
+      function baseBarOptions(yLabel, tooltipSuffix = "") {
+        return {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) =>
+                  ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString(undefined, { maximumFractionDigits: 2 })}${tooltipSuffix}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { maxRotation: 20, font: { size: 10 } },
+              grid: { color: gridColor },
+            },
+            y: {
+              title: {
+                display: !!yLabel,
+                text: yLabel,
+                color: "#64748b",
+                font: { size: 10 },
+              },
+              grid: { color: gridColor },
+              ticks: {
+                callback: (v) =>
+                  v >= 1000 ? (v / 1000).toLocaleString() + "k" : v,
+              },
+            },
+          },
+        };
+      }
+
+      function renderCharts(data) {
+        // Destroy any existing chart instances before re-rendering
+        for (const key of Object.keys(chartInstances)) {
+          chartInstances[key].destroy();
+          delete chartInstances[key];
+        }
+
+        const labels = data.map((d) => d.label);
+        const COLORS = data.map((d) => d.color);
+
+        // RPS
+        chartInstances.rps = new Chart(document.getElementById("rpsChart"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Mean RPS",
+                data: data.map((d) => d.rpsMean),
+                backgroundColor: COLORS.map((c) => c + "cc"),
+                borderColor: COLORS,
+                borderWidth: 1.5,
+                borderRadius: 4,
+              },
+              {
+                label: "Max RPS",
+                data: data.map((d) => d.rpsMax),
+                backgroundColor: COLORS.map((c) => c + "44"),
+                borderColor: COLORS,
+                borderWidth: 1.5,
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            ...baseBarOptions("Requests / sec", " req/s"),
+            plugins: {
+              ...baseBarOptions("").plugins,
+              legend: {
+                display: true,
+                labels: { color: "#94a3b8", boxWidth: 12, padding: 16 },
+              },
+            },
+          },
+        });
+
+        // Latency percentiles (x-axis = percentile buckets, series = frameworks)
+        const latencyBuckets = ["p50", "p75", "p90", "p95", "p99"];
+        chartInstances.latency = new Chart(
+          document.getElementById("latencyChart"),
+          {
+            type: "bar",
+            data: {
+              labels: latencyBuckets,
+              datasets: data.map((d, i) => ({
+                label: d.label,
+                data: [d.lat50, d.lat75, d.lat90, d.lat95, d.lat99],
+                backgroundColor: COLORS[i] + "cc",
+                borderColor: COLORS[i],
+                borderWidth: 1.5,
+                borderRadius: 4,
+              })),
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  labels: {
+                    color: "#94a3b8",
+                    boxWidth: 12,
+                    padding: 12,
+                    font: { size: 10 },
+                  },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) =>
+                      ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString(undefined, { maximumFractionDigits: 3 })} ms`,
+                  },
+                },
+              },
+              scales: {
+                x: { grid: { color: gridColor } },
+                y: {
+                  title: {
+                    display: true,
+                    text: "Latency (ms)",
+                    color: "#64748b",
+                    font: { size: 10 },
+                  },
+                  grid: { color: gridColor },
+                },
+              },
+            },
+          },
+        );
+
+        // Memory
+        chartInstances.memory = new Chart(
+          document.getElementById("memoryChart"),
+          {
+            type: "bar",
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Working Set (MB)",
+                  data: data.map((d) => d.workingSet),
+                  backgroundColor: COLORS.map((c) => c + "cc"),
+                  borderColor: COLORS,
+                  borderWidth: 1.5,
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: baseBarOptions("MB", " MB"),
+          },
+        );
+
+        // Build & Start time
+        chartInstances.build = new Chart(
+          document.getElementById("buildChart"),
+          {
+            type: "bar",
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: "Build Time",
+                  data: data.map((d) => d.buildTime),
+                  backgroundColor: COLORS.map((c) => c + "cc"),
+                  borderColor: COLORS,
+                  borderWidth: 1.5,
+                  borderRadius: 4,
+                },
+                {
+                  label: "Start Time",
+                  data: data.map((d) => d.startTime),
+                  backgroundColor: COLORS.map((c) => c + "55"),
+                  borderColor: COLORS,
+                  borderWidth: 1.5,
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              ...baseBarOptions("ms", " ms"),
+              plugins: {
+                ...baseBarOptions("").plugins,
+                legend: {
+                  display: true,
+                  labels: { color: "#94a3b8", boxWidth: 12, padding: 16 },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) =>
+                      ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()} ms`,
+                  },
+                },
+              },
+            },
+          },
+        );
+
+        // Summary table
+        const tbody = document.getElementById("summaryBody");
+        tbody.innerHTML = "";
+        const fmt = (v, dec = 2) =>
+          v != null
+            ? v.toLocaleString(undefined, { maximumFractionDigits: dec })
+            : "—";
+        data.forEach((d, i) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+          <td><span class="badge" style="background:${d.color}"></span>${d.label}</td>
+          <td>${fmt(d.rpsMean)}</td>
+          <td>${fmt(d.rpsMax)}</td>
+          <td>${fmt(d.latMean, 3)}</td>
+          <td>${fmt(d.lat50, 3)}</td>
+          <td>${fmt(d.lat75, 3)}</td>
+          <td>${fmt(d.lat90, 3)}</td>
+          <td>${fmt(d.lat95, 3)}</td>
+          <td>${fmt(d.lat99, 3)}</td>
+          <td>${fmt(d.workingSet, 0)}</td>
+          <td>${d.buildTime != null ? d.buildTime.toLocaleString() : "—"}</td>
+          <td>${d.startTime != null ? d.startTime.toLocaleString() : "—"}</td>
+        `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("picker").style.display = "none";
+        document.getElementById("charts").style.display = "block";
+      }
+
+      // ── Load via fetch() (works on Firefox and any local/http server) ─────────
+      async function loadViaFetch() {
+        const results = await Promise.all(
+          SOURCES.map((src) =>
+            fetch(src.filename)
+              .then((r) => {
+                if (!r.ok) throw new Error(r.status);
+                return r.json();
+              })
+              .then((json) => extractMetrics(json, src.label, src.color)),
+          ),
+        );
+        renderCharts(results);
+      }
+
+      // ── Load via FileReader (fallback for Chrome on file://) ─────────────────
+      function readFileAsJson(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              resolve(JSON.parse(e.target.result));
+            } catch (err) {
+              reject(new Error(`${file.name}: invalid JSON`));
+            }
+          };
+          reader.onerror = () => reject(new Error(`${file.name}: read error`));
+          reader.readAsText(file);
+        });
+      }
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", async function () {
+          const files = Array.from(this.files);
+          const statusEl = document.getElementById("fileStatus");
+
+          if (files.length === 0) return;
+
+          // Match each uploaded file to a SOURCES entry by filename
+          const parsed = [];
+          const missing = [];
+
+          for (const src of SOURCES) {
+            const match = files.find((f) => f.name === src.filename);
+            if (!match) {
+              missing.push(src.filename);
+              continue;
+            }
+            try {
+              const json = await readFileAsJson(match);
+              parsed.push(extractMetrics(json, src.label, src.color));
+            } catch (err) {
+              statusEl.innerHTML = `<span class="err">${err.message}</span>`;
+              return;
+            }
+          }
+
+          if (missing.length > 0) {
+            statusEl.innerHTML = `<span class="err">Missing: ${missing.join(", ")}</span>`;
+            return;
+          }
+
+          statusEl.innerHTML = `<span class="ok">All ${parsed.length} files loaded successfully.</span>`;
+          renderCharts(parsed);
+        });
+
+      // ── Bootstrap: try fetch first, show picker on failure ───────────────────
+      loadViaFetch().catch(() => {
+        // fetch() blocked (e.g. Chrome on file://) — show the file picker
+        document.getElementById("picker").style.display = "block";
+        document.getElementById("fileStatus").innerHTML =
+          '<span class="err">Auto-load blocked by browser (Chrome on file://).<br/>Select the JSON files above to continue.</span>';
+      });
+    </script>
+  </body>
+</html>
