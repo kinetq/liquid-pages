@@ -3,17 +3,16 @@ using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using System.Buffers;
 using System.Text;
 using Kinetq.LiquidPages.Builders;
-using Microsoft.IO;
 
 namespace Kinetq.LiquidPages.AspNetCore;
 
 public static class ApplicationBuilderExtensions
 {
-    private static readonly RecyclableMemoryStreamManager Manager = new RecyclableMemoryStreamManager();
-
     public static IApplicationBuilder UseLiquidPagesErrorHandling(this IApplicationBuilder app)
     {
         app.UseExceptionHandler("/__liquid-error/500");
@@ -60,18 +59,21 @@ public static class ApplicationBuilderExtensions
 
         if (request.ContentLength > 0)
         {
-            using var reader = new StreamReader(request.Body, Encoding.UTF8, true, -1, true);
-            liquidRequest.Body = await reader.ReadToEndAsync();
+            liquidRequest.Body = await ReadRequestBodyAsync(request);
         }
 
         var liquidResponseMiddleware = context.RequestServices.GetRequiredService<ILiquidResponseMiddleware>();
         var response = context.Response;
-
-        using var pooledMemoryStream = Manager.GetStream();
+        using var responseBodyWriter = new HttpResponseStreamWriter(
+            response.Body,
+            Encoding.UTF8,
+            1024,
+            ArrayPool<byte>.Shared,
+            ArrayPool<char>.Shared);
 
         var responseModel = new LiquidResponseBuilder
         {
-            BodyWriter = new StreamWriter(pooledMemoryStream),
+            BodyWriter = responseBodyWriter,
             SetContentType = contentType =>
             {
                 response.ContentType = contentType;
@@ -83,11 +85,48 @@ public static class ApplicationBuilderExtensions
         };
 
         await liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
-        await responseModel.BodyWriter.FlushAsync();
-        
-        pooledMemoryStream.Position = 0;
-        await pooledMemoryStream.CopyToAsync(context.Response.Body);
-        // Note: We don't call EndAsync here as the StreamWriter might be reused if there are other middleware chained.
-        // The framework will handle the final disposal of the response body stream.
+        await responseBodyWriter.FlushAsync();
+    }
+
+    private static async Task<string> ReadRequestBodyAsync(HttpRequest request)
+    {
+        var contentLength = request.ContentLength;
+        if (!contentLength.HasValue || contentLength.Value <= 0)
+        {
+            return string.Empty;
+        }
+
+        if (contentLength.Value > int.MaxValue)
+        {
+            using var reader = new StreamReader(request.Body, Encoding.UTF8, true, -1, true);
+            return await reader.ReadToEndAsync();
+        }
+
+        var byteCount = (int)contentLength.Value;
+        var rentedBuffer = ArrayPool<byte>.Shared.Rent(byteCount);
+
+        try
+        {
+            var totalRead = 0;
+            while (totalRead < byteCount)
+            {
+                var read = await request.Body.ReadAsync(
+                    rentedBuffer.AsMemory(totalRead, byteCount - totalRead),
+                    request.HttpContext.RequestAborted);
+
+                if (read == 0)
+                {
+                    break;
+                }
+
+                totalRead += read;
+            }
+
+            return Encoding.UTF8.GetString(rentedBuffer, 0, totalRead);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rentedBuffer);
+        }
     }
 }
