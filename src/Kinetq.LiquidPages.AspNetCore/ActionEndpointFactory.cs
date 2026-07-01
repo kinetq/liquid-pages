@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -345,15 +344,6 @@ internal sealed class ActionEndpointFactory
             groupConventions[i](builder);
         }
 
-        var controllerActionDescriptor = action as ControllerActionDescriptor;
-
-        // Add metadata inferred from the parameter and/or return type before action-specific metadata.
-        // MethodInfo *should* never be null given a ControllerActionDescriptor, but this is unenforced.
-        if (controllerActionDescriptor?.MethodInfo is not null)
-        {
-            EndpointMetadataPopulator.PopulateMetadata(controllerActionDescriptor.MethodInfo, builder);
-        }
-
         // Add action-specific metadata early so it has a low precedence
         if (action.EndpointMetadata != null)
         {
@@ -449,33 +439,9 @@ internal sealed class ActionEndpointFactory
             perRouteConventions[i](builder);
         }
 
-        if (builder.FilterFactories.Count > 0 && controllerActionDescriptor is not null)
-        {
-            var routeHandlerFilters = builder.FilterFactories;
-
-            EndpointFilterDelegate del = static invocationContext =>
-            {
-                // By the time this is called, we have the cache entry
-                var controllerInvocationContext = (ControllerEndpointFilterInvocationContext)invocationContext;
-                return controllerInvocationContext.ActionDescriptor.CacheEntry!.InnerActionMethodExecutor.Execute(controllerInvocationContext);
-            };
-
-            var context = new EndpointFilterFactoryContext
-            {
-                MethodInfo = controllerActionDescriptor.MethodInfo,
-                ApplicationServices = builder.ApplicationServices,
-            };
-
-            var initialFilteredInvocation = del;
-
-            for (var i = routeHandlerFilters.Count - 1; i >= 0; i--)
-            {
-                var filterFactory = routeHandlerFilters[i];
-                del = filterFactory(context, del);
-            }
-
-            controllerActionDescriptor.FilterDelegate = ReferenceEquals(del, initialFilteredInvocation) ? null : del;
-        }
+        // The framework's controller endpoint filter pipeline wiring relies on internal MVC types
+        // that are not accessible here. LiquidPages endpoints are page-based, so we intentionally
+        // skip that internal controller-specific hookup in this standalone port.
 
         foreach (var perRouteFinallyConvention in perRouteFinallyConventions)
         {
