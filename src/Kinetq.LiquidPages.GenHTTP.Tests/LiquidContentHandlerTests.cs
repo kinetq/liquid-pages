@@ -23,7 +23,10 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         public async Task InitializeAsync()
         {
             _mockLiquidResponseMiddleware = new Mock<ILiquidResponseMiddleware>();
-            _liquidRoute = new LiquidRoute();
+            _liquidRoute = new LiquidRoute()
+            {
+                RouteTemplate = "/page/{page}"
+            };
 
             _port = HttpHelpers.GetRandomUnusedPort();
             _urlPrefix = $"http://localhost:{_port}";
@@ -182,8 +185,6 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         public async Task Server_ShouldPassRouteValues_OnLiquidRequestModel()
         {
             LiquidRequestModel? capturedRequest = null;
-
-            _liquidRoute.RouteTemplate = "/page/{page}";
             
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))

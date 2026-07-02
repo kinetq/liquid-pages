@@ -37,20 +37,16 @@ public class LiquidWebModule : RoutingModuleBase
 
         try
         {
-            var liquidRequest = new LiquidRequestModel()
+            var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Url.AbsolutePath,
                 QueryParams = request.Url.Query.GetQueryParams(),
                 Headers = new EmbedIOHeaderDictionary(request.Headers),
                 Method = request.HttpMethod,
                 LiquidRoute = liquidRoute,
-                ErrorStatusCode = liquidRoute == null && routeMatch == null ? (int?)HttpStatusCode.NotFound : null
+                ErrorStatusCode = liquidRoute == null && routeMatch == null ? (int?)HttpStatusCode.NotFound : null,
+                RouteValues = routeMatch != null ? new EmbedIORouteValuesDictionary(routeMatch.Pairs) : EmptyRouteValuesDictionary.Instance
             };
-
-            if (routeMatch != null)
-            {
-                liquidRequest.RouteValues = new EmbedIORouteValuesDictionary(routeMatch.Pairs);
-            }
 
             if (request.HasEntityBody)
             {

@@ -2,9 +2,9 @@
 
 namespace Kinetq.LiquidPages.Builders;
 
-public class LiquidResponseBuilder
+public sealed class LiquidResponseBuilder
 { 
-    public TextWriter BodyWriter { get; set; }
-    public Action<int> SetStatusCode { get; set; } = _ => { };
-    public Action<string> SetContentType { get; set; } = _ => { };
+    public TextWriter BodyWriter { get; init; }
+    public Action<int> SetStatusCode { get; init; } = _ => { };
+    public Action<string> SetContentType { get; init; } = _ => { };
 }

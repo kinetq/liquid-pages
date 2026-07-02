@@ -2,11 +2,11 @@
 
 namespace Kinetq.LiquidPages.Models;
 
-public class LiquidRoute
+public sealed class LiquidRoute
 {
-    public string RouteTemplate { get; set; }
-    public string LiquidTemplatePath { get; set; }
-    public Func<LiquidRequestModel, Task<object>> Execute { get; set; }
-    public Type? PageModelType { get; set; }
+    public string RouteTemplate { get; init; }
+    public string LiquidTemplatePath { get; init; }
+    public Func<LiquidRequestModel, Task<object>> Execute { get; init; }
+    public Type? PageModelType { get; init; }
     public TemplateOptions? TemplateOptions { get; set; }
 }
