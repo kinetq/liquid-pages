@@ -1,9 +1,33 @@
 @model dynamic
 @{
     Layout = "_Layout";
+    var scenarios = new[]
+    {
+        new { Endpoint = "GET /", Rps = 9810, P95 = 31 },
+        new { Endpoint = "GET /catalog", Rps = 8450, P95 = 42 },
+        new { Endpoint = "POST /checkout", Rps = 4630, P95 = 65 }
+    };
 }
 
-@await ViewBag.Html.PartialAsync("_Header")
-
 <h1>@Model.H1</h1>
-<p>This is a boilerplate page rendered with <strong>SimpleW.Helper.Razor</strong>.</p>
+<p>This sample now renders a more realistic benchmark summary with local static assets.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Endpoint</th>
+            <th>RPS</th>
+            <th>P95 (ms)</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var scenario in scenarios)
+    {
+        <tr>
+            <td>@scenario.Endpoint</td>
+            <td>@scenario.Rps</td>
+            <td>@scenario.P95</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -2,9 +2,40 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var benchmarkResults = new[]
+    {
+        new { Endpoint = "GET /", Rps = 10240, P95 = 28 },
+        new { Endpoint = "GET /products", Rps = 9180, P95 = 35 },
+        new { Endpoint = "POST /checkout", Rps = 5120, P95 = 59 }
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-4">Razor Pages Sample</h1>
+    <p class="lead">This sample includes local static assets and a more realistic benchmark-style view.</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="h5">Benchmark Snapshot</h2>
+        <table class="table table-striped mb-0" id="bench-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>RPS</th>
+                    <th>P95 (ms)</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var result in benchmarkResults)
+            {
+                <tr>
+                    <td>@result.Endpoint</td>
+                    <td>@result.Rps</td>
+                    <td>@result.P95</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </div>
