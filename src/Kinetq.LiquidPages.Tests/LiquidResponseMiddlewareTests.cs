@@ -62,8 +62,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
@@ -96,8 +95,7 @@ namespace Kinetq.LiquidPages.Tests
             // Act
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
-                Route = "/",
-                QueryParams = new Dictionary<string, string>()
+                Route = "/"
             }, responseModel);
 
             var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
@@ -135,8 +133,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert
@@ -177,8 +174,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert
@@ -222,8 +218,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert

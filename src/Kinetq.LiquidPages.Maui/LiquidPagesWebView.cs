@@ -72,7 +72,6 @@ public class LiquidPagesWebView : WebView
         {
             Route = path,
             Method = "GET",
-            QueryParams = new Dictionary<string, string>(),
             LiquidRoute = routeMatch?.LiquidRoute,
             RouteValues = routeMatch?.RouteValues ?? EmptyRouteValuesDictionary.Instance
         };

@@ -6,7 +6,7 @@ namespace Kinetq.LiquidPages.Models;
 public sealed class LiquidRequestModel
 {
     public string Route { get; init; }
-    public IDictionary<string, string> QueryParams { get; init; } = new Dictionary<string, string>();
+    public IReadOnlyQueryDictionary? QueryParams { get; init; }
     public IReadOnlyRouteValuesDictionary RouteValues { get; init; } = EmptyRouteValuesDictionary.Instance;
     public object? Body { get; set; }
     public IReadOnlyHeaderDictionary? Headers { get; init; }

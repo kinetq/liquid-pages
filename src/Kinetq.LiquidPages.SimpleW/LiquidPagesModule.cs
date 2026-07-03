@@ -1,10 +1,8 @@
-﻿using Kinetq.LiquidPages.Helpers;
-using Kinetq.LiquidPages.Interfaces;
+﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
 using System.Text;
-using Kinetq.LiquidPages.Builders;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -59,7 +57,7 @@ namespace Kinetq.LiquidPages.SimpleW
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Path,
-                QueryParams = request.Query,
+                QueryParams = new SimpleWQueryDictionary(request.Query),
                 Headers = new SimpleWHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = liquidRoute,

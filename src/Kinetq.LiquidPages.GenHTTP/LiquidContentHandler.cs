@@ -26,7 +26,7 @@ public sealed class LiquidContentHandler : IHandler
         var liquidRequest = new LiquidRequestModel
         {
             Route = requestPath,
-            QueryParams = request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+            QueryParams = new GenHTTPQueryDictionary(request.Query),
             Headers = new GenHTTPHeaderDictionary(request.Headers),
             Method = request.Method.RawMethod,
             LiquidRoute = _liquidRoute,

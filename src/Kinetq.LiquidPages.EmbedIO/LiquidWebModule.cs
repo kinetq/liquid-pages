@@ -39,7 +39,7 @@ public class LiquidWebModule : RoutingModuleBase
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Url.AbsolutePath,
-                QueryParams = request.Url.Query.GetQueryParams(),
+                QueryParams = new EmbedIOLiquidQueryDictionary(request.QueryString),
                 Headers = new EmbedIOHeaderDictionary(request.Headers),
                 Method = request.HttpMethod,
                 LiquidRoute = liquidRoute,
