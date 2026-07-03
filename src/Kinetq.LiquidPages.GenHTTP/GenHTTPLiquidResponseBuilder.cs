@@ -1,8 +1,10 @@
 ﻿using Kinetq.LiquidPages.Builders;
+using Kinetq.LiquidPages.Interfaces;
 
 namespace Kinetq.LiquidPages.GenHTTP;
 
-public class GenHTTPLiquidResponseBuilder(GenHTTPLiquidResponse response, StreamWriter bodyWriter) : LiquidResponseBuilder<GenHTTPLiquidResponse>(response, bodyWriter)
+public class GenHTTPLiquidResponseBuilder(GenHTTPLiquidResponse response, StreamWriter bodyWriter) 
+    : LiquidResponseBuilder<GenHTTPLiquidResponse>(response, bodyWriter), ILiquidResponseBuilder
 {
     public override void SetStatusCode(int statusCode, string? message = null)
     {

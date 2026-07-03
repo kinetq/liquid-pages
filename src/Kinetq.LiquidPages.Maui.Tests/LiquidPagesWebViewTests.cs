@@ -28,7 +28,7 @@ public class LiquidPagesWebViewTests
 
         LiquidRequestModel? capturedRequest = null;
         middlewareMock
-            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<MauiLiquidResponse>>()))
+            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
             .Returns<LiquidRequestModel, LiquidResponseBuilder<MauiLiquidResponse>>(async (request, response) =>
             {
                 capturedRequest = request;
@@ -73,7 +73,7 @@ public class LiquidPagesWebViewTests
 
         LiquidRequestModel? capturedRequest = null;
         middlewareMock
-            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<MauiLiquidResponse>>()))
+            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
             .Returns<LiquidRequestModel, LiquidResponseBuilder<MauiLiquidResponse>>(async (request, response) =>
             {
                 capturedRequest = request;

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
@@ -27,47 +26,47 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task HandleRequestAsync<T>(LiquidRequestModel request, LiquidResponseBuilder<T> response)
+    public async Task HandleRequestAsync(LiquidRequestModel request, ILiquidResponseBuilder responseBuilder)
     {
         var renderModel = new RenderModel();
 
         if (request.ErrorStatusCode.HasValue)
         {
             var requestedStatusCode = (HttpStatusCode)request.ErrorStatusCode.Value;
-            await GetErrorRouteResponse(requestedStatusCode, renderModel, request, response);
+            await GetErrorRouteResponse(requestedStatusCode, renderModel, request, responseBuilder);
             return;
         }
 
         LiquidRoute? liquidRoute = request.LiquidRoute;
         if (liquidRoute == null)
         {
-            await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request, response);
+            await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request, responseBuilder);
             return;
         }
 
-        HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request);
+        HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request, responseBuilder);
         if (statusCode != null && (int)statusCode.Value >= 400)
         {
-            await GetErrorRouteResponse(statusCode.Value, renderModel, request, response);
+            await GetErrorRouteResponse(statusCode.Value, renderModel, request, responseBuilder);
             return;
         }
 
-        response.SetStatusCode(200);
-        response.SetContentType("text/html");
+        responseBuilder.SetStatusCode(200);
+        responseBuilder.SetContentType("text/html");
 
-        await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
+        await _htmlRenderer.RenderHtml(renderModel, liquidRoute, responseBuilder.BodyWriter);
     }
 
-    private async Task GetErrorRouteResponse<T>(
+    private async Task GetErrorRouteResponse(
         HttpStatusCode httpStatusCode,
         RenderModel renderModel,
         LiquidRequestModel request,
-        LiquidResponseBuilder<T> response,
+        ILiquidResponseBuilder response,
         int callStack = 0
         )
     {
         var statusCodeRoute = _liquidRoutesManager.GetRouteForStatusCode(httpStatusCode);
-        HttpStatusCode? processStatusCodeRoute = await ProcessRoute(statusCodeRoute, renderModel, request);
+        HttpStatusCode? processStatusCodeRoute = await ProcessRoute(statusCodeRoute, renderModel, request, response);
         if (processStatusCodeRoute != null && callStack < 3)
         {
             await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, response, callStack + 1);
@@ -92,7 +91,8 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
     private async Task<HttpStatusCode?> ProcessRoute(
         LiquidRoute? liquidRoute,
         RenderModel renderModel,
-        LiquidRequestModel request)
+        LiquidRequestModel request,
+        ILiquidResponseBuilder responseBuilder)
     {
         if (liquidRoute?.Execute == null)
         {
@@ -105,6 +105,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
             {
                 using var scope = _serviceScopeFactory.CreateScope();
                 request.LiquidPageModel = (LiquidPageModel?)scope.ServiceProvider.GetService(liquidRoute.PageModelType);
+                request.LiquidPageModel!.ResponseBuilder = responseBuilder;
             }
             
             renderModel.ViewModel = await liquidRoute.Execute(request);

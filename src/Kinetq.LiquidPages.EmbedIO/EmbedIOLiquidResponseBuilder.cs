@@ -1,9 +1,11 @@
 ﻿using EmbedIO;
 using Kinetq.LiquidPages.Builders;
+using Kinetq.LiquidPages.Interfaces;
 
 namespace Kinetq.LiquidPages.EmbedIO;
 
-public class EmbedIOLiquidResponseBuilder(IHttpResponse response, TextWriter bodyWriter) : LiquidResponseBuilder<IHttpResponse>(response, bodyWriter)
+public class EmbedIOLiquidResponseBuilder(IHttpResponse response, TextWriter bodyWriter) 
+    : LiquidResponseBuilder<IHttpResponse>(response, bodyWriter), ILiquidResponseBuilder
 {
     public override void SetStatusCode(int statusCode, string? message = null)
     {

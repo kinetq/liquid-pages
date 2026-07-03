@@ -72,7 +72,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             LiquidRequestModel capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<IHttpResponse>>()))
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
                 .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
                 {
                     capturedRequest = req;
@@ -126,7 +126,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             LiquidRequestModel capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<IHttpResponse>>()))
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
                 .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
                 {
                     capturedRequest = req;
@@ -139,7 +139,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             await httpClient.PostAsync(_urlPrefix, new StringContent("{\"test\": 0}"));
 
             _mockLiquidResponseMiddleware.Verify(
-                m => m.HandleRequestAsync(It.Is<LiquidRequestModel>(r => r.Body != null), It.IsAny<LiquidResponseBuilder<IHttpResponse>>()),
+                m => m.HandleRequestAsync(It.Is<LiquidRequestModel>(r => r.Body != null), It.IsAny<ILiquidResponseBuilder>()),
                 Times.Once);
 
             Assert.NotNull(capturedRequest);
@@ -150,7 +150,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
         public async Task WebServer_ShouldReturn500_WhenHandleRequestAsyncThrows()
         {
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<IHttpResponse>>()))
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
                 .ThrowsAsync(new Exception("Simulated failure"));
 
             using var httpClient = new HttpClient();
@@ -166,7 +166,7 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
             LiquidRequestModel capturedRequest = null;
 
             _mockLiquidResponseMiddleware
-                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<IHttpResponse>>()))
+                .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
                 .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
                 {
                     capturedRequest = req;

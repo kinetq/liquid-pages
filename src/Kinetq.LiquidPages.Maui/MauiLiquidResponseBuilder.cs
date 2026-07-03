@@ -1,8 +1,10 @@
 ﻿using Kinetq.LiquidPages.Builders;
+using Kinetq.LiquidPages.Interfaces;
 
 namespace Kinetq.LiquidPages.Maui;
 
-public class MauiLiquidResponseBuilder(MauiLiquidResponse response, TextWriter bodyWriter) : LiquidResponseBuilder<MauiLiquidResponse>(response, bodyWriter)
+public class MauiLiquidResponseBuilder(MauiLiquidResponse response, TextWriter bodyWriter) 
+    : LiquidResponseBuilder<MauiLiquidResponse>(response, bodyWriter), ILiquidResponseBuilder
 {
     public override void SetStatusCode(int statusCode, string? message = null)
     {

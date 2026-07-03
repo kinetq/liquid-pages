@@ -230,7 +230,7 @@ namespace Kinetq.LiquidPages.Tests
             Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusCodeAccessor());
         }
 
-        private static (LiquidResponseBuilder<TestLiquidResponse> ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
+        private static (TestLiquidResponseBuilder ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
@@ -250,7 +250,7 @@ namespace Kinetq.LiquidPages.Tests
         }
 
         private sealed class TestLiquidResponseBuilder(TestLiquidResponse response, TextWriter bodyWriter)
-            : LiquidResponseBuilder<TestLiquidResponse>(response, bodyWriter)
+            : LiquidResponseBuilder<TestLiquidResponse>(response, bodyWriter), ILiquidResponseBuilder
         {
             public override void SetStatusCode(int statusCode, string? message = null)
             {

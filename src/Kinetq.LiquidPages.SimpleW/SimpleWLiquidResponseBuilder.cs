@@ -1,9 +1,11 @@
 ﻿using Kinetq.LiquidPages.Builders;
+using Kinetq.LiquidPages.Interfaces;
 using SimpleW;
 
 namespace Kinetq.LiquidPages.SimpleW;
 
-public class SimpleWLiquidResponseBuilder(HttpResponse response, StreamWriter bodyWriter) : LiquidResponseBuilder<HttpResponse>(response, bodyWriter)
+public class SimpleWLiquidResponseBuilder(HttpResponse response, StreamWriter bodyWriter) 
+    : LiquidResponseBuilder<HttpResponse>(response, bodyWriter), ILiquidResponseBuilder
 {
     public override void SetStatusCode(int statusCode, string? message = null)
     {

@@ -32,6 +32,10 @@ public static class ServiceCollectionHelpers
             serviceCollection.AddTransient(type);
         }
 
+        //Type liquidResponseBuilderType = assembliesToScan
+        //    .SelectMany(a => a.GetTypes())
+        //    .Single(t => t.IsClass && !t.IsAbstract && t.GetInterface(nameof(ILiquidResponseBuilder)) != null);
+
         return serviceCollection;
     }
 }
