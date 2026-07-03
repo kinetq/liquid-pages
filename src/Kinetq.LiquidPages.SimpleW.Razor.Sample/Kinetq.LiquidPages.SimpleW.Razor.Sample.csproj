@@ -25,6 +25,10 @@
     <PackageReference Include="SimpleW.Helper.Razor" Version="26.0.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="ErrorPages\" />
   </ItemGroup>

@@ -1,5 +1,4 @@
 using System.Text;
-using Kinetq.LiquidPages.Builders;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Maui.Interfaces;
 using Kinetq.LiquidPages.Models;
@@ -8,16 +7,16 @@ namespace Kinetq.LiquidPages.Maui;
 
 public class LiquidPagesWebView : WebView
 {
-    public IRouteTree? RouteTree { get; set; }
-
-    public ILiquidResponseMiddleware? LiquidResponseMiddleware { get; set; }
-
-    public ITemplateOptionsManager? TemplateOptionsManager { get; set; }
+    private readonly IRouteTree _routeTree;
+    private readonly ILiquidResponseMiddleware _liquidResponseMiddleware;
 
     public event EventHandler<LiquidPagesResponseEventArgs>? ResponseRendered;
 
-    public LiquidPagesWebView()
+    public LiquidPagesWebView(IRouteTree routeTree, ILiquidResponseMiddleware liquidResponseMiddleware)
     {
+        _routeTree = routeTree;
+        _liquidResponseMiddleware = liquidResponseMiddleware;
+
         Loaded += OnLoaded;
         Navigating += OnNavigating;
     }
@@ -68,7 +67,7 @@ public class LiquidPagesWebView : WebView
 
     private async Task<RenderedResponse> HandlePathAsync(string path)
     {
-        var routeMatch = RouteTree.Match(path);
+        var routeMatch = _routeTree.Match(path);
         var request = new LiquidRequestModel
         {
             Route = path,
@@ -81,41 +80,17 @@ public class LiquidPagesWebView : WebView
         await using var memoryStream = new MemoryStream();
         await using var writer = new StreamWriter(memoryStream, Encoding.UTF8, leaveOpen: true);
 
-        var contentType = "text/html";
-        var statusCode = 200;
+        var mauiResponse = new MauiLiquidResponse();
+        var response = new MauiLiquidResponseBuilder(mauiResponse, writer);
 
-        var response = new LiquidResponseBuilder
-        {
-            BodyWriter = writer,
-            SetContentType = ct => contentType = ct,
-            SetStatusCode = sc => statusCode = sc
-        };
-
-        await LiquidResponseMiddleware.HandleRequestAsync(request, response);
+        await _liquidResponseMiddleware.HandleRequestAsync(request, response);
         await writer.FlushAsync();
 
         memoryStream.Position = 0;
         using var reader = new StreamReader(memoryStream, Encoding.UTF8, leaveOpen: true);
         var body = await reader.ReadToEndAsync();
 
-        return new RenderedResponse(statusCode, contentType, body);
-    }
-
-    private async Task<bool> EnsureWebViewReadyForScriptAsync()
-    {
-#if WINDOWS
-        if (Handler?.PlatformView is Microsoft.UI.Xaml.Controls.WebView2 nativeWebView)
-        {
-            if (nativeWebView.CoreWebView2 == null)
-            {
-                await nativeWebView.EnsureCoreWebView2Async();
-            }
-
-            return nativeWebView.CoreWebView2 != null;
-        }
-#endif
-
-        return true;
+        return new RenderedResponse(mauiResponse.StatusCode, mauiResponse.ContentType, body);
     }
 
     private static string NormalizePath(string? path)

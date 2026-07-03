@@ -27,7 +27,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task HandleRequestAsync(LiquidRequestModel request, LiquidResponseBuilder response)
+    public async Task HandleRequestAsync<T>(LiquidRequestModel request, LiquidResponseBuilder<T> response)
     {
         var renderModel = new RenderModel();
 
@@ -58,11 +58,11 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         await _htmlRenderer.RenderHtml(renderModel, liquidRoute, response.BodyWriter);
     }
 
-    private async Task GetErrorRouteResponse(
+    private async Task GetErrorRouteResponse<T>(
         HttpStatusCode httpStatusCode,
         RenderModel renderModel,
         LiquidRequestModel request,
-        LiquidResponseBuilder response,
+        LiquidResponseBuilder<T> response,
         int callStack = 0
         )
     {

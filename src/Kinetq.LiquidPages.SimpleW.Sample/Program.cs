@@ -20,6 +20,15 @@ namespace Kinetq.LiquidPages.SimpleW.Sample
 
             // listen to all IPs port 2015
             var server = new SimpleWServer(IPAddress.Any, 2015);
+            server.Configure(options => {
+                // Always beneficial socket options
+                options.TcpNoDelay = true;
+                options.ReuseAddress = true;
+                options.TcpKeepAlive = true;
+
+                // Advanced tuning (platform dependent)
+                options.AcceptPerCore = true;
+            });
 
             var liquidRoutesManager = container.GetRequiredService<ILiquidRoutesManager>();
             var liquidResponseMiddleware = container.GetRequiredService<ILiquidResponseMiddleware>();

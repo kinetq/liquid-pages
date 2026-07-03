@@ -28,8 +28,8 @@ public class LiquidPagesWebViewTests
 
         LiquidRequestModel? capturedRequest = null;
         middlewareMock
-            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
-            .Returns<LiquidRequestModel, LiquidResponseBuilder>(async (request, response) =>
+            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<MauiLiquidResponse>>()))
+            .Returns<LiquidRequestModel, LiquidResponseBuilder<MauiLiquidResponse>>(async (request, response) =>
             {
                 capturedRequest = request;
                 response.SetStatusCode(201);
@@ -37,11 +37,7 @@ public class LiquidPagesWebViewTests
                 await response.BodyWriter.WriteAsync("Rendered body");
             });
 
-        var webView = new LiquidPagesWebView
-        {
-            RouteTree = routeTreeMock.Object,
-            LiquidResponseMiddleware = middlewareMock.Object
-        };
+        var webView = new LiquidPagesWebView(routeTreeMock.Object, middlewareMock.Object);
 
         LiquidPagesResponseEventArgs? renderedArgs = null;
         webView.ResponseRendered += (_, args) => renderedArgs = args;
@@ -77,8 +73,8 @@ public class LiquidPagesWebViewTests
 
         LiquidRequestModel? capturedRequest = null;
         middlewareMock
-            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder>()))
-            .Returns<LiquidRequestModel, LiquidResponseBuilder>(async (request, response) =>
+            .Setup(x => x.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<LiquidResponseBuilder<MauiLiquidResponse>>()))
+            .Returns<LiquidRequestModel, LiquidResponseBuilder<MauiLiquidResponse>>(async (request, response) =>
             {
                 capturedRequest = request;
                 response.SetStatusCode(200);
@@ -86,11 +82,7 @@ public class LiquidPagesWebViewTests
                 await response.BodyWriter.WriteAsync("<h1>Home</h1>");
             });
 
-        var webView = new LiquidPagesWebView
-        {
-            RouteTree = routeTreeMock.Object,
-            LiquidResponseMiddleware = middlewareMock.Object
-        };
+        var webView = new LiquidPagesWebView(routeTreeMock.Object, middlewareMock.Object);
 
         await webView.NavigateToPathAsync(null);
 
