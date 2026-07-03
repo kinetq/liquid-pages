@@ -22,19 +22,15 @@ public static class ServiceCollectionHelpers
         serviceCollection.AddScoped<IHtmlRenderer, HtmlRenderer>();
         serviceCollection.AddScoped<ILiquidStartup, LiquidStartup>();
 
-        IEnumerable<Type> liquidPageModels = assembliesToScan
-            .SelectMany(a => a.GetTypes())
-            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(LiquidPageModel)));
+        var allTypes = assembliesToScan.SelectMany(a => a.GetTypes()).ToList();
+        IEnumerable<Type> liquidPageModels = allTypes
+            .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(typeof(LiquidPageModel)));
 
         foreach (Type type in liquidPageModels)
         {
             serviceCollection.AddTransient(typeof(LiquidPageModel), type);
             serviceCollection.AddTransient(type);
         }
-
-        //Type liquidResponseBuilderType = assembliesToScan
-        //    .SelectMany(a => a.GetTypes())
-        //    .Single(t => t.IsClass && !t.IsAbstract && t.GetInterface(nameof(ILiquidResponseBuilder)) != null);
 
         return serviceCollection;
     }

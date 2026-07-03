@@ -1,10 +1,10 @@
 ﻿using Kinetq.LiquidPages.Builders;
-using Kinetq.LiquidPages.Interfaces;
+using Kinetq.LiquidPages.Models;
 
 namespace Kinetq.LiquidPages.Maui;
 
 public class MauiLiquidResponseBuilder(MauiLiquidResponse response, TextWriter bodyWriter) 
-    : LiquidResponseBuilder<MauiLiquidResponse>(response, bodyWriter), ILiquidResponseBuilder
+    : LiquidResponseBuilder<MauiLiquidResponse>(response, bodyWriter)
 {
     public override void SetStatusCode(int statusCode, string? message = null)
     {
@@ -19,6 +19,21 @@ public class MauiLiquidResponseBuilder(MauiLiquidResponse response, TextWriter b
 
     public override void AddHeader(string key, string value)
     {
-        throw new NotImplementedException();
+        Response.Headers[key] = value;
+    }
+
+    public override void RemoveHeader(string key)
+    {
+        Response.Headers.Remove(key);
+    }
+
+    public override void AddCookie(string key, string value, LiquidCookieOptions? cookieOptions = null)
+    {
+        Response.Cookies[key] = value;
+    }
+
+    public override void RemoveCookie(string key)
+    {
+        Response.Cookies.Remove(key);
     }
 }

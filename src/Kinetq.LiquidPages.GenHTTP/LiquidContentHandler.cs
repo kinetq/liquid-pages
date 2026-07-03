@@ -1,6 +1,7 @@
 using System.Text;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Protocol;
+using GenHTTP.Modules.IO;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 
@@ -59,6 +60,11 @@ public sealed class LiquidContentHandler : IHandler
             foreach (var header in liquidResponse.Headers)
             {
                 builder.Header(header.Key, header.Value);
+            }
+
+            foreach (var cookie in liquidResponse.Cookies)
+            {
+                builder.Cookie(cookie);
             }
 
             return builder

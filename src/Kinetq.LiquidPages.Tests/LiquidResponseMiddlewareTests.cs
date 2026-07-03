@@ -245,7 +245,7 @@ namespace Kinetq.LiquidPages.Tests
         }
 
         private sealed class TestLiquidResponseBuilder(TestLiquidResponse response, TextWriter bodyWriter)
-            : LiquidResponseBuilder<TestLiquidResponse>(response, bodyWriter), ILiquidResponseBuilder
+            : LiquidResponseBuilder<TestLiquidResponse>(response, bodyWriter)
         {
             public override void SetStatusCode(int statusCode, string? message = null)
             {
@@ -258,6 +258,18 @@ namespace Kinetq.LiquidPages.Tests
             }
 
             public override void AddHeader(string key, string value)
+            {
+            }
+
+            public override void RemoveHeader(string key)
+            {
+            }
+
+            public override void AddCookie(string key, string value, LiquidCookieOptions? cookieOptions = null)
+            {
+            }
+
+            public override void RemoveCookie(string key)
             {
             }
         }
