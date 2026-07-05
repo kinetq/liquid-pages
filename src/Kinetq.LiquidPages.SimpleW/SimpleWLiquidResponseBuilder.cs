@@ -5,7 +5,7 @@ using static SimpleW.HttpResponse;
 
 namespace Kinetq.LiquidPages.SimpleW;
 
-public class SimpleWLiquidResponseBuilder(HttpResponse response, StreamWriter bodyWriter)
+public class SimpleWLiquidResponseBuilder(HttpResponse response, StreamWriter? bodyWriter)
     : LiquidResponseBuilder<HttpResponse>(response, bodyWriter)
 {
     public override void SetStatusCode(int statusCode, string? message = null)

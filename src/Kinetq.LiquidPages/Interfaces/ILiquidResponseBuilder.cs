@@ -11,5 +11,5 @@ public interface ILiquidResponseBuilder
     void AddCookie(string key, string value, LiquidCookieOptions? cookieOptions = null);
     void RemoveCookie(string key);
     Task StartResponse();
-    TextWriter BodyWriter { get; }
+    TextWriter? BodyWriter { get; }
 }

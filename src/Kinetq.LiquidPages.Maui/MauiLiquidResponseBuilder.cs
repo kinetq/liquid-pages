@@ -36,4 +36,9 @@ public class MauiLiquidResponseBuilder(MauiLiquidResponse response, TextWriter b
     {
         Response.Cookies.Remove(key);
     }
+
+    public override Task StartResponse()
+    {
+        return Task.CompletedTask;
+    }
 }

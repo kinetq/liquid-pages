@@ -23,8 +23,14 @@ namespace Kinetq.LiquidPages.SimpleW
         {
             foreach (var liquidRoute in _routesManager.LiquidRoutes)
             {
-                server.MapGet(liquidRoute.RouteTemplate, () => liquidRoute);
-                server.MapPost(liquidRoute.RouteTemplate, () => liquidRoute);
+                server.MapGet(liquidRoute.RouteTemplate, async (HttpSession session) =>
+                {
+                    await RenderLiquidViewAsync(session, liquidRoute);
+                });
+                server.MapPost(liquidRoute.RouteTemplate, async (HttpSession session) =>
+                {
+                    await RenderLiquidViewAsync(session, liquidRoute);
+                });
             }
 
             if (MapFallback404)
@@ -35,20 +41,20 @@ namespace Kinetq.LiquidPages.SimpleW
                 });
             }
 
-            // wrap existing handler-result (default is JSON sender) 
-            HttpResultHandler next = server.Router.ResultHandler;
+            //// wrap existing handler-result (default is JSON sender) 
+            //HttpResultHandler next = server.Router.ResultHandler;
 
-            server.ConfigureResultHandler(async (session, result) =>
-            {
-                // add Liquid render
-                if (result is LiquidRoute vr)
-                {
-                    await RenderLiquidViewAsync(session, vr);
-                    return;
-                }
+            //server.ConfigureResultHandler(async (session, result) =>
+            //{
+            //    // add Liquid render
+            //    if (result is LiquidRoute vr)
+            //    {
+            //        await RenderLiquidViewAsync(session, vr);
+            //        return;
+            //    }
 
-                await next(session, result);
-            });
+            //    await next(session, result);
+            //});
         }
 
         private async ValueTask RenderLiquidViewAsync(HttpSession session, LiquidRoute? liquidRoute = null, int? statusCode = null)
@@ -75,7 +81,6 @@ namespace Kinetq.LiquidPages.SimpleW
             try
             {
                 var response = session.Response;
-                var responseContentType = "text/html";
 
                 await using var contentStream = new MemoryStream();
                 await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
@@ -85,8 +90,7 @@ namespace Kinetq.LiquidPages.SimpleW
                 await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
                 await streamWriter.FlushAsync();
                 
-                await response
-                    .Body(contentStream.ToArray(), responseContentType)
+                await response.Body(contentStream.GetBuffer())
                     .SendAsync();
             }
             catch (Exception ex)

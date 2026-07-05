@@ -272,6 +272,11 @@ namespace Kinetq.LiquidPages.Tests
             public override void RemoveCookie(string key)
             {
             }
+
+            public override Task StartResponse()
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }

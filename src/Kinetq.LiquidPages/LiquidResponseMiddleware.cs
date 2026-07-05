@@ -26,39 +26,42 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task HandleRequestAsync(LiquidRequestModel request, ILiquidResponseBuilder responseBuilder)
+    public async Task<string?> HandleRequestAsync(LiquidRequestModel request, ILiquidResponseBuilder responseBuilder)
     {
         var renderModel = new RenderModel();
 
         if (request.ErrorStatusCode.HasValue)
         {
             var requestedStatusCode = (HttpStatusCode)request.ErrorStatusCode.Value;
-            await GetErrorRouteResponse(requestedStatusCode, renderModel, request, responseBuilder);
-            return;
+            return await GetErrorRouteResponse(requestedStatusCode, renderModel, request, responseBuilder);
         }
 
         LiquidRoute? liquidRoute = request.LiquidRoute;
         if (liquidRoute == null)
         {
-            await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request, responseBuilder);
-            return;
+            return await GetErrorRouteResponse(HttpStatusCode.NotFound, renderModel, request, responseBuilder);
         }
 
         HttpStatusCode? statusCode = await ProcessRoute(liquidRoute, renderModel, request, responseBuilder);
         if (statusCode != null && (int)statusCode.Value >= 400)
         {
-            await GetErrorRouteResponse(statusCode.Value, renderModel, request, responseBuilder);
-            return;
+            return await GetErrorRouteResponse(statusCode.Value, renderModel, request, responseBuilder);
         }
 
         responseBuilder.SetStatusCode(200);
         responseBuilder.SetContentType("text/html");
         await responseBuilder.StartResponse();
-        
-        await _htmlRenderer.RenderHtml(renderModel, liquidRoute, responseBuilder.BodyWriter);
+
+        if (responseBuilder.BodyWriter != null)
+        {
+            await _htmlRenderer.RenderHtml(renderModel, liquidRoute, responseBuilder.BodyWriter);
+            return null;
+        }
+
+        return await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
     }
 
-    private async Task GetErrorRouteResponse(
+    private async Task<string?> GetErrorRouteResponse(
         HttpStatusCode httpStatusCode,
         RenderModel renderModel,
         LiquidRequestModel request,
@@ -70,8 +73,7 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
         HttpStatusCode? processStatusCodeRoute = await ProcessRoute(statusCodeRoute, renderModel, request, response);
         if (processStatusCodeRoute != null && callStack < 3)
         {
-            await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, response, callStack + 1);
-            return;
+            return await GetErrorRouteResponse(processStatusCodeRoute.Value, renderModel, request, response, callStack + 1);
         }
 
         if (processStatusCodeRoute != null && callStack >= 3)
@@ -79,14 +81,31 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
             response.SetStatusCode((int)HttpStatusCode.InternalServerError);
             response.SetContentType("text/html");
 
-            await response.BodyWriter.WriteAsync("<h1>500 - Internal Server Error</h1>");
-            return;
+            if (response.BodyWriter != null)
+            {
+                await response.BodyWriter.WriteAsync("<h1>500 - Internal Server Error</h1>");
+                return null;
+            }
+            
+            return "<h1>500 - Internal Server Error</h1>";
         }
 
         response.SetStatusCode((int)httpStatusCode);
         response.SetContentType("text/html");
-        
-        await _htmlRenderer.RenderHtml(renderModel, statusCodeRoute, response.BodyWriter);
+
+        return await ProcessResponse(renderModel, statusCodeRoute, response);
+    }
+
+    private async Task<string?> ProcessResponse(RenderModel renderModel, LiquidRoute liquidRoute,
+        ILiquidResponseBuilder responseBuilder)
+    {
+        if (responseBuilder.BodyWriter != null)
+        {
+            await _htmlRenderer.RenderHtml(renderModel, liquidRoute, responseBuilder.BodyWriter);
+            return null;
+        }
+
+        return await _htmlRenderer.RenderHtml(renderModel, liquidRoute);
     }
 
     private async Task<HttpStatusCode?> ProcessRoute(
