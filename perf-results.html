@@ -1,0 +1,743 @@
+﻿<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Performance Benchmark Comparison</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body style="margin:0; font-family:Arial, Helvetica, sans-serif; background:#0f172a; color:#f8fafc;">
+    <main style="max-width:1200px; margin:0 auto; padding:24px;">
+      <header style="margin-bottom:16px;">
+        <h1 style="margin:0 0 6px 0; font-size:28px;">Performance Benchmark Comparison</h1>
+        <p style="margin:0; font-size:14px; color:#cbd5e1;">Baseline is the first benchmark response in the loaded file set.</p>
+      </header>
+
+      
+
+      
+      <section style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Web Servers</h2>
+          <p style="margin:8px 0 0 0; font-size:28px; font-weight:700;">4</p>
+        </article>
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Baseline</h2>
+          <p style="margin:8px 0 0 0; font-size:20px; font-weight:700;">aspnetcore</p>
+        </article>
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Compared Metrics</h2>
+          <p style="margin:8px 0 0 0; font-size:28px; font-weight:700;">12</p>
+        </article>
+      </section>
+
+      <section style="overflow-x:auto; border:1px solid #334155; background:#1e293b; border-radius:8px; margin-bottom:16px;">
+        <table style="width:100%; border-collapse:collapse; min-width:900px;">
+          <thead>
+            <tr style="background:#334155; border-bottom:1px solid #475569;">
+              <th style="padding:10px; text-align:left; position:sticky; left:0; z-index:3; background:#334155;">Metric</th>
+              
+              
+              
+              <th style="padding:10px; text-align:center; background:#334155;" colspan="4">aspnetcore</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:center; background:#3b4a5f;" colspan="4">embedio</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:center; background:#334155;" colspan="4">genhttp</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:center; background:#3b4a5f;" colspan="4">razor</th>
+              
+              
+            </tr>
+            <tr style="background:#334155; border-bottom:1px solid #475569; color:#cbd5e1; font-size:12px;">
+              <th style="padding:10px; text-align:left; background:#334155;"></th>
+              
+              
+              
+              <th style="padding:10px; text-align:left; background:#334155;">Value</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ%</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Value</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ%</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:left; background:#334155;">Value</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ%</th>
+              
+              
+              
+              
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Value</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ%</th>
+              
+              
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">App Build Time (ms)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">17073</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">12059</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:70.6319920342061%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-5014</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-29.37%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">12237</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:71.674573888596%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-4836</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-28.33%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">6016</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:35.2369237978094%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-11057</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-64.76%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">App Start Time (ms)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">5270</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:99.2280173225381%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">5273</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:99.2845038599134%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+3</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+0.06%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">5279</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:99.3974769346639%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+9</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+0.17%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">5311</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+41</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+0.78%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Published Size (KB)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">108464</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:89.7227185494011%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">80563</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:66.6426775196876%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-27901</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-25.72%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">81251</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:67.2117993514658%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-27213</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-25.09%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">120888</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+12424</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+11.45%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">App Working Set (MB)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">158</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:78.2178217821782%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">122</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:60.3960396039604%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-36</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-22.78%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">175</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:86.6336633663366%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+17</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+10.76%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">202</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+44</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+27.85%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">App Private Memory (MB)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">139</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:75.9562841530054%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">87</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:47.5409836065574%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-52</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-37.41%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">177</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:96.7213114754098%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+38</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+27.34%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">183</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+44</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+31.65%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">App Max Global CPU (%)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">98.87</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:98.8713989257812%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">77.2</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:77.1957550048828%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-21.68</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-21.92%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">93.18</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:93.1824111938476%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-5.69</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-5.75%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">100</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+1.13</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+1.14%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load RPS Mean</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">187627.42</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">28449.89</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:15.1629726874756%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-159177.52</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-84.84%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">69936.31</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:37.2740342041503%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-117691.11</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-62.73%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">116625.88</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:62.1582317607441%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-71001.53</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-37.84%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load Latency P95 (ms)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">2.63</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:31.7184863822608%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">2.9</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:34.9602313810557%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+0.27</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+10.22%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">8.3</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+5.67</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">+215.27%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">3.54</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:42.6006266570258%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+0.9</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+34.31%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load Throughput (MB/s)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">333.68</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:32.1511230862102%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">55.77</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:5.37340945734756%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-277.92</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-83.29%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">130.59</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:12.5822608596517%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-203.1</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-60.87%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">1037.86</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">+704.18</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">+211.03%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load Total Requests</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">2812852</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">426727</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:15.1706168685732%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-2386125</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-84.83%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">1048566</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:37.2776811577715%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-1764286</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#1e293b;">-62.72%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">1742125</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:61.9344707791238%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-1070727</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">-38.07%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load Working Set (MB)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">36</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:94.7368421052632%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">38</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+2</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+5.56%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">36</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:94.7368421052632%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">35</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:92.1052631578947%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-1</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#243447;">-2.78%</td>
+              
+              
+            </tr>
+            
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">Load Private Memory (MB)</td>
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">48</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:85.7142857142857%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0</td>
+              <td style="padding:10px; white-space:nowrap; color:#e2e8f0; background:#1e293b;">0%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">56</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:100%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+8</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+16.67%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">46</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:82.1428571428571%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-2</td>
+              <td style="padding:10px; white-space:nowrap; color:#4ade80; background:#1e293b;">-4.17%</td>
+              
+              
+              
+              
+              <td style="padding:10px; white-space:nowrap; background:#243447;">50</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:89.2857142857143%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+2</td>
+              <td style="padding:10px; white-space:nowrap; color:#f87171; background:#243447;">+4.17%</td>
+              
+              
+            </tr>
+            
+          </tbody>
+        </table>
+      </section>
+      
+    </main>
+  </body>
+
+</html>
