@@ -53,7 +53,8 @@ public class LiquidResponseMiddleware : ILiquidResponseMiddleware
 
         responseBuilder.SetStatusCode(200);
         responseBuilder.SetContentType("text/html");
-
+        await responseBuilder.StartResponse();
+        
         await _htmlRenderer.RenderHtml(renderModel, liquidRoute, responseBuilder.BodyWriter);
     }
 

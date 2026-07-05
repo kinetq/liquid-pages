@@ -54,4 +54,9 @@ public class AspNetCoreLiquidResponseBuilder(HttpResponse response, TextWriter b
     {
         Response.Cookies.Delete(key);
     }
+
+    public override async Task StartResponse()
+    {
+        await Response.StartAsync();
+    }
 }

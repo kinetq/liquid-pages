@@ -44,4 +44,9 @@ public class GenHTTPLiquidResponseBuilder(GenHTTPLiquidResponse response, Stream
             Response.Cookies.Remove(cookie.Value);
         }
     }
+
+    public override Task StartResponse()
+    {
+        return Task.CompletedTask;
+    }
 }

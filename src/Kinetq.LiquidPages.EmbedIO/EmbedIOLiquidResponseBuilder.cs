@@ -50,4 +50,9 @@ public class EmbedIOLiquidResponseBuilder(IHttpResponse response, TextWriter bod
             Expires = DateTime.UtcNow.AddDays(-1)
         });
     }
+
+    public override Task StartResponse()
+    {
+        return Task.CompletedTask;
+    }
 }

@@ -64,4 +64,9 @@ public class SimpleWLiquidResponseBuilder(HttpResponse response, StreamWriter bo
     {
         Response.DeleteCookie(key);
     }
+
+    public override Task StartResponse()
+    {
+        return Task.CompletedTask;
+    }
 }
