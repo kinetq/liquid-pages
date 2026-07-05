@@ -35,6 +35,7 @@ public class LiquidPagesWebViewTests
                 response.SetStatusCode(201);
                 response.SetContentType("text/plain");
                 await response.BodyWriter.WriteAsync("Rendered body");
+                return null;
             });
 
         var webView = new LiquidPagesWebView(routeTreeMock.Object, middlewareMock.Object);
@@ -80,6 +81,7 @@ public class LiquidPagesWebViewTests
                 response.SetStatusCode(200);
                 response.SetContentType("text/html");
                 await response.BodyWriter.WriteAsync("<h1>Home</h1>");
+                return null;
             });
 
         var webView = new LiquidPagesWebView(routeTreeMock.Object, middlewareMock.Object);

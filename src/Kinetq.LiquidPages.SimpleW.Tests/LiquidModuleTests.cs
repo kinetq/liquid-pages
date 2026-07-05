@@ -84,14 +84,14 @@ namespace Kinetq.LiquidPages.SimpleW.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<HttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -108,14 +108,14 @@ namespace Kinetq.LiquidPages.SimpleW.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<HttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -150,14 +150,14 @@ namespace Kinetq.LiquidPages.SimpleW.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<HttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -174,14 +174,14 @@ namespace Kinetq.LiquidPages.SimpleW.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<HttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -198,14 +198,14 @@ namespace Kinetq.LiquidPages.SimpleW.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<HttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/plain");
                     response.BodyWriter.Write("ok");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 

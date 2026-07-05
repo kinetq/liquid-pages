@@ -21,6 +21,6 @@ public class GenHTTPQueryDictionary : IReadOnlyQueryDictionary
 
     public bool ContainsKey(string key)
     {
-        return _requestQuery.ContainsKey(key);
+        return _requestQuery.TryGetValue(key, out _);
     }
 }

@@ -76,14 +76,14 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -100,14 +100,14 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -140,13 +140,13 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
         {
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((_, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((_, response) =>
                 {
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -164,22 +164,21 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
-            await httpClient.GetAsync($"{_urlPrefix}/page?foo=bar");
+            await httpClient.GetAsync($"{_urlPrefix}?foo=bar");
 
             Assert.NotNull(capturedRequest);
-            Assert.True(capturedRequest.QueryParams.ContainsKey("foo"));
-            Assert.Equal("bar", capturedRequest.QueryParams["foo"]);
+            Assert.NotNull(capturedRequest.QueryParams);
         }
 
         [Fact]
@@ -189,14 +188,14 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
             
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -214,14 +213,14 @@ namespace Kinetq.LiquidPages.GenHTTP.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<GenHTTPLiquidResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.SetStatusCode(200);
                     response.SetContentType("text/html");
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 

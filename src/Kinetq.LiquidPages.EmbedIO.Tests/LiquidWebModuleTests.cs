@@ -73,12 +73,12 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -127,12 +127,12 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.BodyWriter.Write("<h1>Page Found</h1>");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
@@ -167,12 +167,12 @@ namespace Kinetq.LiquidPages.EmbedIO.Tests
 
             _mockLiquidResponseMiddleware
                 .Setup(m => m.HandleRequestAsync(It.IsAny<LiquidRequestModel>(), It.IsAny<ILiquidResponseBuilder>()))
-                .Callback<LiquidRequestModel, LiquidResponseBuilder<IHttpResponse>>((req, response) =>
+                .Callback<LiquidRequestModel, ILiquidResponseBuilder>((req, response) =>
                 {
                     capturedRequest = req;
                     response.BodyWriter.Write("ok");
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((string?)null);
 
             using var httpClient = new HttpClient();
 
