@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using Kinetq.LiquidPages.Interfaces;
 
-namespace Kinetq.LiquidPages.Maui;
+namespace Kinetq.LiquidPages.Models;
 
 public class LiquidRouteValuesDictionary : IReadOnlyRouteValuesDictionary
 {

@@ -53,6 +53,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Perf", "src\Kinetq.LiquidPages.Perf\Kinetq.LiquidPages.Perf.csproj", "{2C3ABB5D-8132-4860-8F28-A911519D26A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.NetCoreServer", "src\Kinetq.LiquidPages.NetCoreServer\Kinetq.LiquidPages.NetCoreServer.csproj", "{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.NetCoreServer.Sample", "src\Kinetq.LiquidPages.NetCoreServer.Sample\Kinetq.LiquidPages.NetCoreServer.Sample.csproj", "{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +147,14 @@ Global
 		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,6 @@
-﻿using Kinetq.LiquidPages.Maui.Models;
-using Kinetq.LiquidPages.Models;
+﻿using Kinetq.LiquidPages.Models;
 
-namespace Kinetq.LiquidPages.Maui.Interfaces;
+namespace Kinetq.LiquidPages.Interfaces;
 
 public interface IRouteTree
 {

@@ -1,6 +1,5 @@
 ﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Maui;
-using Kinetq.LiquidPages.Maui.Interfaces;
 
 namespace Kinetq.LiquidPages.Avalonia.Sample;
 

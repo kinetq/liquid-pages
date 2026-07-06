@@ -7,16 +7,24 @@ jobs:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.AspNetCore.Sample/Kinetq.LiquidPages.AspNetCore.Sample.csproj
+
   razorpages-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.RazorPages.Sample/Kinetq.LiquidPages.RazorPages.Sample.csproj
+
   embedio-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.EmbedIO.Sample/Kinetq.LiquidPages.EmbedIO.Sample.csproj
+
+  netcoreserver-sample:
+    sources:
+      liquidpages:
+        localFolder: .
+    project: liquidpages/src/Kinetq.LiquidPages.NetCoreServer.Sample/Kinetq.LiquidPages.NetCoreServer.Sample.csproj
 
   genhttp-sample:
     sources:
@@ -59,6 +67,14 @@ scenarios:
       job: bombardier
       variables:
         serverPort: 5662
+        path: /
+  netcoreserver-home:
+    application:
+      job: netcoreserver-sample
+    load:
+      job: bombardier
+      variables:
+        serverPort: 8080
         path: /
   genhttp-home:
     application:
