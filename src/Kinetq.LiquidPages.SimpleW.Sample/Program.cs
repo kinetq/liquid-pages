@@ -30,23 +30,25 @@ namespace Kinetq.LiquidPages.SimpleW.Sample
                 options.AcceptPerCore = true;
             });
 
-            var liquidRoutesManager = container.GetRequiredService<ILiquidRoutesManager>();
-            var liquidResponseMiddleware = container.GetRequiredService<ILiquidResponseMiddleware>();
-            var liquidStartup = container.GetRequiredService<ILiquidStartup>();
+            //var liquidRoutesManager = container.GetRequiredService<ILiquidRoutesManager>();
+            //var liquidResponseMiddleware = container.GetRequiredService<ILiquidResponseMiddleware>();
+            //var liquidStartup = container.GetRequiredService<ILiquidStartup>();
 
-            liquidStartup.RegisterPageModels();
-            liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
+            //liquidStartup.RegisterPageModels();
+            //liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
 
-            server.UseStaticFilesModule(options => {
-                options.Path =  Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");                  // serve your files located here
-                options.Prefix = "/Static";                           // to "/" endpoint
-                options.CacheTimeout = TimeSpan.FromDays(1d);    // cached for 24h
-                options.AutoIndex = true;                       // enable autoindex if no index.html exists in the directory
-            });
-            server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
-            {
-                MapFallback404 = true
-            });
+            //server.UseStaticFilesModule(options => {
+            //    options.Path =  Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");                  // serve your files located here
+            //    options.Prefix = "/Static";                           // to "/" endpoint
+            //    options.CacheTimeout = TimeSpan.FromDays(1d);    // cached for 24h
+            //    options.AutoIndex = true;                       // enable autoindex if no index.html exists in the directory
+            //});
+            //server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
+            //{
+            //    MapFallback404 = true
+            //});
+
+            server.MapGet("/", () => new { message = "Hello World !" });
 
             // run server
             await server.RunAsync();
