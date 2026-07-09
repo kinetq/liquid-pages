@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		liquidpages.benchmark.yaml = liquidpages.benchmark.yaml
 		.github\workflows\main.yml = .github\workflows\main.yml
+		perf-results.html = perf-results.html
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -49,6 +50,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Sample", "src\Kinetq.LiquidPages.Maui.Sample\Kinetq.LiquidPages.Maui.Sample.csproj", "{071D573C-18A8-4BA8-95DF-E0210EBBCA7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Maui.Tests", "src\Kinetq.LiquidPages.Maui.Tests\Kinetq.LiquidPages.Maui.Tests.csproj", "{778D9908-2965-4C90-AC66-A814B8DCF6CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.Perf", "src\Kinetq.LiquidPages.Perf\Kinetq.LiquidPages.Perf.csproj", "{2C3ABB5D-8132-4860-8F28-A911519D26A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.NetCoreServer", "src\Kinetq.LiquidPages.NetCoreServer\Kinetq.LiquidPages.NetCoreServer.csproj", "{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetq.LiquidPages.NetCoreServer.Sample", "src\Kinetq.LiquidPages.NetCoreServer.Sample\Kinetq.LiquidPages.NetCoreServer.Sample.csproj", "{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -136,6 +143,18 @@ Global
 		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{778D9908-2965-4C90-AC66-A814B8DCF6CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3ABB5D-8132-4860-8F28-A911519D26A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FC6EF9-218A-4CE6-AB00-90DB93F7C0BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98B08EFC-DCAC-45C3-8744-5933F81C9A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

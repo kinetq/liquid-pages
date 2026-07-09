@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Managers;
+using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,13 +19,14 @@ public static class ServiceCollectionHelpers
         serviceCollection.AddSingleton<ILiquidPartialsManager, LiquidPartialsManager>();
         serviceCollection.AddSingleton<ILiquidTemplateManager, LiquidTemplateManager>();
         serviceCollection.AddSingleton<ITemplateOptionsManager, TemplateOptionsManager>();
+        serviceCollection.AddSingleton<IRouteTree, RouteTree>();
         serviceCollection.AddScoped<ILiquidResponseMiddleware, LiquidResponseMiddleware>();
         serviceCollection.AddScoped<IHtmlRenderer, HtmlRenderer>();
         serviceCollection.AddScoped<ILiquidStartup, LiquidStartup>();
 
-        IEnumerable<Type> liquidPageModels = assembliesToScan
-            .SelectMany(a => a.GetTypes())
-            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(LiquidPageModel)));
+        var allTypes = assembliesToScan.SelectMany(a => a.GetTypes()).ToList();
+        IEnumerable<Type> liquidPageModels = allTypes
+            .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(typeof(LiquidPageModel)));
 
         foreach (Type type in liquidPageModels)
         {

@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>{{ view_model.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body style="margin:0; font-family:Arial, Helvetica, sans-serif; background:#0f172a; color:#f8fafc;">
+    <main style="max-width:1200px; margin:0 auto; padding:24px;">
+      <header style="margin-bottom:16px;">
+        <h1 style="margin:0 0 6px 0; font-size:28px;">{{ view_model.title }}</h1>
+        <p style="margin:0; font-size:14px; color:#cbd5e1;">Baseline is the first benchmark response in the loaded file set.</p>
+      </header>
+
+      {% if view_model.runs.size == 0 %}
+      <section style="border:1px solid #334155; background:#1e293b; border-radius:8px; padding:18px; margin-bottom:16px;">
+        <p style="margin:0; color:#cbd5e1;">No benchmark responses were found.</p>
+      </section>
+      {% endif %}
+
+      {% if view_model.runs.size > 0 %}
+      <section style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Web Servers</h2>
+          <p style="margin:8px 0 0 0; font-size:28px; font-weight:700;">{{ view_model.response_count }}</p>
+        </article>
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Baseline</h2>
+          <p style="margin:8px 0 0 0; font-size:20px; font-weight:700;">{{ view_model.baseline_label }}</p>
+        </article>
+        <article style="flex:1 1 240px; border:1px solid #334155; background:#1e293b; border-radius:8px; padding:14px;">
+          <h2 style="margin:0; font-size:13px; color:#cbd5e1;">Compared Metrics</h2>
+          <p style="margin:8px 0 0 0; font-size:28px; font-weight:700;">{{ view_model.comparison_rows.size }}</p>
+        </article>
+      </section>
+
+      <section style="overflow-x:auto; border:1px solid #334155; background:#1e293b; border-radius:8px; margin-bottom:16px;">
+        <table style="width:100%; border-collapse:collapse; min-width:900px;">
+          <thead>
+            <tr style="background:#334155; border-bottom:1px solid #475569;">
+              <th style="padding:10px; text-align:left; position:sticky; left:0; z-index:3; background:#334155;">Metric</th>
+              {% for run in view_model.runs %}
+              {% assign run_mod = forloop.index0 | modulo: 2 %}
+              {% if run_mod == 0 %}
+              <th style="padding:10px; text-align:center; background:#334155;" colspan="4">{{ run.label }}</th>
+              {% else %}
+              <th style="padding:10px; text-align:center; background:#3b4a5f;" colspan="4">{{ run.label }}</th>
+              {% endif %}
+              {% endfor %}
+            </tr>
+            <tr style="background:#334155; border-bottom:1px solid #475569; color:#cbd5e1; font-size:12px;">
+              <th style="padding:10px; text-align:left; background:#334155;"></th>
+              {% for run in view_model.runs %}
+              {% assign run_mod = forloop.index0 | modulo: 2 %}
+              {% if run_mod == 0 %}
+              <th style="padding:10px; text-align:left; background:#334155;">Value</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#334155;">Δ%</th>
+              {% else %}
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Value</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Graph</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ</th>
+              <th style="padding:10px; text-align:left; background:#3b4a5f;">Δ%</th>
+              {% endif %}
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in view_model.comparison_rows %}
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px; font-weight:600; white-space:nowrap; position:sticky; left:0; z-index:2; background:#1e293b;">{{ row.metric_name }}</td>
+              {% for value in row.values %}
+              {% assign run_mod = forloop.index0 | modulo: 2 %}
+              {% if run_mod == 0 %}
+              <td style="padding:10px; white-space:nowrap; background:#1e293b;">{{ value.display_value }}</td>
+              <td style="padding:10px; min-width:170px; background:#1e293b;">
+                <div style="height:12px; border:1px solid #475569; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:{{ value.bar_width_percentage }}%; background:#38bdf8;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:{{value.color}}; background:#1e293b;">{{ value.display_delta }}</td>
+              <td style="padding:10px; white-space:nowrap; color:{{value.color}}; background:#1e293b;">{{ value.display_delta_percentage }}</td>
+              {% else %}
+              <td style="padding:10px; white-space:nowrap; background:#243447;">{{ value.display_value }}</td>
+              <td style="padding:10px; min-width:170px; background:#243447;">
+                <div style="height:12px; border:1px solid #5b6b7f; border-radius:999px; background:#0f172a; overflow:hidden;">
+                  <div style="height:100%; width:{{ value.bar_width_percentage }}%; background:#60a5fa;"></div>
+                </div>
+              </td>
+              <td style="padding:10px; white-space:nowrap; color:{{value.color}}; background:#243447;">{{ value.display_delta }}</td>
+              <td style="padding:10px; white-space:nowrap; color:{{value.color}}; background:#243447;">{{ value.display_delta_percentage }}</td>
+              {% endif %}
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+    </main>
+  </body>
+
+</html>

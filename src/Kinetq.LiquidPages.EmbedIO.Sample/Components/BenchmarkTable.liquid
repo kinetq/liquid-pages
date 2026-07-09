@@ -1,0 +1,19 @@
+{% assign endpoints = "GET /,GET /products,GET /search,GET /cart,POST /checkout,GET /api/items" | split: "," %}
+<section>
+	<h2>Benchmark Matrix</h2>
+	<table class="bench-table" id="bench-table">
+		<thead>
+			<tr><th>Endpoint</th><th>RPS</th><th>P95 (ms)</th><th>Error %</th></tr>
+		</thead>
+		<tbody>
+		{% for endpoint in endpoints %}
+			<tr>
+				<td>{{ endpoint }}</td>
+				<td>{{ 9000 | plus: forloop.index0 | times: 2 }}</td>
+				<td>{{ 18 | plus: forloop.index | times: 3 }}</td>
+				<td>0.{{ forloop.index }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</section>

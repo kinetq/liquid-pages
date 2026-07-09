@@ -1,6 +1,4 @@
-﻿using Kinetq.LiquidPages.Models;
-
-namespace Kinetq.LiquidPages.Maui.Models;
+﻿namespace Kinetq.LiquidPages.Models;
 
 public class RouteNode
 {

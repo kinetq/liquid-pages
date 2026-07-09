@@ -1,6 +1,5 @@
 ﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Maui;
-using Kinetq.LiquidPages.Maui.Interfaces;
 
 namespace Kinetq.LiquidPages.Avalonia.Sample;
 
@@ -13,24 +12,18 @@ public partial class MainPage : ContentPage
 	{
 	}
 
-	private MainPage((IRouteTree RouteTree, ILiquidResponseMiddleware LiquidResponseMiddleware, ITemplateOptionsManager TemplateOptionsManager) services)
-		: this(services.RouteTree, services.LiquidResponseMiddleware, services.TemplateOptionsManager)
+	private MainPage((IRouteTree RouteTree, ILiquidResponseMiddleware LiquidResponseMiddleware) services)
+		: this(services.RouteTree, services.LiquidResponseMiddleware)
 	{
 	}
 
 	public MainPage(
 		IRouteTree routeTree,
-		ILiquidResponseMiddleware liquidResponseMiddleware,
-		ITemplateOptionsManager templateOptionsManager)
+		ILiquidResponseMiddleware liquidResponseMiddleware)
 	{
 		InitializeComponent();
 
-		_browser = new LiquidPagesWebView
-		{
-			RouteTree = routeTree,
-			LiquidResponseMiddleware = liquidResponseMiddleware,
-			TemplateOptionsManager = templateOptionsManager
-		};
+        _browser = new LiquidPagesWebView(routeTree, liquidResponseMiddleware);
 		_browser.ResponseRendered += OnBrowserResponseRendered;
 		BrowserHost.Content = _browser;
 
@@ -48,12 +41,11 @@ public partial class MainPage : ContentPage
 		AddressEntry.Text = e.Path;
 	}
 
-	private static (IRouteTree RouteTree, ILiquidResponseMiddleware LiquidResponseMiddleware, ITemplateOptionsManager TemplateOptionsManager) ResolveServices()
+	private static (IRouteTree RouteTree, ILiquidResponseMiddleware LiquidResponseMiddleware) ResolveServices()
 	{
 		var serviceProvider = ServiceRegistration.CreateServiceProvider();
 		return (
 			serviceProvider.GetRequiredService<IRouteTree>(),
-			serviceProvider.GetRequiredService<ILiquidResponseMiddleware>(),
-			serviceProvider.GetRequiredService<ITemplateOptionsManager>());
+			serviceProvider.GetRequiredService<ILiquidResponseMiddleware>());
 	}
 }

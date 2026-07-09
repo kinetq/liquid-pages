@@ -1,27 +1,17 @@
-using Kinetq.LiquidPages.Helpers;
+using System.Buffers;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
-using Kinetq.LiquidPages.Builders;
-using Microsoft.IO;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Kinetq.LiquidPages.AspNetCore;
 
 public static class ApplicationBuilderExtensions
 {
-    private static readonly RecyclableMemoryStreamManager Manager = new RecyclableMemoryStreamManager();
-
-    public static IApplicationBuilder UseLiquidPagesErrorHandling(this IApplicationBuilder app)
-    {
-        app.UseExceptionHandler("/__liquid-error/500");
-        app.UseStatusCodePagesWithReExecute("/__liquid-error/{0}");
-        return app;
-    }
-
-    public static IApplicationBuilder UseLiquidPages(this WebApplication app)
+    public static IApplicationBuilder UseLiquidPages(this WebApplication app, bool map404Fallback = false)
     {
         var routesManager = app.Services.GetRequiredService<ILiquidRoutesManager>();
         foreach (var route in routesManager.LiquidRoutes)
@@ -42,16 +32,24 @@ public static class ApplicationBuilderExtensions
             });
         }
 
+        if (map404Fallback)
+        {
+            app.MapFallback(async (context) =>
+            {
+                await HandleLiquidRequest(context, null);
+            });
+        }
+
         return app;
     }
 
-    private static async Task HandleLiquidRequest(HttpContext context, LiquidRoute liquidRoute)
+    private static async Task HandleLiquidRequest(HttpContext context, LiquidRoute? liquidRoute)
     {
         var request = context.Request;
         var liquidRequest = new LiquidRequestModel
         {
             Route = request.Path.Value ?? "/",
-            QueryParams = (request.QueryString.Value ?? string.Empty).GetQueryParams(),
+            QueryParams = new AspNetCoreQueryParams(request.Query),
             Headers = new AspNetCoreHeaderDictionary(request.Headers),
             Method = request.Method,
             LiquidRoute = liquidRoute,
@@ -67,27 +65,16 @@ public static class ApplicationBuilderExtensions
         var liquidResponseMiddleware = context.RequestServices.GetRequiredService<ILiquidResponseMiddleware>();
         var response = context.Response;
 
-        using var pooledMemoryStream = Manager.GetStream();
+        var responseBodyWriter = new HttpResponseStreamWriter(
+            response.Body,
+            Encoding.UTF8,
+            1024,
+            ArrayPool<byte>.Shared,
+            ArrayPool<char>.Shared);
 
-        var responseModel = new LiquidResponseBuilder
-        {
-            BodyWriter = new StreamWriter(pooledMemoryStream),
-            SetContentType = contentType =>
-            {
-                response.ContentType = contentType;
-            },
-            SetStatusCode = (statusCode) =>
-            {
-                response.StatusCode = statusCode;
-            }
-        };
+        var responseModel = new AspNetCoreLiquidResponseBuilder(response, responseBodyWriter);
 
         await liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
         await responseModel.BodyWriter.FlushAsync();
-        
-        pooledMemoryStream.Position = 0;
-        await pooledMemoryStream.CopyToAsync(context.Response.Body);
-        // Note: We don't call EndAsync here as the StreamWriter might be reused if there are other middleware chained.
-        // The framework will handle the final disposal of the response body stream.
     }
 }

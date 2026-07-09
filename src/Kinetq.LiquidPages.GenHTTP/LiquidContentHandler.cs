@@ -1,7 +1,7 @@
 using System.Text;
 using GenHTTP.Api.Content;
 using GenHTTP.Api.Protocol;
-using Kinetq.LiquidPages.Builders;
+using GenHTTP.Modules.IO;
 using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 
@@ -27,7 +27,7 @@ public sealed class LiquidContentHandler : IHandler
         var liquidRequest = new LiquidRequestModel
         {
             Route = requestPath,
-            QueryParams = request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+            QueryParams = new GenHTTPQueryDictionary(request.Query),
             Headers = new GenHTTPHeaderDictionary(request.Headers),
             Method = request.Method.RawMethod,
             LiquidRoute = _liquidRoute,
@@ -42,33 +42,32 @@ public sealed class LiquidContentHandler : IHandler
 
         try
         {
-            var responseStatusCode = 200;
-            var responseContentType = "text/html";
-
             await using var contentStream = new MemoryStream();
             await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
 
-            var responseModel = new LiquidResponseBuilder
-            {
-                BodyWriter = streamWriter,
-                SetContentType = contentType =>
-                {
-                    responseContentType = contentType;
-                },
-                SetStatusCode = statusCode =>
-                {
-                    responseStatusCode = statusCode;
-                }
-            };
+            var liquidResponse = new GenHTTPLiquidResponse();
+            var responseBuilder = new GenHTTPLiquidResponseBuilder(liquidResponse, streamWriter);
 
-            await _middleware.HandleRequestAsync(liquidRequest, responseModel);
+            await _middleware.HandleRequestAsync(liquidRequest, responseBuilder);
             await streamWriter.FlushAsync();
 
             var contentBytes = contentStream.ToArray();
 
-            return request.Respond()
-                .Status((ResponseStatus)responseStatusCode)
-                .Type(FlexibleContentType.Parse(responseContentType))
+            var builder = request.Respond()
+                .Status((ResponseStatus)liquidResponse.StatusCode)
+                .Type(FlexibleContentType.Parse(liquidResponse.ContentType));
+
+            foreach (var header in liquidResponse.Headers)
+            {
+                builder.Header(header.Key, header.Value);
+            }
+
+            foreach (var cookie in liquidResponse.Cookies)
+            {
+                builder.Cookie(cookie);
+            }
+
+            return builder
                 .Content(new ByteArrayContent(contentBytes))
                 .Build();
         }

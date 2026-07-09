@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Static\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Components\BenchmarkTable.liquid" />
+    <EmbeddedResource Include="Components\Hero.liquid" />
+    <EmbeddedResource Include="Components\SummaryCards.liquid" />
+    <EmbeddedResource Include="ErrorPages\NotFound.liquid" />
+    <EmbeddedResource Include="Layouts\default.liquid" />
+    <EmbeddedResource Include="Pages\Home.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kinetq.LiquidPages.NetCoreServer\Kinetq.LiquidPages.NetCoreServer.csproj" />
+  </ItemGroup>
+
+</Project>

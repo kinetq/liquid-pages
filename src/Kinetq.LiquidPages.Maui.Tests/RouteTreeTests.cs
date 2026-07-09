@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Kinetq.LiquidPages.Interfaces;
-using Kinetq.LiquidPages.Maui.Models;
 using Kinetq.LiquidPages.Models;
 using Moq;
 using Xunit;

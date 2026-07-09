@@ -1,5 +1,5 @@
-﻿using Kinetq.LiquidPages.Maui.Interfaces;
-using Kinetq.LiquidPages.Maui.Models;
+﻿using Kinetq.LiquidPages.Interfaces;
+using Kinetq.LiquidPages.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kinetq.LiquidPages.Maui.Helpers;

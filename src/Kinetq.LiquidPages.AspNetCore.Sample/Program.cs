@@ -17,8 +17,7 @@ using (var scope = app.Services.CreateScope())
     startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
 }
 
-app.UseLiquidPagesErrorHandling();
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseLiquidPages();
 
 await app.RunAsync();

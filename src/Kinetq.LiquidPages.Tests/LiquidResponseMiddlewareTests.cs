@@ -62,8 +62,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
@@ -96,8 +95,7 @@ namespace Kinetq.LiquidPages.Tests
             // Act
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
-                Route = "/",
-                QueryParams = new Dictionary<string, string>()
+                Route = "/"
             }, responseModel);
 
             var actualHtml = Encoding.UTF8.GetString(responseStream.ToArray());
@@ -135,8 +133,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert
@@ -177,8 +174,7 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert
@@ -222,30 +218,65 @@ namespace Kinetq.LiquidPages.Tests
             await _liquidResponseMiddleware.HandleRequestAsync(new LiquidRequestModel()
             {
                 Route = expectedRoute,
-                LiquidRoute = liquidRoute,
-                QueryParams = new Dictionary<string, string>()
+                LiquidRoute = liquidRoute
             }, responseModel);
 
             // Assert
             Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusCodeAccessor());
         }
 
-        private static (LiquidResponseBuilder ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
+        private static (TestLiquidResponseBuilder ResponseModel, MemoryStream ResponseStream, Func<int> StatusCodeAccessor, Func<string> ContentTypeAccessor) CreateResponseModel()
         {
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream, new UTF8Encoding(false), leaveOpen: true);
             writer.AutoFlush = true;
-            var statusCode = 0;
-            var contentType = string.Empty;
 
-            var responseModel = new LiquidResponseBuilder
+            var response = new TestLiquidResponse();
+            var responseModel = new TestLiquidResponseBuilder(response, writer);
+
+            return (responseModel, stream, () => response.StatusCode, () => response.ContentType);
+        }
+
+        private sealed class TestLiquidResponse
+        {
+            public int StatusCode { get; set; }
+
+            public string ContentType { get; set; } = string.Empty;
+        }
+
+        private sealed class TestLiquidResponseBuilder(TestLiquidResponse response, TextWriter bodyWriter)
+            : LiquidResponseBuilder<TestLiquidResponse>(response, bodyWriter)
+        {
+            public override void SetStatusCode(int statusCode, string? message = null)
             {
-                BodyWriter = writer,
-                SetStatusCode = value => statusCode = value,
-                SetContentType = value => contentType = value
-            };
+                Response.StatusCode = statusCode;
+            }
 
-            return (responseModel, stream, () => statusCode, () => contentType);
+            public override void SetContentType(string contentType)
+            {
+                Response.ContentType = contentType;
+            }
+
+            public override void AddHeader(string key, string value)
+            {
+            }
+
+            public override void RemoveHeader(string key)
+            {
+            }
+
+            public override void AddCookie(string key, string value, LiquidCookieOptions? cookieOptions = null)
+            {
+            }
+
+            public override void RemoveCookie(string key)
+            {
+            }
+
+            public override Task StartResponse()
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }

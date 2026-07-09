@@ -1,10 +1,8 @@
-﻿using Kinetq.LiquidPages.Helpers;
-using Kinetq.LiquidPages.Interfaces;
+﻿using Kinetq.LiquidPages.Interfaces;
 using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
 using System.Text;
-using Kinetq.LiquidPages.Builders;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -19,38 +17,44 @@ namespace Kinetq.LiquidPages.SimpleW
             _liquidResponseMiddleware = liquidResponseMiddleware;
         }
 
-        public bool MapFallback404 { get; set; } = false;
+        public bool MapFallback404 { get; init; }
 
         public void Install(SimpleWServer server)
         {
             foreach (var liquidRoute in _routesManager.LiquidRoutes)
             {
-                server.MapGet(liquidRoute.RouteTemplate, () => liquidRoute);
-                server.MapPost(liquidRoute.RouteTemplate, () => liquidRoute);
+                server.MapGet(liquidRoute.RouteTemplate, async (HttpSession session) =>
+                {
+                    await RenderLiquidViewAsync(session, liquidRoute);
+                });
+                server.MapPost(liquidRoute.RouteTemplate, async (HttpSession session) =>
+                {
+                    await RenderLiquidViewAsync(session, liquidRoute);
+                });
             }
 
             if (MapFallback404)
             {
                 server.Router.MapFallback(async (HttpSession session) =>
                 {
-                    await RenderLiquidViewAsync(session, null, 404).ConfigureAwait(false);
+                    await RenderLiquidViewAsync(session, null, 404);
                 });
             }
 
-            // wrap existing handler-result (default is JSON sender) 
-            HttpResultHandler next = server.Router.ResultHandler;
+            //// wrap existing handler-result (default is JSON sender) 
+            //HttpResultHandler next = server.Router.ResultHandler;
 
-            server.ConfigureResultHandler(async (session, result) =>
-            {
-                // add Razor render
-                if (result is LiquidRoute vr)
-                {
-                    await RenderLiquidViewAsync(session, vr).ConfigureAwait(false);
-                    return;
-                }
+            //server.ConfigureResultHandler(async (session, result) =>
+            //{
+            //    // add Liquid render
+            //    if (result is LiquidRoute vr)
+            //    {
+            //        await RenderLiquidViewAsync(session, vr);
+            //        return;
+            //    }
 
-                await next(session, result).ConfigureAwait(false);
-            });
+            //    await next(session, result);
+            //});
         }
 
         private async ValueTask RenderLiquidViewAsync(HttpSession session, LiquidRoute? liquidRoute = null, int? statusCode = null)
@@ -59,7 +63,7 @@ namespace Kinetq.LiquidPages.SimpleW
             var liquidRequest = new LiquidRequestModel
             {
                 Route = request.Path,
-                QueryParams = (request.QueryString).GetQueryParams(),
+                QueryParams = new SimpleWQueryDictionary(request.Query),
                 Headers = new SimpleWHeaderDictionary(request.Headers),
                 Method = request.Method,
                 LiquidRoute = liquidRoute,
@@ -77,38 +81,24 @@ namespace Kinetq.LiquidPages.SimpleW
             try
             {
                 var response = session.Response;
-                var responseContentType = "text/html";
 
                 await using var contentStream = new MemoryStream();
                 await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
 
-                var responseModel = new LiquidResponseBuilder
-                {
-                    BodyWriter = streamWriter,
-                    SetContentType = contentType =>
-                    {
-                        responseContentType = contentType;
-                        response.ContentType(contentType);
-                    },
-                    SetStatusCode = sc =>
-                    {
-                        response.Status(sc, null);
-                    }
-                };
+                var responseModel = new SimpleWLiquidResponseBuilder(response, streamWriter);
 
                 await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
                 await streamWriter.FlushAsync();
                 
-                await response
-                    .Body(contentStream.ToArray(), responseContentType)
-                    .SendAsync().ConfigureAwait(false);
+                await response.Body(contentStream.GetBuffer())
+                    .SendAsync();
             }
             catch (Exception ex)
             {
                 await session.Response
                     .Status(500)
                     .Html($"<h1>Internal Server Error</h1><pre>{System.Net.WebUtility.HtmlEncode(ex.ToString())}</pre>")
-                    .SendAsync().ConfigureAwait(false);
+                    .SendAsync();
             }
         }
     }

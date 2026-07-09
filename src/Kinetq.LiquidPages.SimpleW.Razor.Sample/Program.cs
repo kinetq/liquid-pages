@@ -10,6 +10,15 @@ class Program
     static async Task Main()
     {
         var server = new SimpleWServer(IPAddress.Any, 2015);
+        server.Configure(options => {
+            // Always beneficial socket options
+            options.TcpNoDelay = true;
+            options.ReuseAddress = true;
+            options.TcpKeepAlive = true;
+
+            // Advanced tuning (platform dependent)
+            options.AcceptPerCore = true;
+        });
 
         server.UseRazorModule(options =>
               {

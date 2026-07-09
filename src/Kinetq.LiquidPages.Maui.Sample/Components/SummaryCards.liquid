@@ -1,0 +1,10 @@
+{% assign cards = "Requests/sec:18420,Avg Latency:23ms,P95:71ms,Error Rate:0.14%" | split: "," %}
+<section class="cards">
+{% for card in cards %}
+	{% assign parts = card | split: ":" %}
+	<article class="card">
+		<h3>{{ parts[0] }}</h3>
+		<p>{{ parts[1] }}</p>
+	</article>
+{% endfor %}
+</section>

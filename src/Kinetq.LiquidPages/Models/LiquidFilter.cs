@@ -2,9 +2,9 @@
 
 namespace Kinetq.LiquidPages.Models
 {
-    public class LiquidFilter
+    public sealed class LiquidFilter
     {
-        public string Name { get; set; } = null!;
-        public FilterDelegate FilterDelegate { get; set; } = null!;
+        public string Name { get; init; } = null!;
+        public FilterDelegate FilterDelegate { get; init; } = null!;
     }
 }

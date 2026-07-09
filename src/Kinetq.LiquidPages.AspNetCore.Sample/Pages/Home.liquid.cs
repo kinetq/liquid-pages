@@ -1,6 +1,5 @@
 using Kinetq.LiquidPages.Models;
 using Kinetq.LiquidPages.Pages;
-using Microsoft.Extensions.FileProviders;
 
 namespace Kinetq.LiquidPages.AspNetCore.Sample.Pages;
 

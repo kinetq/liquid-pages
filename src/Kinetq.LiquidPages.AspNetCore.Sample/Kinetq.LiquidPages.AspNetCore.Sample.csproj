@@ -21,4 +21,11 @@
     <EmbeddedResource Include="**\*.liquid" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="Components\BenchmarkTable.liquid" />
+    <Content Remove="Components\Hero.liquid" />
+    <Content Remove="Components\SummaryCards.liquid" />
+    <Content Remove="Layouts\default.liquid" />
+  </ItemGroup>
+
 </Project>
