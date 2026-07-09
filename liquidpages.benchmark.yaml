@@ -7,41 +7,49 @@ jobs:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.AspNetCore.Sample/Kinetq.LiquidPages.AspNetCore.Sample.csproj
+    buildArguments: -c Release
 
   razorpages-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.RazorPages.Sample/Kinetq.LiquidPages.RazorPages.Sample.csproj
+    buildArguments: -c Release
 
   embedio-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.EmbedIO.Sample/Kinetq.LiquidPages.EmbedIO.Sample.csproj
+    buildArguments: -c Release
 
   netcoreserver-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.NetCoreServer.Sample/Kinetq.LiquidPages.NetCoreServer.Sample.csproj
+    buildArguments: -c Release
 
   genhttp-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.GenHTTP.Sample/Kinetq.LiquidPages.GenHTTP.Sample.csproj
+    buildArguments: -c Release
 
   simplew-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Sample/Kinetq.LiquidPages.SimpleW.Sample.csproj
+    buildArguments: -c Release
+
   simplew-razor-sample:
     sources:
       liquidpages:
         localFolder: .
     project: liquidpages/src/Kinetq.LiquidPages.SimpleW.Razor.Sample/Kinetq.LiquidPages.SimpleW.Razor.Sample.csproj
+    buildArguments: -c Release
 
 scenarios:
   aspnetcore-liquid:

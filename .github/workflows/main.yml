@@ -106,7 +106,7 @@ jobs:
           INCLUDE_SYMBOLS: true
 
   deploy-perf-results:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     if: github.ref == 'refs/heads/master'
 
@@ -114,14 +114,69 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup Dotnet 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Run setup
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: |
+        dotnet tool update --global Microsoft.Crank.Controller --version "0.2.0-*"
+        dotnet tool update --global Microsoft.Crank.Agent --version "0.2.0-*"
+
+    - name: Run crank
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: |
+        $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
+
+        $agent = Start-Process -FilePath "crank-agent" -PassThru -WindowStyle Hidden
+        Start-Sleep -Seconds 5
+
+        $scenarios = @{
+          "aspnetcore-liquid" = "liquid_results_aspnetcore.json"
+          "aspnetcore-razor" = "liquid_results_razor.json"
+          "embedio-home" = "liquid_results_embedio.json"
+          "netcoreserver-home" = "liquid_results_netcoreserver.json"
+          "genhttp-home" = "liquid_results_genhttp.json"
+          "simplew-home" = "liquid_results_simplew.json"
+          "simplew-razor-home" = "liquid_results_simplew_razor.json"
+        }
+
+        try {
+          foreach ($scenario in $scenarios.Keys) {
+            crank --config liquidpages.benchmark.yaml --scenario $scenario --profile local --json $scenarios[$scenario]
+          }
+        }
+        finally {
+          if (-not $agent.HasExited) {
+            Stop-Process -Id $agent.Id -Force
+          }
+        }
+
+    - name: Build perf generator
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: dotnet build src/Kinetq.LiquidPages.Perf/Kinetq.LiquidPages.Perf.csproj -c Release
+
+    - name: Generate perf-results.html
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: .\src\Kinetq.LiquidPages.Perf\bin\Release\net10.0\Kinetq.LiquidPages.Perf.exe .
+
     - name: Setup GitHub Pages
       uses: actions/configure-pages@v5
 
     - name: Prepare Pages artifact
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
       run: |
-        mkdir -p _site
-        cp perf-results.html _site/perf-results.html
-        cp perf-results.html _site/index.html
+        New-Item -ItemType Directory -Path _site -Force | Out-Null
+        Copy-Item perf-results.html _site/perf-results.html
+        Copy-Item perf-results.html _site/index.html
+        Copy-Item liquid_results_*.json _site/
 
     - name: Upload Pages artifact
       uses: actions/upload-pages-artifact@v3
