@@ -285,7 +285,7 @@ If you choose not to use the extension, you will need to configure the following
 ```
 
 ## Performance
-Detailed performance for each server is available <a href="https://kinetqprodeastus2.blob.core.windows.net/assets/perf-results.html" target="_blank">here</a>.
+Detailed performance for each server is available <a href="https://kinetqprodeastus2.blob.core.windows.net/assets/perf-results.html" target="_blank" rel="noopener noreferrer">here</a>.
 
 Performance is baselined against AspNetCore/Razor Pages. Each sample project was run with the same page model and template.
 
