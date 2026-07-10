@@ -86,6 +86,81 @@ Properties on the page model are available in the template via the `view_model` 
 
 ### 6. Wire up middleware
 
+#### ASP.NET Core middleware
+
+Install the ASP.NET Core companion package:
+
+```powershell
+dotnet add package Kinetq.LiquidPages.AspNetCore
+```
+
+Register LiquidPages services, initialize startup registrations, and map LiquidPages middleware directly on the app:
+
+```csharp
+using Kinetq.LiquidPages.AspNetCore;
+using Kinetq.LiquidPages.Helpers;
+using Kinetq.LiquidPages.Interfaces;
+using Microsoft.Extensions.FileProviders;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddLiquidPages(typeof(Program).Assembly);
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
+    startup.RegisterPageModels();
+    
+    startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
+}
+
+app.MapStaticAssets();
+app.UseLiquidPages();
+
+await app.RunAsync();
+```
+
+#### SimpleW middleware
+
+Install the SimpleW companion package:
+
+```powershell
+dotnet add package Kinetq.LiquidPages.SimpleW
+```
+
+Resolve `ILiquidRoutesManager`, `ILiquidResponseMiddleware`, and `ILiquidStartup` from your container, then register page models/file providers before attaching `LiquidPagesModule`:
+
+```csharp
+using Kinetq.LiquidPages.Helpers;
+using Kinetq.LiquidPages.Interfaces;
+using Microsoft.Extensions.FileProviders;
+using SimpleW;
+
+var liquidRoutesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
+var liquidResponseMiddleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
+var liquidStartup = serviceProvider.GetRequiredService<ILiquidStartup>();
+
+liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
+liquidStartup.RegisterPageModels();
+
+var server = new SimpleWServer(IPAddress.Any, 2015);
+server.UseStaticFilesModule(options => {
+    options.Path = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");
+    options.Prefix = "/Static";
+    options.CacheTimeout = TimeSpan.FromDays(1);
+    options.AutoIndex = true;
+});
+
+server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
+{
+    MapFallback404 = true
+});
+
+await server.RunAsync();
+```
+
 #### GenHTTP middleware
 
 Install the GenHTTP companion package:
@@ -145,82 +220,9 @@ webServer.WithModule(new LiquidWebModule("/", routesManager)
 });
 ```
 
-#### ASP.NET Core middleware
-
-Install the ASP.NET Core companion package:
-
-```powershell
-dotnet add package Kinetq.LiquidPages.AspNetCore
-```
-
-Register LiquidPages services, initialize startup registrations, and map LiquidPages middleware directly on the app:
-
-```csharp
-using Kinetq.LiquidPages.AspNetCore;
-using Kinetq.LiquidPages.Helpers;
-using Kinetq.LiquidPages.Interfaces;
-using Microsoft.Extensions.FileProviders;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddLiquidPages(typeof(Program).Assembly);
-
-var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var startup = scope.ServiceProvider.GetRequiredService<ILiquidStartup>();
-    startup.RegisterPageModels();
-    startup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
-}
-
-app.UseLiquidPagesErrorHandling();
-app.UseStaticFiles();
-app.UseLiquidPages();
-
-await app.RunAsync();
-```
-
-#### SimpleW middleware
-
-Install the SimpleW companion package:
-
-```powershell
-dotnet add package Kinetq.LiquidPages.SimpleW
-```
-
-Resolve `ILiquidRoutesManager`, `ILiquidResponseMiddleware`, and `ILiquidStartup` from your container, then register page models/file providers before attaching `LiquidPagesModule`:
-
-```csharp
-using Kinetq.LiquidPages.Helpers;
-using Kinetq.LiquidPages.Interfaces;
-using Microsoft.Extensions.FileProviders;
-using SimpleW;
-
-var liquidRoutesManager = serviceProvider.GetRequiredService<ILiquidRoutesManager>();
-var liquidResponseMiddleware = serviceProvider.GetRequiredService<ILiquidResponseMiddleware>();
-var liquidStartup = serviceProvider.GetRequiredService<ILiquidStartup>();
-
-liquidStartup.RegisterFileProvider("/", new EmbeddedFileProvider(typeof(Program).Assembly));
-liquidStartup.RegisterPageModels();
-
-var server = new SimpleWServer(IPAddress.Any, 2015);
-server.UseStaticFilesModule(options => {
-    options.Path = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "Static");
-    options.Prefix = "/Static";
-    options.CacheTimeout = TimeSpan.FromDays(1);
-    options.AutoIndex = true;
-});
-
-server.UseModule(new LiquidPagesModule(liquidRoutesManager, liquidResponseMiddleware)
-{
-    MapFallback404 = true
-});
-
-await server.RunAsync();
-```
-
 For other web servers, call `HandleRequestAsync` on `ILiquidResponseMiddleware` from within your own request handler.
+
+<iframe src="https://kinetqprodeastus2.blob.core.windows.net/assets/perf-results.html" width="100%" height="400" title="Embedded Content"></iframe>
 
 ## Visual Studio Extension
 
