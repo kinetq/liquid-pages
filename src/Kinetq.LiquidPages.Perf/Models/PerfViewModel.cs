@@ -23,19 +23,53 @@ public class PerfViewModel
 
     public string Title { get; set; } = "Performance Benchmark Comparison";
 
-    public IList<PerfBenchmarkRun> Runs { get; } = new List<PerfBenchmarkRun>();
+    private readonly IList<PerfBenchmarkRun> _runs = new List<PerfBenchmarkRun>();
+
+    public IList<PerfBenchmarkRun> Runs
+    {
+        get
+        {
+            return _runs.OrderBy(x => _order.TryGetValue(x.Label, out int value) ? value : 0).ToList();
+        }
+    }
 
     public IList<PerfComparisonRow> ComparisonRows { get; } = new List<PerfComparisonRow>();
 
     public int ResponseCount => Runs.Count;
 
     public string BaselineLabel => Runs.FirstOrDefault()?.Label ?? "n/a";
+    private const string AspNetCoreLiquidPagesLabel = "Liquid Pages/AspNetCore";
+    private const string AspNetCoreRazorPagesLabel = "Razor Pages/AspNetCore";
+    private const string SimpleWLiquidPagesLabel = "Liquid Pages/SimpleW";
+    private const string GenHTTPLiquidPagesLabel = "Liquid Pages/GenHTTP";
+    private const string EmbedIOLiquidPagesLabel = "Liquid Pages/EmbedIO";
+    private const string NetCoreServerLiquidPagesLabel = "Liquid Pages/NetCoreServer";
+
+    private readonly IDictionary<string, int> _order = new Dictionary<string, int>()
+    {
+        { AspNetCoreRazorPagesLabel, 0 },
+        { AspNetCoreLiquidPagesLabel, 1 },
+        { SimpleWLiquidPagesLabel, 2 },
+        { GenHTTPLiquidPagesLabel, 3 },
+        { NetCoreServerLiquidPagesLabel, 4 },
+        { EmbedIOLiquidPagesLabel, 5 }
+    };
+
+    private readonly IDictionary<string, string> _labels = new Dictionary<string, string>()
+    {
+        { "razor", AspNetCoreRazorPagesLabel },
+        { "aspnetcore", AspNetCoreLiquidPagesLabel },
+        { "simplew", SimpleWLiquidPagesLabel },
+        { "genhttp", GenHTTPLiquidPagesLabel },
+        { "netcoreserver", NetCoreServerLiquidPagesLabel },
+        { "embedio", EmbedIOLiquidPagesLabel }
+    };
 
     public void AddBenchmarkResponse(string filePath, PerfBenchmarkResponse benchmarkResponse)
     {
-        Runs.Add(new PerfBenchmarkRun
+        _runs.Add(new PerfBenchmarkRun
         {
-            Label = BuildLabel(filePath, Runs.Count + 1),
+            Label = _labels[BuildLabel(filePath, Runs.Count + 1)],
             BenchmarkResponse = benchmarkResponse
         });
 

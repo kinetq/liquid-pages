@@ -2,7 +2,7 @@
 using Kinetq.LiquidPages.Models;
 using SimpleW;
 using SimpleW.Modules;
-using System.Text;
+using System.Globalization;
 
 namespace Kinetq.LiquidPages.SimpleW
 {
@@ -82,15 +82,14 @@ namespace Kinetq.LiquidPages.SimpleW
             {
                 var response = session.Response;
 
-                await using var contentStream = new MemoryStream();
-                await using var streamWriter = new StreamWriter(contentStream, Encoding.UTF8, leaveOpen: true);
+                using var contentWriter = new StringWriter(CultureInfo.InvariantCulture);
 
-                var responseModel = new SimpleWLiquidResponseBuilder(response, streamWriter);
+                var responseModel = new SimpleWLiquidResponseBuilder(response, contentWriter);
 
                 await _liquidResponseMiddleware.HandleRequestAsync(liquidRequest, responseModel);
-                await streamWriter.FlushAsync();
+                await contentWriter.FlushAsync();
                 
-                await response.Body(contentStream.GetBuffer())
+                await response.Html(contentWriter.ToString())
                     .SendAsync();
             }
             catch (Exception ex)

@@ -140,10 +140,8 @@ jobs:
           "aspnetcore-liquid:liquid_results_aspnetcore.json"
           "aspnetcore-razor:liquid_results_razor.json"
           "embedio-home:liquid_results_embedio.json"
-          "netcoreserver-home:liquid_results_netcoreserver.json"
           "genhttp-home:liquid_results_genhttp.json"
           "simplew-home:liquid_results_simplew.json"
-          "simplew-razor-home:liquid_results_simplew_razor.json"
         )
 
         for entry in "${scenarios[@]}"; do
