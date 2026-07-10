@@ -106,7 +106,7 @@ jobs:
           INCLUDE_SYMBOLS: true
 
   deploy-perf-results:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/master'
 
@@ -121,69 +121,52 @@ jobs:
 
     - name: Run setup
       working-directory: ${{ github.workspace }}
-      shell: pwsh
+      shell: bash
       run: |
         dotnet tool update --global Microsoft.Crank.Controller --version "0.2.0-*"
         dotnet tool update --global Microsoft.Crank.Agent --version "0.2.0-*"
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
     - name: Run crank
       working-directory: ${{ github.workspace }}
-      shell: pwsh
+      shell: bash
       run: |
-        $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
+        crank-agent > crank-agent.log 2>&1 &
+        AGENT_PID=$!
+        trap 'kill $AGENT_PID' EXIT
+        sleep 5
 
-        $agent = Start-Process -FilePath "crank-agent" -PassThru -WindowStyle Hidden
-        Start-Sleep -Seconds 5
+        scenarios=(
+          "aspnetcore-liquid:liquid_results_aspnetcore.json"
+          "aspnetcore-razor:liquid_results_razor.json"
+          "embedio-home:liquid_results_embedio.json"
+          "netcoreserver-home:liquid_results_netcoreserver.json"
+          "genhttp-home:liquid_results_genhttp.json"
+          "simplew-home:liquid_results_simplew.json"
+          "simplew-razor-home:liquid_results_simplew_razor.json"
+        )
 
-        $scenarios = @{
-          "aspnetcore-liquid" = "liquid_results_aspnetcore.json"
-          "aspnetcore-razor" = "liquid_results_razor.json"
-          "embedio-home" = "liquid_results_embedio.json"
-          "netcoreserver-home" = "liquid_results_netcoreserver.json"
-          "genhttp-home" = "liquid_results_genhttp.json"
-          "simplew-home" = "liquid_results_simplew.json"
-          "simplew-razor-home" = "liquid_results_simplew_razor.json"
-        }
-
-        try {
-          foreach ($scenario in $scenarios.Keys) {
-            crank --config liquidpages.benchmark.yaml --scenario $scenario --profile local --json $scenarios[$scenario]
-          }
-        }
-        finally {
-          if (-not $agent.HasExited) {
-            Stop-Process -Id $agent.Id -Force
-          }
-        }
+        for entry in "${scenarios[@]}"; do
+          scenario="${entry%%:*}"
+          output="${entry##*:}"
+          crank --config liquidpages.benchmark.yaml --scenario "$scenario" --profile local --json "$output"
+        done
 
     - name: Build perf generator
       working-directory: ${{ github.workspace }}
-      shell: pwsh
+      shell: bash
       run: dotnet build src/Kinetq.LiquidPages.Perf/Kinetq.LiquidPages.Perf.csproj -c Release
 
     - name: Generate perf-results.html
       working-directory: ${{ github.workspace }}
-      shell: pwsh
-      run: .\src\Kinetq.LiquidPages.Perf\bin\Release\net10.0\Kinetq.LiquidPages.Perf.exe .
+      shell: bash
+      run: dotnet ./src/Kinetq.LiquidPages.Perf/bin/Release/net10.0/Kinetq.LiquidPages.Perf.dll .
 
-    - name: Setup GitHub Pages
-      uses: actions/configure-pages@v5
-
-    - name: Prepare Pages artifact
-      working-directory: ${{ github.workspace }}
-      shell: pwsh
-      run: |
-        New-Item -ItemType Directory -Path _site -Force | Out-Null
-        Copy-Item perf-results.html _site/perf-results.html
-        Copy-Item perf-results.html _site/index.html
-        Copy-Item liquid_results_*.json _site/
-
-    - name: Upload Pages artifact
-      uses: actions/upload-pages-artifact@v3
+    - name: Upload perf results artifact
+      uses: actions/upload-artifact@v4
       with:
-        path: _site
-
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+        name: perf-results
+        path: |
+          perf-results.html
+          liquid_results_*.json
 
