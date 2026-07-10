@@ -12,6 +12,25 @@ If you find this project helpful, please consider giving it a ⭐!
 
 LiquidPages is an open-source C# library that brings a Razor Pages–style MVVM framework to [Liquid](https://shopify.github.io/liquid/) templates. It uses [Fluid](https://github.com/sebastienros/fluid) under the hood and is designed to plug into virtually any .NET web server.
 
+## Table of Contents
+
+- [Why?](#why)
+- [Setup](#setup)
+  - [1. Install the NuGet package](#1-install-the-nuget-package)
+  - [2. Register services](#2-register-services)
+  - [3. Register routes, filters, and template file providers at startup](#3-register-routes-filters-and-template-file-providers-at-startup)
+  - [4. Create a page model](#4-create-a-page-model)
+  - [5. Create the Liquid template](#5-create-the-liquid-template)
+  - [6. Wire up middleware](#6-wire-up-middleware)
+    - [ASP.NET Core middleware](#aspnet-core-middleware)
+    - [SimpleW middleware](#simplew-middleware)
+    - [GenHTTP middleware](#genhttp-middleware)
+    - [EmbedIO middleware](#embedio-middleware)
+- [Visual Studio Extension](#visual-studio-extension)
+  - [Without the extension](#without-the-extension)
+- [Performance](#performance)
+- [Documentation](#documentation)
+
 ## Why?
 
 Most .NET templating solutions are tightly coupled to a specific web server or framework. LiquidPages was built to solve two problems:
@@ -222,8 +241,6 @@ webServer.WithModule(new LiquidWebModule("/", routesManager)
 
 For other web servers, call `HandleRequestAsync` on `ILiquidResponseMiddleware` from within your own request handler.
 
-<iframe src="https://kinetqprodeastus2.blob.core.windows.net/assets/perf-results.html" width="100%" height="400" title="Embedded Content"></iframe>
-
 ## Visual Studio Extension
 
 Install the `Kinetq.LiquidPages.Extension` from the Visual Studio Marketplace for syntax highlighting, a Prettier-based formatter (`Ctrl+Shift+X`), and quick commands to scaffold new pages.
@@ -266,6 +283,11 @@ If you choose not to use the extension, you will need to configure the following
   ]
 }
 ```
+
+## Performance
+Detailed performance for each server is available <a href="https://kinetqprodeastus2.blob.core.windows.net/assets/perf-results.html" target="_blank">here</a>.
+
+Performance is baselined against AspNetCore/Razor Pages. Each sample project was run with the same page model and template.
 
 ## Documentation
 
