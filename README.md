@@ -35,7 +35,7 @@ LiquidPages is an open-source C# library that brings a Razor Pages–style MVVM 
 
 Most .NET templating solutions are tightly coupled to a specific web server or framework. LiquidPages was built to solve two problems:
 
-- **Web-server agnostic** — the middleware can hook into any web server (EmbedIO, a custom HTTP listener, or even a MAUI WebView!), so you aren't locked into a particular host.
+- **Web-server agnostic** — the middleware can hook into any web server (Kestrel, SimpleW, a custom HTTP listener, or even a MAUI WebView!), so you aren't locked into a particular host.
 - **Modular by design** — Liquid templates and their page models can live in any C# project across a solution. Each route defines its own `IFileProvider`, making it straightforward to split pages across multiple projects and compose them at runtime.
 
 The result is a lightweight, portable templating layer that stays out of your way regardless of how your application is structured.
