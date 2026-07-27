@@ -89,7 +89,10 @@ public class HtmlRenderer : IHtmlRenderer
                 }
 
                 cachedTemplate = template;
-                _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+                if(!liquidRoute.DisableTemplateCache)
+                {
+                    _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+                }
             }
         }
 
@@ -121,7 +124,10 @@ public class HtmlRenderer : IHtmlRenderer
                 }
 
                 cachedTemplate = template;
-                _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+                if(!liquidRoute.DisableTemplateCache)
+                {
+                    _liquidTemplateManager.RegisterTemplate(liquidTemplateCacheKey, cachedTemplate);
+                }
             }
         }
 

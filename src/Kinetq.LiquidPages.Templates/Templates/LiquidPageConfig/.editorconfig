@@ -1,0 +1,7 @@
+# EditorConfig for Liquid template files
+# This file is automatically created when you add your first Liquid page
+
+root = true
+
+[*.liquid]
+charset = utf-8

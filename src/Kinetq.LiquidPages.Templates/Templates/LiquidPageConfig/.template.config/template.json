@@ -28,6 +28,19 @@
     },
     {
       "source": "./",
+      "target": "./.editorconfig",
+      "include": [ ".editorconfig" ],
+      "copyOnly": [ ".editorconfig" ],
+      "condition": "(CreateWorkspaceSettings)",
+      "modifiers": [
+        {
+          "condition": "(!CreateWorkspaceSettings)",
+          "exclude": [ ".editorconfig" ]
+        }
+      ]
+    },
+    {
+      "source": "./",
       "target": "./",
       "include": [ ".filenesting.json" ],
       "copyOnly": [ ".filenesting.json" ],

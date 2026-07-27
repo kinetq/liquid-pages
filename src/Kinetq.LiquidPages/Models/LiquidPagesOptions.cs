@@ -3,6 +3,7 @@
 public class LiquidPagesOptions
 {
     public IList<PageRoute> PageRoutes = new List<PageRoute>();
+    public bool DisableTemplateCache { get; set; }
 }
 
 public class PageRoute

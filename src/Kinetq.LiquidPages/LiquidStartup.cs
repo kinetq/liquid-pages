@@ -78,6 +78,7 @@ public class LiquidStartup : ILiquidStartup
                 RouteTemplate = optionsPageRoute.RouteTemplate,
                 LiquidTemplatePath = liquidPageAttribute.TemplatePath,
                 PageModelType = pageModelType,
+                DisableTemplateCache = options.DisableTemplateCache,
                 Execute = async (request) =>
                 {
                     if (request.Method == "POST")

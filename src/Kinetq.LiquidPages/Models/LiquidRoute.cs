@@ -9,4 +9,5 @@ public sealed class LiquidRoute
     public Func<LiquidRequestModel, Task<object>> Execute { get; init; }
     public Type? PageModelType { get; init; }
     public TemplateOptions? TemplateOptions { get; set; }
+    public bool DisableTemplateCache { get; set; }
 }
