@@ -16,7 +16,13 @@ public class LiquidPagesOptionsBuilder
         return this;
     }
 
-     internal LiquidPagesOptions Build()
+    public LiquidPagesOptionsBuilder DisableTemplateCache()
+    {
+        _liquidPagesOptions.DisableTemplateCache = true;
+        return this;
+    }
+
+    internal LiquidPagesOptions Build()
     {
         return _liquidPagesOptions;
     }
